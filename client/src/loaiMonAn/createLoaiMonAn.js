@@ -46,7 +46,7 @@ function CreateLoaiMon(props) {
   };
   return (
     <>
-      <CModal show={props.modal} onClose={props.toggleModal} size="xl">
+      <CModal show={props.modal} onClose={props.toggleModal} size="l">
         <CModalHeader closeButton>
           {" "}
           <h3>Thêm mới loại món ăn</h3>
