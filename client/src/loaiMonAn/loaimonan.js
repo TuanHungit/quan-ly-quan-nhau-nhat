@@ -11,22 +11,22 @@ import {
   CContainer,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
+import CreateLoaiMon from './createLoaiMonAn';
 import Icon from '@mdi/react';
-import { mdiAccountPlus } from '@mdi/js';
-
+import { mdiViewGridPlus } from '@mdi/js'
 // import DestinationCreate from './createDestination'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
   { key: "id", label: "STT", _style: { width: "10%" } },
   { key: "lma_ten", label: "Tên", _style: { width: "8%" } },
- 
+
   { key: "action", label: "ACTION", _style: { width: "10%" } },
 ];
 const monanlist = [
-    { id: "1", lma_ten: "nước uống" },
-    { id: "2", lma_ten: "lẩu" },
-    { id: "3", lma_ten: "đồ nướng"},
-  ];
+  { id: "1", lma_ten: "nước uống" },
+  { id: "2", lma_ten: "lẩu" },
+  { id: "3", lma_ten: "đồ nướng" },
+];
 const getBadge = (status) => {
   switch (status) {
     case "Active":
@@ -41,7 +41,7 @@ const getBadge = (status) => {
       return "primary";
   }
 };
- 
+
 function LoaiMonAn() {
   const [destinationsList, setDestinationsList] = useState(null);
   const [details, setDetails] = useState([]);
@@ -49,7 +49,7 @@ function LoaiMonAn() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
- 
+
   const createSuccess = () => {
     setSuccess(!success);
   };
@@ -72,7 +72,7 @@ function LoaiMonAn() {
   const toggleModal = () => {
     setModal(!modal);
   };
-  
+
   return (
     <>
       <CCard>
@@ -81,31 +81,28 @@ function LoaiMonAn() {
             <CRow className="d-flex justify-content-between">
               <h1>Danh sách loại món ăn</h1>
               <div className='card-header-actions'>
-                <CLink to='#'>
-                  <CButton
-                    block
-                    variant='outline'
-                    color='primary'
-                    size='sm'
-                    className='users-title-btn-add'>
-                    <Icon
-                      path={mdiAccountPlus}
-                      size={1}
-                      title='Create Admin'
-                      className='mr-1'
-                    />
-                    Thêm loại món ăn
+                <CButton onClick={toggleModal}
+                  block
+                  variant='outline'
+                  color='primary'
+                  size='sm'
+                  className='users-title-btn-add'>
+                  <Icon
+                    path={mdiViewGridPlus}
+                    size={1}
+                    title='Create Admin'
+                    className='mr-1'
+                  />
+                    Thêm loại món ăn.
                   </CButton>
-                </CLink>
               </div>
-
             </CRow>
           </CContainer>
         </CCardHeader>
-      
+
         <CCardBody>
           <CDataTable
-             items={monanlist}
+            items={monanlist}
             fields={fields}
             striped
             itemsPerPage={5}

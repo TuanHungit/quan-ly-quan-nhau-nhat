@@ -86,7 +86,6 @@ function MonAn() {
               <h1>Danh sách món ăn</h1>
               <div className='card-header-actions'>
                   <CButton
-                  onClick={e=>}
                     block
                     variant='outline'
                     color='primary'

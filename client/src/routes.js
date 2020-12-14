@@ -38,7 +38,7 @@ const Typography = React.lazy(() => import('./views/theme/typography/Typography'
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'));
 const Users = React.lazy(() => import('./views/users/Users'));
 const User = React.lazy(() => import('./views/users/User'));
-const Monan = React.lazy(() => import('./product/monan.js'));
+const Monan = React.lazy(() => import('./monAn/monan.js'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
