@@ -37,7 +37,7 @@ import {
 import "./menu.css";
 import { classNames } from "classnames";
 
-export default (props) => {
+export default ({ onClickMenuHandler }) => {
   const settings = {
     dots: true,
     infinite: true,
@@ -65,7 +65,12 @@ export default (props) => {
                   .filter((food) => food.ma_lmaid === categoryId)
                   .map((el) => (
                     <CCol lg="3">
-                      <figure class="figure">
+                      <figure
+                        class="figure"
+                        onClick={(e) =>
+                          onClickMenuHandler(el.ma_id, el.ma_ten, el.ma_giaban)
+                        }
+                      >
                         <img
                           src={el.ma_hinhanh}
                           class="figure-img img-fluid rounded"

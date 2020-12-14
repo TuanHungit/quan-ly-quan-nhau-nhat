@@ -20,3 +20,7 @@
   left: 30%;
   position: relative;
 }
+.bill {
+  overflow: none;
+  overflow-y: scroll;
+}

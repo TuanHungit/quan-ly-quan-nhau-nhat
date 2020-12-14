@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
 import Menu from "./menu/menu";
+import { produce } from "immer";
 import {
-  mdiFoodOff,
   mdiAccountCircle,
   mdiTable,
   mdiLeadPencil,
   mdiHistory,
   mdiBellRing,
   mdiCurrencyUsd,
+  mdiDelete,
+  mdiPlusCircle,
+  mdiMinusCircle,
+  mdiFoodOff,
 } from "@mdi/js";
 import {
   CContainer,
@@ -35,6 +39,7 @@ import {
 } from "@coreui/react";
 import "./orders.css";
 import TableData from "./tableData";
+import { shallow } from "enzyme/build";
 
 export default (props) => {
   const settings = {
@@ -45,10 +50,20 @@ export default (props) => {
     slidesToScroll: 1,
   };
   const [table, setTable] = useState(0);
-
+  const [bill, setBill] = useState([]);
   const onClickTableHandler = (e, el) => {
     setTable(el.ban_stt);
   };
+
+  const onClickMenuHandler = (id, name, price) => {
+    setBill((el) => el.concat([{ id, name, price, amount: 1 }]));
+  };
+  // setBill((state) => {
+  //   produce(el, (v) => {
+  //     v[index].price = price;
+  //     v[index].name = name;
+  //   });
+  // });
   return (
     <div>
       <CContainer fluid style={{ height: "100vh", backgroundColor: "#fff" }}>
@@ -89,7 +104,11 @@ export default (props) => {
                         </CDropdownMenu>
                       </CDropdown>
                     </CRow>
-                    <Slider {...settings} style={{ height: "82vh" }}>
+                    <Slider
+                      {...settings}
+                      style={{ height: "82vh" }}
+                      className="mb-5"
+                    >
                       <div>
                         <CRow style={{ height: "100%" }}>
                           {TableData.slice(0, 24).map((el, key) => (
@@ -136,7 +155,7 @@ export default (props) => {
                   </CContainer>
                 </CTabPane>
                 <CTabPane data-tab="menu" className="pt-3">
-                  <Menu />
+                  <Menu onClickMenuHandler={onClickMenuHandler} />
                 </CTabPane>
               </CTabContent>
             </CTabs>
@@ -176,17 +195,77 @@ export default (props) => {
                               <CCol lg="5"></CCol>
                             </CRow>
                           </CCardHeader>
-                          <CCardBody>
-                            <div className="icon">
-                              <Icon
-                                path={mdiFoodOff}
-                                title="User Profile"
-                                size={10}
-                                horizontal
-                                rotate={180}
-                                vertical
-                              />
-                            </div>
+                          <CCardBody className="bill">
+                            {/* */}
+                            {bill.length > 0 ? (
+                              bill.map((el, key) => {
+                                const id = el.id;
+                                return (
+                                  <CRow
+                                    className="border-bottom py-2"
+                                    style={{ boxShadow: "0px 1px 1px #007fc1" }}
+                                    key={key}
+                                  >
+                                    <CCol lg="7" className="d-flex">
+                                      <Icon
+                                        path={mdiDelete}
+                                        title="User Profile"
+                                        size={1}
+                                        horizontal
+                                        rotate={180}
+                                        vertical
+                                        onClick={(e) => {
+                                          const billUpdated = bill.filter(
+                                            (el) => el.id !== id
+                                          );
+                                          setBill([...billUpdated]);
+                                        }}
+                                      />
+                                      <p>&nbsp;{key + 1}&nbsp;</p>
+                                      <p>{el.name}</p>
+                                    </CCol>
+                                    <CCol
+                                      lg="5"
+                                      className="d-flex justify-content-between"
+                                    >
+                                      <Icon
+                                        path={mdiMinusCircle}
+                                        title="User Profile"
+                                        size={1}
+                                        horizontal
+                                        rotate={180}
+                                        vertical
+                                      />
+                                      <p> &nbsp;{el.amount}&nbsp;</p>
+                                      <Icon
+                                        path={mdiPlusCircle}
+                                        title="User Profile"
+                                        size={1}
+                                        horizontal
+                                        rotate={180}
+                                        vertical
+                                      />
+                                      <p>{el.price}</p>
+                                      <p>
+                                        {" "}
+                                        <strong>{el.price}</strong>{" "}
+                                      </p>
+                                    </CCol>
+                                  </CRow>
+                                );
+                              })
+                            ) : (
+                              <div className="icon">
+                                <Icon
+                                  path={mdiFoodOff}
+                                  title="User Profile"
+                                  size={10}
+                                  horizontal
+                                  rotate={180}
+                                  vertical
+                                />
+                              </div>
+                            )}
                           </CCardBody>
                           <CCardFooter>
                             <CRow className="d-flex justify-content-between">
