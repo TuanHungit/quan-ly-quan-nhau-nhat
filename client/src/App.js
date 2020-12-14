@@ -30,6 +30,7 @@ class App extends Component {
               <Route exact path="/500" name="Page 500" render={props => <Page500 {...props}/>} />
               <Route path="/" name="Home" render={props => <TheLayout {...props}/>} />
               <Route path="/ds" name="Home" render={props => <TheLayout {...props}/>} />
+              <Route path="/dsdf" name="Home" render={props => <TheLayout {...props}/>} />
 
             </Switch>
           </React.Suspense>
