@@ -11,9 +11,9 @@ import {
   CContainer,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import CreateLoaiMon from './createLoaiMonAn';
 import Icon from '@mdi/react';
-import {mdiViewGridPlus} from '@mdi/js'
+import { mdiAccountPlus } from '@mdi/js';
+
 // import DestinationCreate from './createDestination'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
@@ -80,22 +80,25 @@ function LoaiMonAn() {
           <CContainer className="container">
             <CRow className="d-flex justify-content-between">
               <h1>Danh sách loại món ăn</h1>
-              <div className='card-header-actions'> 
-                  <CButton  onClick={toggleModal}
+              <div className='card-header-actions'>
+                <CLink to='#'>
+                  <CButton
                     block
                     variant='outline'
                     color='primary'
                     size='sm'
                     className='users-title-btn-add'>
                     <Icon
-                      path={mdiViewGridPlus}
+                      path={mdiAccountPlus}
                       size={1}
                       title='Create Admin'
                       className='mr-1'
                     />
                     Thêm loại món ăn
                   </CButton>
+                </CLink>
               </div>
+
             </CRow>
           </CContainer>
         </CCardHeader>
