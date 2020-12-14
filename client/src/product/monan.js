@@ -12,6 +12,8 @@ import {
 } from "@coreui/react";
 import "./style.css";
 import CIcon from "@coreui/icons-react";
+import Icon from '@mdi/react';
+import { mdiFoodForkDrink } from '@mdi/js';
 // import DestinationCreate from './createDestination'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
@@ -46,7 +48,7 @@ function MonAn() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
- 
+
   const createSuccess = () => {
     setSuccess(!success);
   };
@@ -70,32 +72,46 @@ function MonAn() {
     setModal(!modal);
   };
   const monanlist = [
-    { id: "1", ma_ten: "nước uống", ma_giaban:"100000", ma_giavon:"50000",ma_donvitinh:"ly", ma_hinhanh:" ",ma_motachitiet:"fjdgfgfdhg" },
-    { id: "2", ma_ten: "nước uống", ma_giaban:"100000", ma_giavon:"50000",ma_donvitinh:"ly", ma_hinhanh:" ",ma_motachitiet:"fjdgfgfdhg" },
-    { id: "3", ma_ten: "7up ", ma_giaban:"100000", ma_giavon:"50000",ma_donvitinh:"ly", ma_hinhanh:" ",ma_motachitiet:"fjdgfgfdhg" },
+    { id: "1", ma_ten: "nước uống", ma_giaban: "100000", ma_giavon: "50000", ma_donvitinh: "ly", ma_hinhanh: " ", ma_motachitiet: "fjdgfgfdhg" },
+    { id: "2", ma_ten: "nước uống", ma_giaban: "100000", ma_giavon: "50000", ma_donvitinh: "ly", ma_hinhanh: " ", ma_motachitiet: "fjdgfgfdhg" },
+    { id: "3", ma_ten: "7up ", ma_giaban: "100000", ma_giavon: "50000", ma_donvitinh: "ly", ma_hinhanh: " ", ma_motachitiet: "fjdgfgfdhg" },
 
   ];
   return (
     <>
       <CCard>
-        <CCardHeader className="CCardHeader-title ">
+        <CCardHeader className="CCardHeader-title">
           <CContainer>
             <CRow className="d-flex justify-content-between">
               <h1>Danh sách món ăn</h1>
-              <CButton size="sm" color="info" onClick={toggleModal}>
-                + Thêm mới
-              </CButton>
+              <div className='card-header-actions'>
+                  <CButton
+                  onClick={e=>}
+                    block
+                    variant='outline'
+                    color='primary'
+                    size='sm'
+                  className='CCardHeader-title-btn-createfood'>
+                    <Icon
+                      path={mdiFoodForkDrink}
+                      size={1}
+                      title='Create Food'
+                      className='mr-1'
+                    />
+                    Thêm món ăn
+                  </CButton>
+              </div>
             </CRow>
           </CContainer>
         </CCardHeader>
-      
+
         <CCardBody>
           <CDataTable
             items={monanlist}
             fields={fields}
             striped
             itemsPerPage={5}
-            pagination 
+            pagination
             scopedSlots={{
               index: (item) => <td>{item.id}</td>,
               ten: (item) => (
