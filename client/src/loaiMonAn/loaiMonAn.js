@@ -18,7 +18,7 @@ import { mdiViewGridPlus } from '@mdi/js'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
     { key: "id", label: "STT", _style: { width: "10%" } },
-    { key: "lma_ten", label: "Tên", _style: { width: "8%" } },
+    { key: "lma_ten", label: "Tên", _style: { width: "80%" } },
 
     { key: "action", label: "ACTION", _style: { width: "10%" } },
 ];
