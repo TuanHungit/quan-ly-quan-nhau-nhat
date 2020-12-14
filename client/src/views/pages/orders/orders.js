@@ -1,6 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import Slider from "react-slick";
-import { getStyle } from "@coreui/utils";
+import Icon from "@mdi/react";
+import Menu from "./menu/menu";
+import {
+  mdiFoodOff,
+  mdiAccountCircle,
+  mdiTable,
+  mdiLeadPencil,
+  mdiHistory,
+  mdiBellRing,
+  mdiCurrencyUsd,
+} from "@mdi/js";
+import {
+  CContainer,
+  CImg,
+  CRow,
+  CCol,
+  CTabs,
+  CNav,
+  CNavItem,
+  CNavLink,
+  CTabContent,
+  CTabPane,
+  CCard,
+  CCardHeader,
+  CCardBody,
+  CCardFooter,
+  CButton,
+  CInput,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownItem,
+  CDropdownMenu,
+} from "@coreui/react";
+import "./orders.css";
+import TableData from "./tableData";
 
 export default (props) => {
   const settings = {
@@ -10,29 +44,238 @@ export default (props) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+  const [table, setTable] = useState(0);
+
+  const onClickTableHandler = (e, el) => {
+    setTable(el.ban_stt);
+  };
   return (
     <div>
-      <h2> Single Item</h2>
-      <Slider {...settings}>
-        <div>
-          <h3>1</h3>
-        </div>
-        <div>
-          <h3>2</h3>
-        </div>
-        <div>
-          <h3>3</h3>
-        </div>
-        <div>
-          <h3>4</h3>
-        </div>
-        <div>
-          <h3>5</h3>
-        </div>
-        <div>
-          <h3>6</h3>
-        </div>
-      </Slider>
+      <CContainer fluid style={{ height: "100vh", backgroundColor: "#fff" }}>
+        <CRow>
+          <CCol lg="7">
+            <CTabs activeTab="roomtable">
+              <CNav variant="tabs">
+                <CNavItem>
+                  <CNavLink data-tab="roomtable">
+                    {" "}
+                    <Icon
+                      path={mdiTable}
+                      title="User Profile"
+                      size={0.7}
+                      horizontal
+                      vertical
+                    />
+                    Phòng bàn
+                  </CNavLink>
+                </CNavItem>
+                <CNavItem>
+                  <CNavLink data-tab="menu">Thực đơn</CNavLink>
+                </CNavItem>
+              </CNav>
+              <CTabContent>
+                <CTabPane data-tab="roomtable">
+                  <CContainer>
+                    <CRow className="justify-content-between pt-2">
+                      <p> Sử dụng: 3/31</p>
+                      <CDropdown className="mt-2">
+                        <CDropdownToggle caret color="info">
+                          Tất cả
+                        </CDropdownToggle>
+                        <CDropdownMenu>
+                          <CDropdownItem header>Tất cả</CDropdownItem>
+                          <CDropdownItem>Đang sử dụng</CDropdownItem>
+                          <CDropdownItem>Chưa sử dụng</CDropdownItem>
+                        </CDropdownMenu>
+                      </CDropdown>
+                    </CRow>
+                    <Slider {...settings} style={{ height: "82vh" }}>
+                      <div>
+                        <CRow style={{ height: "100%" }}>
+                          {TableData.slice(0, 24).map((el, key) => (
+                            <CCol lg="2" className="pt-5 " key={key}>
+                              <div
+                                className={`table `}
+                                id={key}
+                                onClick={(e) => onClickTableHandler(e, el)}
+                              >
+                                <CImg
+                                  src="https://static.thenounproject.com/png/262835-200.png"
+                                  alt="Hinhanh"
+                                  height="70"
+                                  fluid
+                                  className="label"
+                                  align="center"
+                                />
+                                <div className="label">Bàn {el.ban_stt}</div>
+                              </div>
+                            </CCol>
+                          ))}
+                        </CRow>
+                      </div>
+                      <div>
+                        <CRow style={{ height: "100%" }}>
+                          {TableData.slice(24).map((el, key) => (
+                            <CCol lg="2" className="pt-5" key={key}>
+                              <div className="table">
+                                <CImg
+                                  src="https://static.thenounproject.com/png/262835-200.png"
+                                  alt="Hinhanh"
+                                  height="70"
+                                  fluid
+                                  className="label"
+                                  align="center"
+                                />
+                                <div className="label">Bàn {el.ban_stt}</div>
+                              </div>
+                            </CCol>
+                          ))}
+                        </CRow>
+                      </div>
+                    </Slider>
+                  </CContainer>
+                </CTabPane>
+                <CTabPane data-tab="menu" className="pt-3">
+                  <Menu />
+                </CTabPane>
+              </CTabContent>
+            </CTabs>
+          </CCol>
+          <CCol lg="5">
+            <CTabs activeTab="bill">
+              <CNav variant="tabs">
+                <CNavItem>
+                  <CNavLink data-tab="bill">Hóa đơn</CNavLink>
+                </CNavItem>
+                <CNavItem>
+                  <CNavLink data-tab="menu">Hóa đơn mới</CNavLink>
+                </CNavItem>
+              </CNav>
+              <CTabContent>
+                <CTabPane data-tab="bill">
+                  <CContainer className="pt-3">
+                    <CRow>
+                      <CCol>
+                        <CCard style={{ height: "89vh" }}>
+                          <CCardHeader>
+                            <CRow>
+                              <CCol lg="3">
+                                {" "}
+                                <Icon
+                                  path={mdiTable}
+                                  title="User Profile"
+                                  size={1}
+                                  horizontal
+                                  vertical
+                                />
+                                Bàn {table}
+                              </CCol>
+                              <CCol lg="4">
+                                <CInput placeholder="Tìm khách hàng (F4)" />
+                              </CCol>
+                              <CCol lg="5"></CCol>
+                            </CRow>
+                          </CCardHeader>
+                          <CCardBody>
+                            <div className="icon">
+                              <Icon
+                                path={mdiFoodOff}
+                                title="User Profile"
+                                size={10}
+                                horizontal
+                                rotate={180}
+                                vertical
+                              />
+                            </div>
+                          </CCardBody>
+                          <CCardFooter>
+                            <CRow className="d-flex justify-content-between">
+                              <p>Số lượng khách </p>
+                              <p>Tổng tiền 375.000</p>
+                            </CRow>
+                            <CRow className="d-flex justify-content-between">
+                              <p className="mt-3">
+                                <Icon
+                                  path={mdiAccountCircle}
+                                  title="User Profile"
+                                  size={0.7}
+                                  horizontal
+                                  rotate={180}
+                                  vertical
+                                />
+                                Nguyễn Tuấn Hùng
+                              </p>
+                              <p className="mt-3">
+                                <Icon
+                                  path={mdiLeadPencil}
+                                  title="User Profile"
+                                  size={0.7}
+                                  horizontal
+                                  rotate={180}
+                                  vertical
+                                />{" "}
+                                Ghi chú
+                              </p>
+                              <p className="mt-3">
+                                <Icon
+                                  path={mdiHistory}
+                                  title="User Profile"
+                                  size={0.7}
+                                  horizontal
+                                  rotate={180}
+                                  vertical
+                                />{" "}
+                                Lịch sử
+                              </p>
+                              <CButton
+                                color="info"
+                                shape="pill"
+                                className="m-2 "
+                              >
+                                Tách ghép đơn
+                              </CButton>
+                            </CRow>
+                            <CRow>
+                              <CCol className="text-center bg-success py-3">
+                                <h4 className="text-light">
+                                  <Icon
+                                    path={mdiCurrencyUsd}
+                                    title="User Profile"
+                                    size={1.2}
+                                    horizontal
+                                    rotate={180}
+                                    vertical
+                                  />{" "}
+                                  Thanh toán
+                                </h4>
+                              </CCol>
+                              <CCol className="text-center bg-info py-3">
+                                <h4 className="text-light">
+                                  {" "}
+                                  <Icon
+                                    path={mdiBellRing}
+                                    title="User Profile"
+                                    size={1.2}
+                                    horizontal
+                                    rotate={180}
+                                    vertical
+                                  />{" "}
+                                  Thông báo
+                                </h4>
+                              </CCol>
+                            </CRow>
+                          </CCardFooter>
+                        </CCard>
+                      </CCol>
+                    </CRow>
+                  </CContainer>
+                </CTabPane>
+                <CTabPane data-tab="menu">452</CTabPane>
+              </CTabContent>
+            </CTabs>
+          </CCol>
+        </CRow>
+      </CContainer>
     </div>
   );
 };
