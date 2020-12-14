@@ -60,10 +60,7 @@ function CreateLoaiMon(props) {
                 <CCol lg="6">
                   <CRow>
                     <CCol lg="4" className="pt-2">
-                     Tên loại {"  "}
-                      <CTooltip content="Hello world! A tooltip example">
-                        <i class="fas fa-info-circle"></i>
-                      </CTooltip>
+                     Tên loại
                     </CCol>
                     <CCol lg="8">
                       <input

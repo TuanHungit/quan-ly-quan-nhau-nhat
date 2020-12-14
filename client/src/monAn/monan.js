@@ -10,11 +10,10 @@ import {
   CRow,
   CContainer,
 } from "@coreui/react";
-import "./style.css";
 import CIcon from "@coreui/icons-react";
 import Icon from '@mdi/react';
 import { mdiFoodForkDrink } from '@mdi/js';
-// import DestinationCreate from './createDestination'
+import CreateFood from './CreateFood'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
   { key: "id", label: "STT", _style: { width: "10%" } },
@@ -86,6 +85,7 @@ function MonAn() {
               <h1>Danh sách món ăn</h1>
               <div className='card-header-actions'>
                   <CButton
+                  onClick={toggleModal}
                     block
                     variant='outline'
                     color='primary'
@@ -170,11 +170,11 @@ function MonAn() {
             }}
           />
         </CCardBody>
-        {/* <DestinationCreate
+        <CreateFood
           modal={modal}
           toggleModal={toggleModal}
           createSuccess={createSuccess}
-        /> */}
+        />
       </CCard>
     </>
   );
