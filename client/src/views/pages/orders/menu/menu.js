@@ -47,7 +47,7 @@ export default ({ onClickMenuHandler }) => {
   };
 
   return (
-    <CTabs activeTab="home">
+    <CTabs activeTab={"MÓN KHAI VỊ"}>
       <CNav variant="tabs">
         {categoryData.map((el, key) => (
           <CNavItem key={el.lma_id}>

@@ -58,12 +58,7 @@ export default (props) => {
   const onClickMenuHandler = (id, name, price) => {
     setBill((el) => el.concat([{ id, name, price, amount: 1 }]));
   };
-  // setBill((state) => {
-  //   produce(el, (v) => {
-  //     v[index].price = price;
-  //     v[index].name = name;
-  //   });
-  // });
+  console.log(bill);
   return (
     <div>
       <CContainer fluid style={{ height: "100vh", backgroundColor: "#fff" }}>
@@ -235,6 +230,14 @@ export default (props) => {
                                         horizontal
                                         rotate={180}
                                         vertical
+                                        onClick={(e) => {
+                                          setBill((el) =>
+                                            produce(el, (v) => {
+                                              v[key].amount =
+                                                el[key].amount - 1;
+                                            })
+                                          );
+                                        }}
                                       />
                                       <p> &nbsp;{el.amount}&nbsp;</p>
                                       <Icon
@@ -244,6 +247,14 @@ export default (props) => {
                                         horizontal
                                         rotate={180}
                                         vertical
+                                        onClick={(e) => {
+                                          setBill((el) =>
+                                            produce(el, (v) => {
+                                              v[key].amount =
+                                                el[key].amount + 1;
+                                            })
+                                          );
+                                        }}
                                       />
                                       <p>{el.price}</p>
                                       <p>
