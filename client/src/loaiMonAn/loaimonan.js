@@ -10,21 +10,20 @@ import {
   CRow,
   CContainer,
 } from "@coreui/react";
-import "./style.css";
 import CIcon from "@coreui/icons-react";
 // import DestinationCreate from './createDestination'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
   { key: "id", label: "STT", _style: { width: "10%" } },
-  { key: "ma_ten", label: "Tên", _style: { width: "15%" } },
-  { key: "ma_giaban", label: "Giá bán", _style: { width: "10%" } },
-  { key: "ma_giavon", label: "Giá vốn", _style: { width: "10%" } },
-  { key: "ma_donvitinh", label: "Đơn vị", _style: { width: "20%" } },
-  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
-  { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
-
+  { key: "lma_ten", label: "Tên", _style: { width: "8%" } },
+ 
   { key: "action", label: "ACTION", _style: { width: "10%" } },
 ];
+const monanlist = [
+    { id: "1", lma_ten: "nước uống" },
+    { id: "2", lma_ten: "lẩu" },
+    { id: "3", lma_ten: "đồ nướng"},
+  ];
 const getBadge = (status) => {
   switch (status) {
     case "Active":
@@ -39,7 +38,8 @@ const getBadge = (status) => {
       return "primary";
   }
 };
-function MonAn() {
+ 
+function LoaiMonAn() {
   const [destinationsList, setDestinationsList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,19 +69,14 @@ function MonAn() {
   const toggleModal = () => {
     setModal(!modal);
   };
-  const monanlist = [
-    { id: "1", ma_ten: "nước uống", ma_giaban:"100000", ma_giavon:"50000",ma_donvitinh:"ly", ma_hinhanh:" ",ma_motachitiet:"fjdgfgfdhg" },
-    { id: "2", ma_ten: "nước uống", ma_giaban:"100000", ma_giavon:"50000",ma_donvitinh:"ly", ma_hinhanh:" ",ma_motachitiet:"fjdgfgfdhg" },
-    { id: "3", ma_ten: "7up ", ma_giaban:"100000", ma_giavon:"50000",ma_donvitinh:"ly", ma_hinhanh:" ",ma_motachitiet:"fjdgfgfdhg" },
-
-  ];
+  
   return (
     <>
       <CCard>
         <CCardHeader className="CCardHeader-title ">
-          <CContainer>
+          <CContainer className="container">
             <CRow className="d-flex justify-content-between">
-              <h1>Danh sách món ăn</h1>
+              <h1>Danh sách loại món ăn</h1>
               <CButton size="sm" color="info" onClick={toggleModal}>
                 + Thêm mới
               </CButton>
@@ -91,41 +86,16 @@ function MonAn() {
       
         <CCardBody>
           <CDataTable
-            items={monanlist}
+             items={monanlist}
             fields={fields}
             striped
             itemsPerPage={5}
-            pagination 
+            pagination
             scopedSlots={{
               index: (item) => <td>{item.id}</td>,
-              ten: (item) => (
+              name: (item) => (
                 <td>
-                  <CBadge color={getBadge(item.ma_ten)}>{item.ma_ten}</CBadge>
-                </td>
-              ),
-              ban: (item) => (
-                <td>
-                  <CBadge color={getBadge(item.ma_giaban)}>{item.ma_giaban}</CBadge>
-                </td>
-              ),
-              von: (item) => (
-                <td>
-                  <CBadge color={getBadge(item.ma_giavon)}>{item.ma_giavon}</CBadge>
-                </td>
-              ),
-              donvitinh: (item) => (
-                <td>
-                  <CBadge color={getBadge(item.ma_donvitinh)}>{item.ma_donvitinh}</CBadge>
-                </td>
-              ),
-              hinhanh: (item) => (
-                <td>
-                  <CBadge color={getBadge(item.ma_hinhanh)}>{item.ma_hinhanh}</CBadge>
-                </td>
-              ),
-              mota: (item) => (
-                <td>
-                  <CBadge color={getBadge(item.ma_motachitiet)}>{item.ma_motachitiet}</CBadge>
+                  <CBadge color={getBadge(item.lma_ten)}>{item.nalma_tenme}</CBadge>
                 </td>
               ),
               action: () => (
@@ -165,4 +135,4 @@ function MonAn() {
   );
 }
 
-export default MonAn;
+export default LoaiMonAn;

@@ -1,4 +1,5 @@
 import React from 'react';
+import LoaiMonAn from './loaiMonAn/loaimonan';
 
 const Toaster = React.lazy(() => import('./views/notifications/toaster/Toaster'));
 const Tables = React.lazy(() => import('./views/base/tables/Tables'));
@@ -43,6 +44,8 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/monan', name: 'Món ăn', component: Monan },
+  { path: '/loaimonan', name: 'Loại món ăn', component: LoaiMonAn },
+
   { path: '/ban', name: 'Bàn', component: Monan },
 
   { path: '/theme', name: 'Theme', component: Colors, exact: true },
