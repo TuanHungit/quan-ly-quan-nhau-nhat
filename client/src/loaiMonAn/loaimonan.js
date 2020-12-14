@@ -94,7 +94,7 @@ function LoaiMonAn() {
                       title='Create Admin'
                       className='mr-1'
                     />
-                    Thêm loại món ăn.
+                    Thêm loại món ăn
                   </CButton>
                 </CLink>
               </div>
