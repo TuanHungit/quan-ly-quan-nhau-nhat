@@ -18,4 +18,3 @@ Dependencies are handled by **npm**.
 [Create-React-App](CRA.md)
 [Readme](./README.md)
 
-mdiTableChair 
