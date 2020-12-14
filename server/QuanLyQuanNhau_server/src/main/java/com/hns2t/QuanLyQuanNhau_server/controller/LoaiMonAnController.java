@@ -20,25 +20,26 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hns2t.QuanLyQuanNhau_server.dao.LoaiMonAnRepository;
 import com.hns2t.QuanLyQuanNhau_server.exception.ResourceNotFoundException;
 import com.hns2t.QuanLyQuanNhau_server.model.LoaiMonAn;
+import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 import com.hns2t.QuanLyQuanNhau_server.service.LoaiMonAnService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/v1/")
 public class LoaiMonAnController {
-	@Autowired
-	private LoaiMonAnService service;
+//	@Autowired
+//	private LoaiMonAnService service;
 	@Autowired
 	private LoaiMonAnRepository repo;
 	
 	@GetMapping("/loaimonans")
 	public List<LoaiMonAn> getAll(){
-		return service.listAll();
+		return repo.findAll();
 	}
 	
 	@PostMapping("/loaimonans")
 	public LoaiMonAn createLoaiMonAn(@RequestBody LoaiMonAn loaiMonAn) {
-		return service.save(loaiMonAn);
+		return repo.save(loaiMonAn);
 	}
 
 	
@@ -51,7 +52,7 @@ public class LoaiMonAnController {
 	
 	@PutMapping("/loaimonans/{id}")
 	public ResponseEntity<LoaiMonAn> updateLoaiMonAn(@PathVariable Long id, @RequestBody LoaiMonAn loaiMonAnDetail){
-		LoaiMonAn object = repo.findById(id)
+		LoaiMonAn object =repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Loai mon an khong ton tai with: " + id));
 		object.setLma_ten(loaiMonAnDetail.getLma_ten());
 		LoaiMonAn updateLoaiMonAn = repo.save(object);
@@ -66,6 +67,16 @@ public class LoaiMonAnController {
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("deleted", Boolean.TRUE);
 		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/loaimonans/{id}/monans")
+	public ResponseEntity<List<MonAn>> getListMonAnOfLoaiMonAn(@PathVariable Long id){
+		LoaiMonAn object = repo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Loai mon an khong ton tai with: " + id));
+		List<MonAn> listMonAns = object.getMonans();
+		System.out.println(listMonAns.toString());
+		return ResponseEntity.ok(listMonAns);
+		
 	}
 }
 
