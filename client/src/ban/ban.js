@@ -30,7 +30,7 @@ const banlist = [
 const getBadge = (status) => {
   switch (status) {
     case "Inactive":
-      return  {backgroundColor: "success"};
+      return { backgroundColor: "success" };
     case "Active":
       return "primary";
     case "Order":

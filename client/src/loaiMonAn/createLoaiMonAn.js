@@ -2,7 +2,9 @@ import React, { lazy, useEffect, useState } from "react";
 
 //import QuillEditor from "../editor/quillEditor";
 //import { createPromotion } from "../../api/promotionApi";
-//import alertify from "alertifyjs";
+import alertify from "alertifyjs";
+import { createOneLoaiMonAn } from "../api/LoaiMonAnApi";
+
 import {
   CButton,
   CModal,
@@ -27,22 +29,22 @@ import {
 
 function CreateLoaiMon(props) {
   const [files, setFiles] = useState(null);
-  const [name, setName] = useState("");
+  const [lma_ten, setLma_ten] = useState("");
  
 
   const onSubmit = async (event) => {
     event.preventDefault();
     const data = {
-      name,
+      lma_ten,
     };
-    // try {
-    //   await createLoaiMon(data);
-    //   props.toggleModal();
-    //   props.createSuccess();
-    //   alertify.success("Thêm khuyến mãi thành công");
-    // } catch (err) {
-    //   alertify.error("Có lỗi rồi");
-    // }
+    try {
+      await createOneLoaiMonAn(data);
+      props.toggleModal();
+      props.createSuccess();
+      alertify.success("Thêm loại món ăn thành công");
+    } catch (err) {
+      alertify.error("Có lỗi rồi");
+    }
   };
   return (
     <>
@@ -66,7 +68,7 @@ function CreateLoaiMon(props) {
                         placeholder="Nhập tên loại món ăn"
                         className="inp"
                         onChange={(e) => {
-                          setName(e.target.value);
+                          setLma_ten(e.target.value);
                         }}
                         style={{ width: "100%" }}
                         required

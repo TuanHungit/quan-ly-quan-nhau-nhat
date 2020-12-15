@@ -11,9 +11,11 @@ import {
   CContainer,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import Icon from '@mdi/react';
-import { mdiFoodForkDrink } from '@mdi/js';
-import CreateFood from './CreateFood'
+import Icon from "@mdi/react";
+import { mdiFoodForkDrink } from "@mdi/js";
+import CreateFood from "./createFood";
+import axios from '../common/axiosClient';
+import {useDispatch, useSelector} from 'react-redux'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
   { key: "id", label: "STT", _style: { width: "10%" } },
@@ -41,6 +43,10 @@ const getBadge = (status) => {
   }
 };
 function MonAn() {
+
+  const dispatch = useDispatch()
+
+
   const [destinationsList, setDestinationsList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,11 +57,12 @@ function MonAn() {
   const createSuccess = () => {
     setSuccess(!success);
   };
+  const filterModel =()=>{
+  
+  }
   // useEffect(() => {
-  //   const fetchData = async () => {
+  //   const getListMonAn = async () => {
   //     try {
-  //       const response = await getAllDestinations();
-
   //       setDestinationsList(response);
   //       setLoading(false);
   //     } catch (err) {
@@ -71,10 +78,33 @@ function MonAn() {
     setModal(!modal);
   };
   const monanlist = [
-    { id: "1", ma_ten: "nước uống", ma_giaban: "100000", ma_giavon: "50000", ma_donvitinh: "ly", ma_hinhanh: " ", ma_motachitiet: "fjdgfgfdhg" },
-    { id: "2", ma_ten: "nước uống", ma_giaban: "100000", ma_giavon: "50000", ma_donvitinh: "ly", ma_hinhanh: " ", ma_motachitiet: "fjdgfgfdhg" },
-    { id: "3", ma_ten: "7up ", ma_giaban: "100000", ma_giavon: "50000", ma_donvitinh: "ly", ma_hinhanh: " ", ma_motachitiet: "fjdgfgfdhg" },
-
+    {
+      id: "1",
+      ma_ten: "nước uống",
+      ma_giaban: "100000",
+      ma_giavon: "50000",
+      ma_donvitinh: "ly",
+      ma_hinhanh: " ",
+      ma_motachitiet: "fjdgfgfdhg",
+    },
+    {
+      id: "2",
+      ma_ten: "nước uống",
+      ma_giaban: "100000",
+      ma_giavon: "50000",
+      ma_donvitinh: "ly",
+      ma_hinhanh: " ",
+      ma_motachitiet: "fjdgfgfdhg",
+    },
+    {
+      id: "3",
+      ma_ten: "7up ",
+      ma_giaban: "100000",
+      ma_giavon: "50000",
+      ma_donvitinh: "ly",
+      ma_hinhanh: " ",
+      ma_motachitiet: "fjdgfgfdhg",
+    },
   ];
   return (
     <>
@@ -83,22 +113,23 @@ function MonAn() {
           <CContainer>
             <CRow className="d-flex justify-content-between">
               <h1>Danh sách món ăn</h1>
-              <div className='card-header-actions'>
-                  <CButton
+              <div className="card-header-actions">
+                <CButton
                   onClick={toggleModal}
-                    block
-                    variant='outline'
-                    color='primary'
-                    size='sm'
-                  className='CCardHeader-title-btn-createfood'>
-                    <Icon
-                      path={mdiFoodForkDrink}
-                      size={1}
-                      title='Create Food'
-                      className='mr-1'
-                    />
-                    Thêm món ăn
-                  </CButton>
+                  block
+                  variant="outline"
+                  color="primary"
+                  size="sm"
+                  className="CCardHeader-title-btn-createfood"
+                >
+                  <Icon
+                    path={mdiFoodForkDrink}
+                    size={1}
+                    title="Create Food"
+                    className="mr-1"
+                  />
+                  Thêm món ăn
+                </CButton>
               </div>
             </CRow>
           </CContainer>
@@ -120,27 +151,37 @@ function MonAn() {
               ),
               ban: (item) => (
                 <td>
-                  <CBadge color={getBadge(item.ma_giaban)}>{item.ma_giaban}</CBadge>
+                  <CBadge color={getBadge(item.ma_giaban)}>
+                    {item.ma_giaban}
+                  </CBadge>
                 </td>
               ),
               von: (item) => (
                 <td>
-                  <CBadge color={getBadge(item.ma_giavon)}>{item.ma_giavon}</CBadge>
+                  <CBadge color={getBadge(item.ma_giavon)}>
+                    {item.ma_giavon}
+                  </CBadge>
                 </td>
               ),
               donvitinh: (item) => (
                 <td>
-                  <CBadge color={getBadge(item.ma_donvitinh)}>{item.ma_donvitinh}</CBadge>
+                  <CBadge color={getBadge(item.ma_donvitinh)}>
+                    {item.ma_donvitinh}
+                  </CBadge>
                 </td>
               ),
               hinhanh: (item) => (
                 <td>
-                  <CBadge color={getBadge(item.ma_hinhanh)}>{item.ma_hinhanh}</CBadge>
+                  <CBadge color={getBadge(item.ma_hinhanh)}>
+                    {item.ma_hinhanh}
+                  </CBadge>
                 </td>
               ),
               mota: (item) => (
                 <td>
-                  <CBadge color={getBadge(item.ma_motachitiet)}>{item.ma_motachitiet}</CBadge>
+                  <CBadge color={getBadge(item.ma_motachitiet)}>
+                    {item.ma_motachitiet}
+                  </CBadge>
                 </td>
               ),
               action: () => (
