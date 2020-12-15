@@ -14,6 +14,8 @@ import CIcon from "@coreui/icons-react";
 import Icon from "@mdi/react";
 import { mdiFoodForkDrink } from "@mdi/js";
 import CreateFood from "./createFood";
+import axios from '../common/axiosClient';
+import {useDispatch, useSelector} from 'react-redux'
 // import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
   { key: "id", label: "STT", _style: { width: "10%" } },
@@ -41,6 +43,10 @@ const getBadge = (status) => {
   }
 };
 function MonAn() {
+
+  const dispatch = useDispatch()
+
+
   const [destinationsList, setDestinationsList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,11 +57,12 @@ function MonAn() {
   const createSuccess = () => {
     setSuccess(!success);
   };
+  const filterModel =()=>{
+  
+  }
   // useEffect(() => {
-  //   const fetchData = async () => {
+  //   const getListMonAn = async () => {
   //     try {
-  //       const response = await getAllDestinations();
-
   //       setDestinationsList(response);
   //       setLoading(false);
   //     } catch (err) {
