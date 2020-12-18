@@ -15,8 +15,6 @@ import CreateLoaiMon from "./createLoaiMonAn";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
 import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
-// import DestinationCreate from './createDestination'
-// import { getAllDestinations } from "../../api/destinationApi";
 const fields = [
   { key: "lma_id", label: "STT", _style: { width: "10%" } },
   { key: "lma_ten", label: "Tên", _style: { width: "80%" } },

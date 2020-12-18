@@ -1,17 +1,24 @@
 import axios from "../common/axiosClient";
 
-export const getAllMonAn = async (options) => {
-  let url = `/loaimonans`;
+export const getMonAns = async (options) => {
+  let url = `/monans`;
   if (options) {
-    url = `/loaimonans?fields=${options.join(",")}`;
+    url = `/monans?fields=${options.join(",")}`;
   }
   const response = await axios.get(url);
   return response.data;
 };
 export const createOneMonAn = async (data) => {
-  const url = `/loaimonans`;
+  const url = `/monans`;
   const response = await axios.post(url, data);
   return response.data;
 };
+export const deleteMonAn = async (data) => {
+  const url = `/monans/${data.ma_id}`;
+  const response = await axios.delete(url, data);
+  return response.data;
+};
+
+
 
 

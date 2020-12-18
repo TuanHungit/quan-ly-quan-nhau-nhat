@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   CButton,
   CModal,
@@ -8,28 +8,59 @@ import {
   CContainer,
   CRow,
   CCol,
+  CSelect,
   CImg,
 } from "@coreui/react";
+import { createOneMonAn} from '../api/MonAnApi';
+import { getAllLoaiMonAn } from '../api/LoaiMonAnApi';
 
-const CreateFood = ({ modal, toggleModal }) => {
-  const [dvt, setDvt] = useState();
-  const [giaban, setGiaBan] = useState();
-  const [giavon, setGiaVon] = useState();
-  const [motachitiet, setMoTaChiTiet] = useState();
-  const [ten, setTen] = useState();
-  const [hinhanh, setHinhAnh] = useState();
+import alertify from "alertifyjs";
 
+const CreateFood = (props) => {
+  const [ma_donvitinh, setDvt] = useState();
+  const [ma_giaban, setGiaBan] = useState();
+  const [ma_giavon, setGiaVon] = useState();
+  const [ma_motachitiet, setMoTaChiTiet] = useState();
+  const [ma_ten, setTen] = useState();
+  const [ma_hinhanh, setHinhAnh] = useState();
+const [loaiMonAnList, setLoaiMonAnList] = useState();
+const [ma_lmaid, setLoaiMonAn] = useState();
+  const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(false);
+
+  const [collapse, setCollapse] = useState(false);
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      dvt, giaban, giavon, motachitiet, ten, hinhanh
+      ma_ten, ma_giaban, ma_giavon, ma_donvitinh, ma_hinhanh, ma_motachitiet, ma_lmaid
     }
     console.log(data)
-  }
-
+    try {
+      await createOneMonAn(data);
+      props.toggleModal();
+      props.createSuccess();
+      alertify.success("Thêm món ăn thành công");
+    } catch (err) {
+      alertify.error("Lỗi nghen");
+    }  }
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getAllLoaiMonAn();
+  
+          setLoaiMonAnList(response);
+          setLoading(false);
+        } catch (err) {
+          setLoaiMonAnList(null);
+          setLoading(true);
+          console.log(err);
+        }
+      };
+      fetchData();
+    }, [success]);
   return (
     <div className='create-food'>
-      <CModal show={modal} onClose={toggleModal} size="md">
+      <CModal show={props.modal} onClose={props.toggleModal}>
         <CModalHeader closeButton>
           <h3>Thêm mới món sản phẩm</h3>
         </CModalHeader>
@@ -99,6 +130,7 @@ const CreateFood = ({ modal, toggleModal }) => {
                   </CRow>
                 </CCol>
               </CRow>
+              
               <CRow className="field">
                 <CCol lg="10">
                   <CRow>
@@ -116,6 +148,34 @@ const CreateFood = ({ modal, toggleModal }) => {
                         style={{ width: "100%" }}
                         required
                       />
+                    </CCol>
+                  </CRow>
+                </CCol>
+              </CRow>
+              <CRow className="field">
+                <CCol lg="10">
+                  <CRow>
+                    <CCol lg="5" className="pt-2">
+                      Loại món ăn
+                    </CCol>
+                    <CCol>
+                    <CSelect
+                          class="form-select"
+                          onChange={(e) => {
+                            setLoaiMonAn(e.target.value);
+                          }}
+                          style={{ width: "100%" }}
+                          required
+                        >
+                          <option selected >Chọn loại món ăn</option>
+                          {loaiMonAnList
+                            ? loaiMonAnList.map((el, key) => (
+                                <option key={key} value={el.lma_id, el.lma_ten}>
+                                  {el.lma_ten}
+                                </option>
+                              ))
+                            : null}
+                        </CSelect>
                     </CCol>
                   </CRow>
                 </CCol>
@@ -151,7 +211,7 @@ const CreateFood = ({ modal, toggleModal }) => {
             <CButton color="primary" type="submit">
               Thêm mới
             </CButton>
-            <CButton color="secondary" onClick={toggleModal}>
+            <CButton color="secondary" onClick={props.toggleModal}>
               Bỏ qua
             </CButton>
           </CModalFooter>
