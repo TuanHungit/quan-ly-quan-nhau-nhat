@@ -14,7 +14,7 @@ public class TaiKhoan {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long tk_id;
 	private String tk_tendangnhap;
-	private Double tk_matkhau;
+	private String tk_matkhau;
 	private PhanQuyen tk_phanquyen;
 	
 	@OneToOne(mappedBy = "taiKhoan")
