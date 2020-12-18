@@ -1,6 +1,6 @@
 import axios from "../common/axiosClient";
 
-export const getAllMonAn = async (options) => {
+export const getMonAns = async (options) => {
   let url = `/monans`;
   if (options) {
     url = `/monans?fields=${options.join(",")}`;

@@ -10,8 +10,10 @@ import {
   CCol,
   CImg,
 } from "@coreui/react";
+import { createOneMonAn} from '../api/MonAnApi';
+import alertify from "alertifyjs";
 
-const CreateFood = ({ modal, toggleModal }) => {
+const CreateFood = (props) => {
   const [dvt, setDvt] = useState();
   const [giaban, setGiaBan] = useState();
   const [giavon, setGiaVon] = useState();
@@ -24,12 +26,18 @@ const CreateFood = ({ modal, toggleModal }) => {
     const data = {
       dvt, giaban, giavon, motachitiet, ten, hinhanh
     }
-    console.log(data)
-  }
+    try {
+      await createOneMonAn(data);
+      props.toggleModal();
+      props.createSuccess();
+      alertify.success("Thêm món ăn thành công");
+    } catch (err) {
+      alertify.error("Lỗi nghen");
+    }  }
 
   return (
     <div className='create-food'>
-      <CModal show={modal} onClose={toggleModal} size="md">
+      <CModal show={props.modal} onClose={props.toggleModal} size="md">
         <CModalHeader closeButton>
           <h3>Thêm mới món sản phẩm</h3>
         </CModalHeader>
@@ -151,7 +159,7 @@ const CreateFood = ({ modal, toggleModal }) => {
             <CButton color="primary" type="submit">
               Thêm mới
             </CButton>
-            <CButton color="secondary" onClick={toggleModal}>
+            <CButton color="secondary" onClick={props.toggleModal}>
               Bỏ qua
             </CButton>
           </CModalFooter>
