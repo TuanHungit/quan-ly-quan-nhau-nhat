@@ -15,6 +15,8 @@ import Icon from "@mdi/react";
 import { mdiFoodForkDrink } from "@mdi/js";
 import CreateFood from "./createFood";
 import { getMonAns, deleteMonAn } from "../api/MonAnApi";
+// import { getMonAns, deleteMonAn } from "../api/MonAnApi";
+
 const fields = [
   { key: "ma_id", label: "STT", _style: { width: "10%" } },
   { key: "ma_ten", label: "Tên", _style: { width: "15%" } },
