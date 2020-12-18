@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
 import Menu from "./menu/menu";
@@ -39,7 +39,6 @@ import {
 } from "@coreui/react";
 import "./orders.css";
 import TableData from "./tableData";
-import { shallow } from "enzyme/build";
 
 export default (props) => {
   const settings = {
@@ -51,14 +50,28 @@ export default (props) => {
   };
   const [table, setTable] = useState(0);
   const [bill, setBill] = useState([]);
+  const [listTable, setListTable] = useState([]);
+
+  useEffect(() => {
+    setListTable(TableData);
+  }, [table]);
+
   const onClickTableHandler = (e, el) => {
     setTable(el.ban_stt);
   };
 
-  const onClickMenuHandler = (id, name, price) => {
-    setBill((el) => el.concat([{ id, name, price, amount: 1 }]));
+  const onClickMenuHandler = (id, idBan, name, price) => {
+    setBill((el) =>
+      el.concat([{ idBan, bill: { id, name, price, amount: 1 } }])
+    );
+    setListTable((el) =>
+      produce((el, v) => {
+        v[table].ban_trangthai = "Đang có khách";
+      })
+    );
+    console.log(listTable);
   };
-  console.log(bill);
+
   return (
     <div>
       <CContainer fluid style={{ height: "100vh", backgroundColor: "#fff" }}>
@@ -106,10 +119,14 @@ export default (props) => {
                     >
                       <div>
                         <CRow style={{ height: "100%" }}>
-                          {TableData.slice(0, 24).map((el, key) => (
+                          {listTable.slice(0, 24).map((el, key) => (
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
-                                className={`table `}
+                                className={`table ${
+                                  el.ban_stt === table
+                                    ? "bg-info text-light"
+                                    : ""
+                                }`}
                                 id={key}
                                 onClick={(e) => onClickTableHandler(e, el)}
                               >
@@ -129,9 +146,17 @@ export default (props) => {
                       </div>
                       <div>
                         <CRow style={{ height: "100%" }}>
-                          {TableData.slice(24).map((el, key) => (
-                            <CCol lg="2" className="pt-5" key={key}>
-                              <div className="table">
+                          {listTable.slice(24).map((el, key) => (
+                            <CCol lg="2" className="pt-5 " key={key}>
+                              <div
+                                className={`table ${
+                                  el.ban_stt === table
+                                    ? "bg-info text-light"
+                                    : ""
+                                }`}
+                                id={key}
+                                onClick={(e) => onClickTableHandler(e, el)}
+                              >
                                 <CImg
                                   src="https://static.thenounproject.com/png/262835-200.png"
                                   alt="Hinhanh"
@@ -150,7 +175,7 @@ export default (props) => {
                   </CContainer>
                 </CTabPane>
                 <CTabPane data-tab="menu" className="pt-3">
-                  <Menu onClickMenuHandler={onClickMenuHandler} />
+                  <Menu onClickMenuHandler={onClickMenuHandler} table={table} />
                 </CTabPane>
               </CTabContent>
             </CTabs>
@@ -193,78 +218,82 @@ export default (props) => {
                           <CCardBody className="bill">
                             {/* */}
                             {bill.length > 0 ? (
-                              bill.map((el, key) => {
-                                const id = el.id;
-                                return (
-                                  <CRow
-                                    className="border-bottom py-2"
-                                    style={{ boxShadow: "0px 1px 1px #007fc1" }}
-                                    key={key}
-                                  >
-                                    <CCol lg="7" className="d-flex">
-                                      <Icon
-                                        path={mdiDelete}
-                                        title="User Profile"
-                                        size={1}
-                                        horizontal
-                                        rotate={180}
-                                        vertical
-                                        onClick={(e) => {
-                                          const billUpdated = bill.filter(
-                                            (el) => el.id !== id
-                                          );
-                                          setBill([...billUpdated]);
-                                        }}
-                                      />
-                                      <p>&nbsp;{key + 1}&nbsp;</p>
-                                      <p>{el.name}</p>
-                                    </CCol>
-                                    <CCol
-                                      lg="5"
-                                      className="d-flex justify-content-between"
+                              bill
+                                .filter((el) => el.idBan === table)
+                                .map((el, key) => {
+                                  const id = el.bill.id;
+                                  return (
+                                    <CRow
+                                      className="border-bottom py-2"
+                                      style={{
+                                        boxShadow: "0px 1px 1px #007fc1",
+                                      }}
+                                      key={key}
                                     >
-                                      <Icon
-                                        path={mdiMinusCircle}
-                                        title="User Profile"
-                                        size={1}
-                                        horizontal
-                                        rotate={180}
-                                        vertical
-                                        onClick={(e) => {
-                                          setBill((el) =>
-                                            produce(el, (v) => {
-                                              v[key].amount =
-                                                el[key].amount - 1;
-                                            })
-                                          );
-                                        }}
-                                      />
-                                      <p> &nbsp;{el.amount}&nbsp;</p>
-                                      <Icon
-                                        path={mdiPlusCircle}
-                                        title="User Profile"
-                                        size={1}
-                                        horizontal
-                                        rotate={180}
-                                        vertical
-                                        onClick={(e) => {
-                                          setBill((el) =>
-                                            produce(el, (v) => {
-                                              v[key].amount =
-                                                el[key].amount + 1;
-                                            })
-                                          );
-                                        }}
-                                      />
-                                      <p>{el.price}</p>
-                                      <p>
-                                        {" "}
-                                        <strong>{el.price}</strong>{" "}
-                                      </p>
-                                    </CCol>
-                                  </CRow>
-                                );
-                              })
+                                      <CCol lg="7" className="d-flex">
+                                        <Icon
+                                          path={mdiDelete}
+                                          title="User Profile"
+                                          size={1}
+                                          horizontal
+                                          rotate={180}
+                                          vertical
+                                          onClick={(e) => {
+                                            const billUpdated = bill.filter(
+                                              (el) => el.bill.id !== id
+                                            );
+                                            setBill([...billUpdated]);
+                                          }}
+                                        />
+                                        <p>&nbsp;{key + 1}&nbsp;</p>
+                                        <p>{el.bill.name}</p>
+                                      </CCol>
+                                      <CCol
+                                        lg="5"
+                                        className="d-flex justify-content-between"
+                                      >
+                                        <Icon
+                                          path={mdiMinusCircle}
+                                          title="User Profile"
+                                          size={1}
+                                          horizontal
+                                          rotate={180}
+                                          vertical
+                                          onClick={(e) => {
+                                            setBill((el) =>
+                                              produce(el, (v) => {
+                                                v[key].bill.amount =
+                                                  el[key].bill.amount - 1;
+                                              })
+                                            );
+                                          }}
+                                        />
+                                        <p> &nbsp;{el.bill.amount}&nbsp;</p>
+                                        <Icon
+                                          path={mdiPlusCircle}
+                                          title="User Profile"
+                                          size={1}
+                                          horizontal
+                                          rotate={180}
+                                          vertical
+                                          onClick={(e) => {
+                                            setBill((el) =>
+                                              produce(el, (v) => {
+                                                v[key].bill.amount =
+                                                  el[key].bill.amount + 1;
+                                              })
+                                            );
+                                          }}
+                                        />
+                                        <p>{el.bill.price}</p>
+                                        <p>
+                                          {" "}
+                                          <strong>{el.bill.price}</strong>{" "}
+                                        </p>
+                                      </CCol>
+                                    </CRow>
+                                  );
+                                })
                             ) : (
                               <div className="icon">
                                 <Icon
