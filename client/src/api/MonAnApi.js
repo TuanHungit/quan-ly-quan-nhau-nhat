@@ -13,5 +13,12 @@ export const createOneMonAn = async (data) => {
   const response = await axios.post(url, data);
   return response.data;
 };
+export const deleteMonAn = async (data) => {
+  const url = `/monans/${data.ma_id}`;
+  const response = await axios.delete(url, data);
+  return response.data;
+};
+
+
 
 

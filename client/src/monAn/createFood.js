@@ -11,21 +11,24 @@ import {
   CImg,
 } from "@coreui/react";
 import { createOneMonAn} from '../api/MonAnApi';
+import { getAllLoaiMonAn } from '../api/LoaiMonAnApi';
+
 import alertify from "alertifyjs";
 
 const CreateFood = (props) => {
-  const [dvt, setDvt] = useState();
-  const [giaban, setGiaBan] = useState();
-  const [giavon, setGiaVon] = useState();
-  const [motachitiet, setMoTaChiTiet] = useState();
-  const [ten, setTen] = useState();
-  const [hinhanh, setHinhAnh] = useState();
+  const [ma_donvitinh, setDvt] = useState();
+  const [ma_giaban, setGiaBan] = useState();
+  const [ma_giavon, setGiaVon] = useState();
+  const [ma_motachitiet, setMoTaChiTiet] = useState();
+  const [ma_ten, setTen] = useState();
+  const [ma_hinhanh, setHinhAnh] = useState();
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      dvt, giaban, giavon, motachitiet, ten, hinhanh
+      ma_ten, ma_giaban, ma_giavon, ma_donvitinh, ma_hinhanh, ma_motachitiet 
     }
+    console.log(data)
     try {
       await createOneMonAn(data);
       props.toggleModal();
@@ -37,7 +40,7 @@ const CreateFood = (props) => {
 
   return (
     <div className='create-food'>
-      <CModal show={props.modal} onClose={props.toggleModal} size="md">
+      <CModal show={props.modal} onClose={props.toggleModal}>
         <CModalHeader closeButton>
           <h3>Thêm mới món sản phẩm</h3>
         </CModalHeader>
@@ -99,6 +102,27 @@ const CreateFood = (props) => {
                         className="inp"
                         onChange={(e) => {
                           setGiaBan(e.target.value);
+                        }}
+                        style={{ width: "100%" }}
+                        required
+                      />
+                    </CCol>
+                  </CRow>
+                </CCol>
+              </CRow>
+              <CRow className="field">
+                <CCol lg="10">
+                  <CRow>
+                    <CCol lg="5" className="pt-2">
+                      Loai thuc an
+                    </CCol>
+                    <CCol>
+                      <input
+                        type="text"
+                        placeholder="Nhập đơn vị tính"
+                        className="inp"
+                        onChange={(e) => {
+                          setDvt(e.target.value);
                         }}
                         style={{ width: "100%" }}
                         required
