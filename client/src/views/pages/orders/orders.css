@@ -1,0 +1,26 @@
+.slider {
+  width: 100%;
+}
+.label {
+  text-align: center;
+}
+/* .hide {
+  display: none;
+} */
+
+.table:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.clicked {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.icon {
+  top: 20%;
+  left: 30%;
+  position: relative;
+}
+.bill {
+  overflow: none;
+  overflow-y: scroll;
+}

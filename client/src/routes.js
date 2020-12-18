@@ -1,4 +1,5 @@
 import React from 'react';
+import LoaiMonAn from './loaiMonAn/loaiMonAn';
 
 const Toaster = React.lazy(() => import('./views/notifications/toaster/Toaster'));
 const Tables = React.lazy(() => import('./views/base/tables/Tables'));
@@ -37,10 +38,17 @@ const Typography = React.lazy(() => import('./views/theme/typography/Typography'
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'));
 const Users = React.lazy(() => import('./views/users/Users'));
 const User = React.lazy(() => import('./views/users/User'));
+const Monan = React.lazy(() => import('./monAn/monan.js'));
+const Ban = React.lazy(() => import('./ban/ban.js'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+  { path: '/monan', name: 'Món ăn', component: Monan },
+  { path: '/loaimonan', name: 'Loại món ăn', component: LoaiMonAn },
+
+  { path: '/ban', name: 'Bàn', component: Ban },
+
   { path: '/theme', name: 'Theme', component: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', component: Colors },
   { path: '/theme/typography', name: 'Typography', component: Typography },
