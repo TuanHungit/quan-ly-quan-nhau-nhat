@@ -47,18 +47,21 @@ function MonAn() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
-
   const createSuccess = () => {
     setSuccess(!success);
+    console.log('1', success)
   };
+
+  console.log('2', success)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getMonAns();
-
+        setSuccess(false);
         setMonAnList(response);
         setLoading(false);
+
       } catch (err) {
         setMonAnList(null);
         setLoading(true);
@@ -67,6 +70,13 @@ function MonAn() {
     };
     fetchData();
   }, [success]);
+
+  const handleDelete = (item) => {
+    deleteMonAn(item)
+    setSuccess(!success);
+
+    console.log('3', success)
+  }
 
   const toggleModal = () => {
     setModal(!modal);
@@ -127,13 +137,13 @@ function MonAn() {
                       <CIcon name="cil-pencil" alt="Edit" />
                       {/* &nbsp;Edit */}
                     </CLink>
-                    <CButton className="c-subheader-nav-link" onClick={() => deleteMonAn(item)}>
+                    <span className="c-subheader-nav-link" onClick={(e) => handleDelete(item)}>
                       <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"
                       />
-                    </CButton>
+                    </span>
                   </div>
                 </td>
               ),
