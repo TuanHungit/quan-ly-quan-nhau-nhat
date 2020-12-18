@@ -21,7 +21,7 @@ const fields = [
   { key: "ma_giaban", label: "Giá bán", _style: { width: "10%" } },
   { key: "ma_giavon", label: "Giá vốn", _style: { width: "10%" } },
   { key: "ma_donvitinh", label: "Đơn vị", _style: { width: "20%" } },
-  // { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
+   { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
   { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
   { key: "action", label: "ACTION", _style: { width: "10%" } },
 ];

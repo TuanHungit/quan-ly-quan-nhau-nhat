@@ -24,7 +24,7 @@ const CreateFood = (props) => {
   const [ma_ten, setTen] = useState();
   const [ma_hinhanh, setHinhAnh] = useState();
 const [loaiMonAnList, setLoaiMonAnList] = useState();
-const [loaiMonAn, setLoaiMonAn] = useState();
+const [ma_lmaid, setLoaiMonAn] = useState();
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
 
@@ -32,7 +32,7 @@ const [loaiMonAn, setLoaiMonAn] = useState();
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      ma_ten, ma_giaban, ma_giavon, ma_donvitinh, ma_hinhanh, ma_motachitiet, loaiMonAn
+      ma_ten, ma_giaban, ma_giavon, ma_donvitinh, ma_hinhanh, ma_motachitiet, ma_lmaid
     }
     console.log(data)
     try {
@@ -130,27 +130,7 @@ const [loaiMonAn, setLoaiMonAn] = useState();
                   </CRow>
                 </CCol>
               </CRow>
-              <CRow className="field">
-                <CCol lg="10">
-                  <CRow>
-                    <CCol lg="5" className="pt-2">
-                      Loai thuc an
-                    </CCol>
-                    <CCol>
-                      <input
-                        type="text"
-                        placeholder="Nhập đơn vị tính"
-                        className="inp"
-                        onChange={(e) => {
-                          setDvt(e.target.value);
-                        }}
-                        style={{ width: "100%" }}
-                        required
-                      />
-                    </CCol>
-                  </CRow>
-                </CCol>
-              </CRow>
+              
               <CRow className="field">
                 <CCol lg="10">
                   <CRow>
