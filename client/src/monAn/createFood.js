@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   CButton,
   CModal,
@@ -8,6 +8,7 @@ import {
   CContainer,
   CRow,
   CCol,
+  CSelect,
   CImg,
 } from "@coreui/react";
 import { createOneMonAn} from '../api/MonAnApi';
@@ -22,11 +23,16 @@ const CreateFood = (props) => {
   const [ma_motachitiet, setMoTaChiTiet] = useState();
   const [ma_ten, setTen] = useState();
   const [ma_hinhanh, setHinhAnh] = useState();
+const [loaiMonAnList, setLoaiMonAnList] = useState();
+const [loaiMonAn, setLoaiMonAn] = useState();
+  const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(false);
 
+  const [collapse, setCollapse] = useState(false);
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      ma_ten, ma_giaban, ma_giavon, ma_donvitinh, ma_hinhanh, ma_motachitiet 
+      ma_ten, ma_giaban, ma_giavon, ma_donvitinh, ma_hinhanh, ma_motachitiet, loaiMonAn
     }
     console.log(data)
     try {
@@ -37,7 +43,21 @@ const CreateFood = (props) => {
     } catch (err) {
       alertify.error("Lỗi nghen");
     }  }
-
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getAllLoaiMonAn();
+  
+          setLoaiMonAnList(response);
+          setLoading(false);
+        } catch (err) {
+          setLoaiMonAnList(null);
+          setLoading(true);
+          console.log(err);
+        }
+      };
+      fetchData();
+    }, [success]);
   return (
     <div className='create-food'>
       <CModal show={props.modal} onClose={props.toggleModal}>
@@ -148,6 +168,34 @@ const CreateFood = (props) => {
                         style={{ width: "100%" }}
                         required
                       />
+                    </CCol>
+                  </CRow>
+                </CCol>
+              </CRow>
+              <CRow className="field">
+                <CCol lg="10">
+                  <CRow>
+                    <CCol lg="5" className="pt-2">
+                      Loại món ăn
+                    </CCol>
+                    <CCol>
+                    <CSelect
+                          class="form-select"
+                          onChange={(e) => {
+                            setLoaiMonAn(e.target.value);
+                          }}
+                          style={{ width: "100%" }}
+                          required
+                        >
+                          <option selected >Chọn loại món ăn</option>
+                          {loaiMonAnList
+                            ? loaiMonAnList.map((el, key) => (
+                                <option key={key} value={el.lma_id, el.lma_ten}>
+                                  {el.lma_ten}
+                                </option>
+                              ))
+                            : null}
+                        </CSelect>
                     </CCol>
                   </CRow>
                 </CCol>
