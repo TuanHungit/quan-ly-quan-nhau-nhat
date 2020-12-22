@@ -117,6 +117,9 @@ function MonAn() {
             striped
             itemsPerPage={5}
             pagination
+            tableFilter
+            sorter
+            hover
             scopedSlots={{
               index: (item) => <td>{item.id}</td>,
               name: (item) => (
