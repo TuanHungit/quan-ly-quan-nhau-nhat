@@ -38,6 +38,54 @@ public class Ban {
 	public Ban() {
 		super();
 	}
+
+	public Long getB_id() {
+		return b_id;
+	}
+
+	public void setB_id(Long b_id) {
+		this.b_id = b_id;
+	}
+
+	public Long getB_stt() {
+		return b_stt;
+	}
+
+	public void setB_stt(Long b_stt) {
+		this.b_stt = b_stt;
+	}
+
+	public Integer getB_soghe() {
+		return b_soghe;
+	}
+
+	public void setB_soghe(Integer b_soghe) {
+		this.b_soghe = b_soghe;
+	}
+
+	public TrangThaiBan getB_trangthai() {
+		return b_trangthai;
+	}
+
+	public void setB_trangthai(TrangThaiBan b_trangthai) {
+		this.b_trangthai = b_trangthai;
+	}
+
+	public List<NhanVien> getNhanviens() {
+		return nhanviens;
+	}
+
+	public void setNhanviens(List<NhanVien> nhanviens) {
+		this.nhanviens = nhanviens;
+	}
+
+	public List<HoaDon> getHoadons() {
+		return hoadons;
+	}
+
+	public void setHoadons(List<HoaDon> hoadons) {
+		this.hoadons = hoadons;
+	}
 	
 	
 }

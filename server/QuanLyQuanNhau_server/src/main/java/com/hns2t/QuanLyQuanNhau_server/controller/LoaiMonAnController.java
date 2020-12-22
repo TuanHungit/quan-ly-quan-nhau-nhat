@@ -25,32 +25,31 @@ import com.hns2t.QuanLyQuanNhau_server.service.LoaiMonAnService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/loaimonans")
 public class LoaiMonAnController {
-//	@Autowired
-//	private LoaiMonAnService service;
+
 	@Autowired
 	private LoaiMonAnRepository repo;
 	
-	@GetMapping("/loaimonans")
+	@GetMapping("")
 	public List<LoaiMonAn> getAll(){
 		return repo.findAll();
 	}
 	
-	@PostMapping("/loaimonans")
+	@PostMapping("")
 	public LoaiMonAn createLoaiMonAn(@RequestBody LoaiMonAn loaiMonAn) {
 		return repo.save(loaiMonAn);
 	}
 
 	
-	@GetMapping("/loaimonans/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<LoaiMonAn> getLoaiMonAn(@PathVariable Long id){
 		LoaiMonAn object = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Loai mon an khong ton tai with: " + id));
 		return ResponseEntity.ok(object);
 	}
 	
-	@PutMapping("/loaimonans/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<LoaiMonAn> updateLoaiMonAn(@PathVariable Long id, @RequestBody LoaiMonAn loaiMonAnDetail){
 		LoaiMonAn object =repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Loai mon an khong ton tai with: " + id));
@@ -59,7 +58,7 @@ public class LoaiMonAnController {
 		return ResponseEntity.ok(updateLoaiMonAn);
 	}
 	
-	@DeleteMapping("/loaimonans/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Map<String, Boolean>> deleteLoaiMonAn(@PathVariable Long id){
 		LoaiMonAn loaiMonAn = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Loai mon an khong ton tai with: " + id));
@@ -69,7 +68,7 @@ public class LoaiMonAnController {
 		return ResponseEntity.ok(response);
 	}
 	
-	@GetMapping("/loaimonans/{id}/monans")
+	@GetMapping("/{id}/monans")
 	public ResponseEntity<List<MonAn>> getListMonAnOfLoaiMonAn(@PathVariable Long id){
 		LoaiMonAn object = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Loai mon an khong ton tai with: " + id));

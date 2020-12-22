@@ -37,7 +37,7 @@ import {
 import "./menu.css";
 import { classNames } from "classnames";
 
-export default ({ onClickMenuHandler }) => {
+export default ({ onClickMenuHandler, table }) => {
   const settings = {
     dots: true,
     infinite: true,
@@ -68,7 +68,12 @@ export default ({ onClickMenuHandler }) => {
                       <figure
                         class="figure"
                         onClick={(e) =>
-                          onClickMenuHandler(el.ma_id, el.ma_ten, el.ma_giaban)
+                          onClickMenuHandler(
+                            el.ma_id,
+                            table,
+                            el.ma_ten,
+                            el.ma_giaban
+                          )
                         }
                       >
                         <img

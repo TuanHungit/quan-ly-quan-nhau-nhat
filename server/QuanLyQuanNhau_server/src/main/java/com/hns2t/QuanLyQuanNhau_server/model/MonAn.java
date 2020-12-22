@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -31,7 +32,7 @@ public class MonAn {
 	
 	@ManyToOne
 	@JoinColumn(name = "ma_lmaid")
-	@JsonIgnore
+    @JsonBackReference
 	private LoaiMonAn loaiMonAn;
 	
 	@OneToMany(mappedBy = "monAn")
