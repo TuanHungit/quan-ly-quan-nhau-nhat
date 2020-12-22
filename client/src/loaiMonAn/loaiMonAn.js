@@ -14,7 +14,8 @@ import CIcon from "@coreui/icons-react";
 import CreateLoaiMon from "./createLoaiMonAn";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
-import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
+import { getAllLoaiMonAn, deleteLoaiMonAn } from "../api/LoaiMonAnApi";
+
 const fields = [
   { key: "lma_id", label: "STT", _style: { width: "10%" } },
   { key: "lma_ten", label: "Tên", _style: { width: "80%" } },
@@ -47,11 +48,12 @@ function LoaiMonAn() {
   const createSuccess = () => {
     setSuccess(!success);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllLoaiMonAn();
-
+        setSuccess(false);
         setLoaiMonAnList(response);
         setLoading(false);
       } catch (err) {
@@ -62,7 +64,13 @@ function LoaiMonAn() {
     };
     fetchData();
   }, [success]);
- 
+
+  const handleDelete = (item) => {
+    deleteLoaiMonAn(item)
+    setSuccess(!success);
+
+  }
+
   const toggleModal = () => {
     setModal(!modal);
   };
@@ -108,7 +116,7 @@ function LoaiMonAn() {
                   <CBadge color={getBadge(item.lma_ten)}>{item.lma_ten}</CBadge>
                 </td>
               ),
-              action: () => (
+              action: (item) => (
                 <td style={{ display: "flex", justifyContent: "start" }}>
                   <div
                     style={{
@@ -121,14 +129,13 @@ function LoaiMonAn() {
                       <CIcon name="cil-pencil" alt="Edit" />
                       {/* &nbsp;Edit */}
                     </CLink>
-                    <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon 
+                    <span className="c-subheader-nav-link" onClick={(e) => handleDelete(item)}>
+                      <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"
                       />
-                      {/* &nbsp;Edit */}
-                    </CLink>
+                    </span>
                   </div>
                 </td>
               ),

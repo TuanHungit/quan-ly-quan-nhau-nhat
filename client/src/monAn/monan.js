@@ -15,7 +15,6 @@ import Icon from "@mdi/react";
 import { mdiFoodForkDrink } from "@mdi/js";
 import CreateFood from "./createFood";
 import { getMonAns, deleteMonAn } from "../api/MonAnApi";
-// import { getMonAns, deleteMonAn } from "../api/MonAnApi";
 
 const fields = [
   { key: "ma_id", label: "STT", _style: { width: "10%" } },
@@ -51,10 +50,8 @@ function MonAn() {
   const [modal, setModal] = useState(false);
   const createSuccess = () => {
     setSuccess(!success);
-    console.log('1', success)
   };
 
-  console.log('2', success)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,7 +74,6 @@ function MonAn() {
     deleteMonAn(item)
     setSuccess(!success);
 
-    console.log('3', success)
   }
 
   const toggleModal = () => {
