@@ -14,6 +14,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "loaimonan")
 public class LoaiMonAn {
@@ -23,6 +26,7 @@ public class LoaiMonAn {
 	private String lma_ten;
 	
 	@OneToMany(mappedBy = "loaiMonAn", fetch = FetchType.EAGER)
+	@JsonIgnore
 	private List<MonAn> monans = new ArrayList<MonAn>();
 	
 	public LoaiMonAn() {

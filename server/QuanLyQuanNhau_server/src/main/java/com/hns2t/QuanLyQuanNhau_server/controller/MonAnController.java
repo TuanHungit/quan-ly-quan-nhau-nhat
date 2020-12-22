@@ -22,30 +22,30 @@ import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/monans")
 public class MonAnController {
 	@Autowired
 	private MonAnRepository repo;
 	
-	@GetMapping("/monans")
+	@GetMapping("")
 	public List<MonAn> getAll(){
 		return repo.findAll();
 	}
 	
-	@PostMapping("/monans")
+	@PostMapping("")
 	public MonAn createMonAn(@RequestBody MonAn monAn) {
 		return repo.save(monAn);
 	}
 
 	
-	@GetMapping("/monans/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<MonAn> getMonAn(@PathVariable Long id){
 		MonAn object = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Mon an khong ton tai with: " + id));
 		return ResponseEntity.ok(object);
 	}
 	
-	@PutMapping("/monans/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<MonAn> updateMonAn(@PathVariable Long id, @RequestBody MonAn monAnDetail){
 		MonAn object =repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Mon an khong ton tai with: " + id));
@@ -59,7 +59,7 @@ public class MonAnController {
 		return ResponseEntity.ok(updateMonAn);
 	}
 	
-	@DeleteMapping("/monans/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Map<String, Boolean>> deleteMonAn(@PathVariable Long id){
 		MonAn monAn = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Mon an khong ton tai with: " + id));
