@@ -21,7 +21,6 @@ import Icon from "@mdi/react";
 import { mdiFoodForkDrink } from "@mdi/js";
 import CreateFood from "./createFood";
 import { getMonAns, deleteMonAn } from "../api/MonAnApi";
-// import { getMonAns, deleteMonAn } from "../api/MonAnApi";
 
 const fields = [
   { key: "ma_id", label: "STT", _style: { width: "10%" } },
@@ -60,18 +59,19 @@ function MonAn() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
-
   const createSuccess = () => {
     setSuccess(!success);
   };
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getMonAns();
-
+        setSuccess(false);
         setMonAnList(response);
         setLoading(false);
+
       } catch (err) {
         setMonAnList(null);
         setLoading(true);
@@ -80,6 +80,12 @@ function MonAn() {
     };
     fetchData();
   }, [success]);
+
+  const handleDelete = (item) => {
+    deleteMonAn(item)
+    setSuccess(!success);
+
+  }
 
   const toggleModal = () => {
     setModal(!modal);
@@ -130,6 +136,9 @@ function MonAn() {
             striped
             itemsPerPage={5}
             pagination
+            tableFilter
+            sorter
+            hover
             scopedSlots={{
               index: (item) => <td>{item.id}</td>,
               name: (item) => (
@@ -163,17 +172,14 @@ function MonAn() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon name="cil-pencil" alt="Edit" />
-                      {/* &nbsp;Edit */}
-                    </CLink>
-                    <CButton className="c-subheader-nav-link" onClick={() => deleteMonAn(item)}>
+                    
+                    <span className="c-subheader-nav-link" onClick={(e) => handleDelete(item)}>
                       <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"
                       />
-                    </CButton>
+                    </span>
                   </div>
                 </td>
               ),
@@ -218,9 +224,7 @@ function MonAn() {
                       <CButton size="sm" color="info">
                         Cập nhật
                       </CButton>
-                      <CButton size="sm" color="danger" className="ml-1">
-                        Xóa
-                      </CButton>
+                      
                     </CCardBody>
                   </CCollapse>
                 );

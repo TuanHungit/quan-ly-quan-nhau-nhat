@@ -13,5 +13,10 @@ export const createOneLoaiMonAn = async (data) => {
   const response = await axios.post(url, data);
   return response.data;
 };
+export const deleteLoaiMonAn = async (data) => {
+  const url = `/loaimonans/${data.lma_id}`;
+  const response = await axios.delete(url, data);
+  return response.data;
+};
 
 

@@ -96,7 +96,7 @@ const [ma_lmaid, setLoaiMonAn] = useState();
                     </CCol>
                     <CCol>
                       <input
-                        type="text"
+                        type="number"
                         placeholder="Nhập giá vốn"
                         className="inp"
                         onChange={(e) => {
@@ -117,7 +117,7 @@ const [ma_lmaid, setLoaiMonAn] = useState();
                     </CCol>
                     <CCol>
                       <input
-                        type="text"
+                        type="number"
                         placeholder="Nhập giá bán"
                         className="inp"
                         onChange={(e) => {

@@ -20,12 +20,13 @@ import CIcon from "@coreui/icons-react";
 import CreateLoaiMon from "./createLoaiMonAn";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
-import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
+import { getAllLoaiMonAn, deleteLoaiMonAn } from "../api/LoaiMonAnApi";
+
 const fields = [
   { key: "lma_id", label: "STT", _style: { width: "10%" } },
   { key: "lma_ten", label: "Tên", _style: { width: "80%" } },
   {
-    key: "show_details",label: "",_style: { width: "10%" },
+    key: "show_details", label: "", _style: { width: "10%" },
     sorter: false,
     filter: false,
   },
@@ -57,11 +58,12 @@ function LoaiMonAn() {
   const createSuccess = () => {
     setSuccess(!success);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllLoaiMonAn();
-
+        setSuccess(false);
         setLoaiMonAnList(response);
         setLoading(false);
       } catch (err) {
@@ -72,7 +74,13 @@ function LoaiMonAn() {
     };
     fetchData();
   }, [success]);
- 
+
+  const handleDelete = (item) => {
+    deleteLoaiMonAn(item)
+    setSuccess(!success);
+
+  }
+
   const toggleModal = () => {
     setModal(!modal);
   };
@@ -119,6 +127,9 @@ function LoaiMonAn() {
             items={loaiMonAnList}
             fields={fields}
             striped
+            tableFilter
+            sorter
+            hover
             itemsPerPage={5}
             pagination
             scopedSlots={{
@@ -145,8 +156,8 @@ function LoaiMonAn() {
                   </td>
                 );
               },
-              
-              action: () => (
+
+              action: (item) => (
                 <td style={{ display: "flex", justifyContent: "start" }}>
                   <div
                     style={{
@@ -155,18 +166,13 @@ function LoaiMonAn() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon name="cil-pencil" alt="Edit" />
-                      {/* &nbsp;Edit */}
-                    </CLink>
-                    <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon 
+                    <span className="c-subheader-nav-link" onClick={(e) => handleDelete(item)}>
+                      <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"
                       />
-                      {/* &nbsp;Edit */}
-                    </CLink>
+                    </span>
                   </div>
                 </td>
               ),
@@ -184,14 +190,14 @@ function LoaiMonAn() {
                                   <CImg
                                     // src={`http://${item.ma_hinhanh}`}
                                     src={`https://www.pexels.com/vi-vn/anh/mon-an-dia-rau-xa-lach-kh-e-m-nh-1095550/`}
-                                      alt="img"
+                                    alt="img"
                                     alt="Image"
                                     width="250px"
                                     height="200px"
                                   />
                                 </CCol>
                                 <CCol lg="9">
-                        
+
                                   <CRow>
                                     <CCol lg="2">Mô tả tóm tắt:</CCol>
                                     <CCol lg="10">
@@ -211,9 +217,7 @@ function LoaiMonAn() {
                       <CButton size="sm" color="info">
                         Cập nhật
                       </CButton>
-                      <CButton size="sm" color="danger" className="ml-1">
-                        Xóa
-                      </CButton>
+
                     </CCardBody>
                   </CCollapse>
                 );
