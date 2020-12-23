@@ -8,15 +8,20 @@ import {
   CDataTable,
   CLink,
   CRow,
-  CContainer,
   CCollapse,
+  CTabs,
+  CTabPane,
+  CTabContent,
+  CCol,
+  CImg,
+  CContainer,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import Icon from "@mdi/react";
 import { mdiFoodForkDrink } from "@mdi/js";
 import CreateFood from "./createFood";
 import { getMonAns, deleteMonAn } from "../api/MonAnApi";
-// import { getMonAns, deleteMonAn } from "../api/MonAnApi";
+import EditMonAn from "./editMonAn";
 
 const fields = [
   { key: "ma_id", label: "STT", _style: { width: "10%" } },
@@ -33,6 +38,16 @@ const fields = [
     sorter: false,
     filter: false,
   },
+  //  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
+  // { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
+  {
+    key: "show_details",
+    label: "",
+    _style: { width: "10%" },
+    sorter: false,
+    filter: false,
+  },
+  { key: "action", label: "ACTION", _style: { width: "10%" } },
 ];
 const getBadge = (status) => {
   switch (status) {
@@ -55,6 +70,7 @@ function MonAn() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
+  const [modal1, setModal1] = useState(false);
 
   const toggleDetails = (index) => {
     const position = details.indexOf(index);
@@ -74,7 +90,7 @@ function MonAn() {
     const fetchData = async () => {
       try {
         const response = await getMonAns();
-
+        setSuccess(false);
         setMonAnList(response);
         setLoading(false);
       } catch (err) {
@@ -86,9 +102,18 @@ function MonAn() {
     fetchData();
   }, [success]);
 
+  const handleDelete = (item) => {
+    deleteMonAn(item);
+    setSuccess(!success);
+  };
+
   const toggleModal = () => {
     setModal(!modal);
   };
+  const toggleModal1 = () => {
+    setModal1(!modal1);
+  };
+
   return (
     <>
       <CCard>
@@ -133,6 +158,9 @@ function MonAn() {
             tableFilter
             footer
             pagination
+            tableFilter
+            sorter
+            hover
             scopedSlots={{
               index: (item) => <td>{item.id}</td>,
               name: (item) => (
@@ -140,7 +168,6 @@ function MonAn() {
                   <CBadge color={getBadge(item.ma_ten)}>{item.ma_ten}</CBadge>
                 </td>
               ),
-
               show_details: (item, index) => {
                 return (
                   <td className="py-2">
@@ -153,24 +180,83 @@ function MonAn() {
                         toggleDetails(index);
                       }}
                     >
-                      {details.includes(index) ? "Hide" : "Show"}
+                      {details.includes(index) ? "Ẩn" : "Hiển thị"}
                     </CButton>
                   </td>
                 );
               },
+              action: (item) => (
+                <td style={{ display: "flex", justifyContent: "start" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      width: "80%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span
+                      className="c-subheader-nav-link"
+                      onClick={(e) => handleDelete(item)}
+                    >
+                      <CIcon
+                        style={{ color: "red" }}
+                        name="cil-trash"
+                        alt="Delete"
+                      />
+                    </span>
+                  </div>
+                </td>
+              ),
               details: (item, index) => {
                 return (
                   <CCollapse show={details.includes(index)}>
                     <CCardBody>
-                      <h4>{item.username}</h4>
-                      <p className="text-muted">
-                        User since: {item.registered}
-                      </p>
-                      <CButton size="sm" color="info">
-                        User Settings
-                      </CButton>
-                      <CButton size="sm" color="danger" className="ml-1">
-                        Delete
+                      <CTabs activeTab="info" active>
+                        <CTabContent style={{ marginTop: "20px" }}>
+                          <CTabPane data-tab="info">
+                            <CContainer>
+                              <CRow>
+                                <CCol lg="3">
+                                  <h6>{item.ma_ten}</h6>
+                                  <CImg
+                                    // src={`http://${item.ma_hinhanh}`}
+                                    src={"food-1.jpg"}
+                                    alt="img"
+                                    alt="Image"
+                                    width="250px"
+                                    height="200px"
+                                  />
+                                </CCol>
+                                <CCol lg="9">
+                                  <CRow>
+                                    <CCol lg="2">Mô tả tóm tắt:</CCol>
+                                    <CCol lg="10">
+                                      <div
+                                        dangerouslySetInnerHTML={{
+                                          __html: item.ma_motachitiet,
+                                        }}
+                                      />
+                                    </CCol>
+                                  </CRow>
+                                </CCol>
+                              </CRow>
+                              <EditMonAn
+                                modal={modal1}
+                                list={item}
+                                toggleModal={toggleModal1}
+                                createSuccess={createSuccess}
+                              />
+                            </CContainer>
+                          </CTabPane>
+                        </CTabContent>
+                      </CTabs>
+                      <CButton
+                        type="submit"
+                        size="sm"
+                        color="info"
+                        onClick={toggleModal1}
+                      >
+                        Cập nhật
                       </CButton>
                     </CCardBody>
                   </CCollapse>
@@ -179,6 +265,7 @@ function MonAn() {
             }}
           />
         </CCardBody>
+
         <CreateFood
           modal={modal}
           toggleModal={toggleModal}

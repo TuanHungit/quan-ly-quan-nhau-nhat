@@ -19,6 +19,12 @@ export const deleteMonAn = async (data) => {
   return response.data;
 };
 
+export const editMonAn = async (data) => {
+  const url = `/monans/${data.ma_id}`;
+  const response = await axios.put(url, data);
+  return response.data;
+};
+
 
 
 

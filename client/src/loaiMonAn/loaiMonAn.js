@@ -8,17 +8,36 @@ import {
   CDataTable,
   CLink,
   CRow,
+  CCollapse,
+  CTabs,
+  CTabPane,
+  CTabContent,
+  CCol,
+  CImg,
   CContainer,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import CreateLoaiMon from "./createLoaiMonAn";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
-import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
+import {
+  getAllLoaiMonAn,
+  deleteLoaiMonAn,
+  editLoaiMonAn,
+} from "../api/LoaiMonAnApi";
+import EditLoaiMon from "./editLoaiMonAn";
+import alertify from "alertifyjs";
+
 const fields = [
   { key: "lma_id", label: "STT", _style: { width: "10%" } },
   { key: "lma_ten", label: "Tên", _style: { width: "80%" } },
-
+  {
+    key: "show_details",
+    label: "",
+    _style: { width: "10%" },
+    sorter: false,
+    filter: false,
+  },
   { key: "action", label: "ACTION", _style: { width: "10%" } },
 ];
 const getBadge = (status) => {
@@ -43,15 +62,17 @@ function LoaiMonAn() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
+  const [modal1, setModal1] = useState(false);
 
   const createSuccess = () => {
     setSuccess(!success);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllLoaiMonAn();
-
+        setSuccess(false);
         setLoaiMonAnList(response);
         setLoading(false);
       } catch (err) {
@@ -63,8 +84,26 @@ function LoaiMonAn() {
     fetchData();
   }, [success]);
 
+  const handleDelete = (item) => {
+    deleteLoaiMonAn(item);
+    setSuccess(!success);
+  };
+
   const toggleModal = () => {
     setModal(!modal);
+  };
+  const toggleModal1 = () => {
+    setModal1(!modal1);
+  };
+  const toggleDetails = (index) => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
+    }
+    setDetails(newDetails);
   };
   return (
     <>
@@ -101,6 +140,9 @@ function LoaiMonAn() {
             striped
             responsive
             loading={loading}
+            tableFilter
+            sorter
+            hover
             itemsPerPage={5}
             itemsPerPageSelect
             hover
@@ -116,7 +158,24 @@ function LoaiMonAn() {
                   <CBadge color={getBadge(item.lma_ten)}>{item.lma_ten}</CBadge>
                 </td>
               ),
-              action: () => (
+              show_details: (item, index) => {
+                return (
+                  <td className="py-2">
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      onClick={() => {
+                        toggleDetails(index);
+                      }}
+                    >
+                      {details.includes(index) ? "Ẩn" : "Hiển thị"}
+                    </CButton>
+                  </td>
+                );
+              },
+              action: (item) => (
                 <td style={{ display: "flex", justifyContent: "start" }}>
                   <div
                     style={{
@@ -125,24 +184,75 @@ function LoaiMonAn() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon name="cil-pencil" alt="Edit" />
-                      {/* &nbsp;Edit */}
-                    </CLink>
-                    <CLink className="c-subheader-nav-link" href="#">
+                    <span
+                      className="c-subheader-nav-link"
+                      onClick={(e) => handleDelete(item)}
+                    >
                       <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"
                       />
-                      {/* &nbsp;Edit */}
-                    </CLink>
+                    </span>
                   </div>
                 </td>
               ),
+              details: (item, index) => {
+                return (
+                  <CCollapse show={details.includes(index)}>
+                    <CCardBody>
+                      <CTabs activeTab="info" active>
+                        <CTabContent style={{ marginTop: "20px" }}>
+                          <CTabPane data-tab="info">
+                            <CContainer>
+                              <CRow>
+                                <CCol lg="3">
+                                  <label>Tên loại món ăn</label>
+                                  <h6>{item.lma_ten}</h6>
+                                  <CImg
+                                    // src={`http://${item.ma_hinhanh}`}
+                                    src={`https://www.pexels.com/vi-vn/anh/mon-an-dia-rau-xa-lach-kh-e-m-nh-1095550/`}
+                                    alt="img"
+                                    alt="Image"
+                                    width="250px"
+                                    height="200px"
+                                  />
+                                </CCol>
+                                <CCol lg="9">
+                                  <CRow>
+                                    <CCol lg="2">Mô tả tóm tắt:</CCol>
+                                    <CCol lg="10">
+                                      <div
+                                        dangerouslySetInnerHTML={{
+                                          __html: item.lma_motachitiet,
+                                        }}
+                                      />
+                                    </CCol>
+                                  </CRow>
+                                </CCol>
+                              </CRow>
+                              <EditLoaiMon
+                                modal={modal1}
+                                list={item}
+                                toggleModal={toggleModal1}
+                                createSuccess={createSuccess}
+                              />
+                            </CContainer>
+                          </CTabPane>
+                        </CTabContent>
+                      </CTabs>
+
+                      <CButton size="sm" color="info" onClick={toggleModal1}>
+                        Cập nhật
+                      </CButton>
+                    </CCardBody>
+                  </CCollapse>
+                );
+              },
             }}
           />
         </CCardBody>
+
         <CreateLoaiMon
           modal={modal}
           toggleModal={toggleModal}
