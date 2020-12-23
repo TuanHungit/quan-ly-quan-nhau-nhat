@@ -137,10 +137,18 @@ function LoaiMonAn() {
             items={loaiMonAnList}
             fields={fields}
             striped
+            responsive
+            loading={loading}
             tableFilter
             sorter
             hover
             itemsPerPage={5}
+            itemsPerPageSelect
+            hover
+            sorter
+            columnFilter
+            tableFilter
+            footer
             pagination
             scopedSlots={{
               index: (item) => <td>{item.lma_id}</td>,

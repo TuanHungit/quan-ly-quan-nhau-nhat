@@ -29,6 +29,15 @@ const fields = [
   { key: "ma_giaban", label: "Giá bán", _style: { width: "10%" } },
   { key: "ma_giavon", label: "Giá vốn", _style: { width: "10%" } },
   { key: "ma_donvitinh", label: "Đơn vị", _style: { width: "20%" } },
+  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
+  { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
+  {
+    key: "show_details",
+    label: "",
+    _style: { width: "1%" },
+    sorter: false,
+    filter: false,
+  },
   //  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
   // { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
   {
@@ -63,6 +72,16 @@ function MonAn() {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
 
+  const toggleDetails = (index) => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
+    }
+    setDetails(newDetails);
+  };
   const createSuccess = () => {
     setSuccess(!success);
   };
@@ -94,16 +113,7 @@ function MonAn() {
   const toggleModal1 = () => {
     setModal1(!modal1);
   };
-  const toggleDetails = (index) => {
-    const position = details.indexOf(index);
-    let newDetails = details.slice();
-    if (position !== -1) {
-      newDetails.splice(position, 1);
-    } else {
-      newDetails = [...details, index];
-    }
-    setDetails(newDetails);
-  };
+
   return (
     <>
       <CCard>
@@ -138,7 +148,15 @@ function MonAn() {
             items={monanlist}
             fields={fields}
             striped
-            itemsPerPage={5}
+            responsive
+            loading={loading}
+            itemsPerPage={4}
+            itemsPerPageSelect
+            hover
+            sorter
+            columnFilter
+            tableFilter
+            footer
             pagination
             tableFilter
             sorter
@@ -232,7 +250,12 @@ function MonAn() {
                           </CTabPane>
                         </CTabContent>
                       </CTabs>
-                      <CButton type="submit" size="sm" color="info" onClick={toggleModal1}>
+                      <CButton
+                        type="submit"
+                        size="sm"
+                        color="info"
+                        onClick={toggleModal1}
+                      >
                         Cập nhật
                       </CButton>
                     </CCardBody>
