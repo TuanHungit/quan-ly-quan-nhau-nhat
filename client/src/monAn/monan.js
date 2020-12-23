@@ -21,6 +21,7 @@ import Icon from "@mdi/react";
 import { mdiFoodForkDrink } from "@mdi/js";
 import CreateFood from "./createFood";
 import { getMonAns, deleteMonAn } from "../api/MonAnApi";
+import EditMonAn from "./editMonAn";
 
 const fields = [
   { key: "ma_id", label: "STT", _style: { width: "10%" } },
@@ -31,7 +32,9 @@ const fields = [
   //  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
   // { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
   {
-    key: "show_details",label: "",_style: { width: "10%" },
+    key: "show_details",
+    label: "",
+    _style: { width: "10%" },
     sorter: false,
     filter: false,
   },
@@ -52,17 +55,17 @@ const getBadge = (status) => {
   }
 };
 function MonAn() {
-
   const [monanlist, setMonAnList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
+  const [modal1, setModal1] = useState(false);
+
   const createSuccess = () => {
     setSuccess(!success);
   };
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +74,6 @@ function MonAn() {
         setSuccess(false);
         setMonAnList(response);
         setLoading(false);
-
       } catch (err) {
         setMonAnList(null);
         setLoading(true);
@@ -82,13 +84,15 @@ function MonAn() {
   }, [success]);
 
   const handleDelete = (item) => {
-    deleteMonAn(item)
+    deleteMonAn(item);
     setSuccess(!success);
-
-  }
+  };
 
   const toggleModal = () => {
     setModal(!modal);
+  };
+  const toggleModal1 = () => {
+    setModal1(!modal1);
   };
   const toggleDetails = (index) => {
     const position = details.indexOf(index);
@@ -172,8 +176,10 @@ function MonAn() {
                       justifyContent: "space-between",
                     }}
                   >
-                    
-                    <span className="c-subheader-nav-link" onClick={(e) => handleDelete(item)}>
+                    <span
+                      className="c-subheader-nav-link"
+                      onClick={(e) => handleDelete(item)}
+                    >
                       <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
@@ -196,15 +202,14 @@ function MonAn() {
                                   <h6>{item.ma_ten}</h6>
                                   <CImg
                                     // src={`http://${item.ma_hinhanh}`}
-                                    src={`https://www.pexels.com/vi-vn/anh/mon-an-dia-rau-xa-lach-kh-e-m-nh-1095550/`}
-                                      alt="img"
+                                    src={"food-1.jpg"}
+                                    alt="img"
                                     alt="Image"
                                     width="250px"
                                     height="200px"
                                   />
                                 </CCol>
                                 <CCol lg="9">
-                        
                                   <CRow>
                                     <CCol lg="2">Mô tả tóm tắt:</CCol>
                                     <CCol lg="10">
@@ -217,14 +222,20 @@ function MonAn() {
                                   </CRow>
                                 </CCol>
                               </CRow>
+                              <EditMonAn
+                                modal={modal1}
+                                list={item}
+                           
+                                toggleModal={toggleModal1}
+                                createSuccess={createSuccess}
+                              />
                             </CContainer>
                           </CTabPane>
                         </CTabContent>
                       </CTabs>
-                      <CButton size="sm" color="info">
+                      <CButton type="submit" size="sm" color="info" onClick={toggleModal1}>
                         Cập nhật
                       </CButton>
-                      
                     </CCardBody>
                   </CCollapse>
                 );
@@ -232,6 +243,7 @@ function MonAn() {
             }}
           />
         </CCardBody>
+
         <CreateFood
           modal={modal}
           toggleModal={toggleModal}

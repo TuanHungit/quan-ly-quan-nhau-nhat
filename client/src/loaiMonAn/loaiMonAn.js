@@ -20,13 +20,21 @@ import CIcon from "@coreui/icons-react";
 import CreateLoaiMon from "./createLoaiMonAn";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
-import { getAllLoaiMonAn, deleteLoaiMonAn } from "../api/LoaiMonAnApi";
+import {
+  getAllLoaiMonAn,
+  deleteLoaiMonAn,
+  editLoaiMonAn,
+} from "../api/LoaiMonAnApi";
+import EditLoaiMon from "./editLoaiMonAn";
+import alertify from "alertifyjs";
 
 const fields = [
   { key: "lma_id", label: "STT", _style: { width: "10%" } },
   { key: "lma_ten", label: "Tên", _style: { width: "80%" } },
   {
-    key: "show_details", label: "", _style: { width: "10%" },
+    key: "show_details",
+    label: "",
+    _style: { width: "10%" },
     sorter: false,
     filter: false,
   },
@@ -54,6 +62,7 @@ function LoaiMonAn() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
+  const [modal1, setModal1] = useState(false);
 
   const createSuccess = () => {
     setSuccess(!success);
@@ -76,13 +85,15 @@ function LoaiMonAn() {
   }, [success]);
 
   const handleDelete = (item) => {
-    deleteLoaiMonAn(item)
+    deleteLoaiMonAn(item);
     setSuccess(!success);
-
-  }
+  };
 
   const toggleModal = () => {
     setModal(!modal);
+  };
+  const toggleModal1 = () => {
+    setModal1(!modal1);
   };
   const toggleDetails = (index) => {
     const position = details.indexOf(index);
@@ -156,7 +167,6 @@ function LoaiMonAn() {
                   </td>
                 );
               },
-
               action: (item) => (
                 <td style={{ display: "flex", justifyContent: "start" }}>
                   <div
@@ -166,7 +176,10 @@ function LoaiMonAn() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <span className="c-subheader-nav-link" onClick={(e) => handleDelete(item)}>
+                    <span
+                      className="c-subheader-nav-link"
+                      onClick={(e) => handleDelete(item)}
+                    >
                       <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
@@ -186,7 +199,8 @@ function LoaiMonAn() {
                             <CContainer>
                               <CRow>
                                 <CCol lg="3">
-                                  <h6>{item.ma_ten}</h6>
+                                  <label>Tên loại món ăn</label>
+                                  <h6>{item.lma_ten}</h6>
                                   <CImg
                                     // src={`http://${item.ma_hinhanh}`}
                                     src={`https://www.pexels.com/vi-vn/anh/mon-an-dia-rau-xa-lach-kh-e-m-nh-1095550/`}
@@ -197,27 +211,32 @@ function LoaiMonAn() {
                                   />
                                 </CCol>
                                 <CCol lg="9">
-
                                   <CRow>
                                     <CCol lg="2">Mô tả tóm tắt:</CCol>
                                     <CCol lg="10">
                                       <div
                                         dangerouslySetInnerHTML={{
-                                          __html: item.ma_motachitiet,
+                                          __html: item.lma_motachitiet,
                                         }}
                                       />
                                     </CCol>
                                   </CRow>
                                 </CCol>
                               </CRow>
+                              <EditLoaiMon
+                                modal={modal1}
+                                list={item}
+                                toggleModal={toggleModal1}
+                                createSuccess={createSuccess}
+                              />
                             </CContainer>
                           </CTabPane>
                         </CTabContent>
                       </CTabs>
-                      <CButton size="sm" color="info">
+
+                      <CButton size="sm" color="info" onClick={toggleModal1}>
                         Cập nhật
                       </CButton>
-
                     </CCardBody>
                   </CCollapse>
                 );
@@ -225,6 +244,7 @@ function LoaiMonAn() {
             }}
           />
         </CCardBody>
+
         <CreateLoaiMon
           modal={modal}
           toggleModal={toggleModal}
