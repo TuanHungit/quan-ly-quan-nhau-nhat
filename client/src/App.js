@@ -18,6 +18,7 @@ const Register = React.lazy(() => import("./views/pages/register/Register"));
 const Page404 = React.lazy(() => import("./views/pages/page404/Page404"));
 const Page500 = React.lazy(() => import("./views/pages/page500/Page500"));
 const Order = React.lazy(() => import("./views/pages/orders/orders"));
+const Kitchen = React.lazy(() => import("./views/pages/kitchen/kitchen"));
 class App extends Component {
   render() {
     return (
@@ -35,6 +36,12 @@ class App extends Component {
               path="/orders"
               name="Order page"
               render={(props) => <Order {...props} />}
+            />
+            <Route
+              exact
+              path="/kitchens"
+              name="Kitchen page"
+              render={(props) => <Kitchen {...props} />}
             />
             <Route
               exact
