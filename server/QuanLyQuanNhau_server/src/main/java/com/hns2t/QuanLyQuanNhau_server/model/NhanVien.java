@@ -15,6 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name= "nhanvien")
@@ -25,6 +29,7 @@ public class NhanVien {
 	private String nv_hoten;
 	@Column(unique = true)
 	private String nv_cmnd;
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date nv_ngaysinh;
 	private String nv_diachi;
 	private String nv_sdt;
@@ -38,15 +43,19 @@ public class NhanVien {
 	private TaiKhoan taiKhoan;
 	
 	@ManyToMany(mappedBy = "nhanviens")
+	@JsonIgnore
 	private List<Ban> bans;
 	
 	@OneToMany(mappedBy = "hd_nhanvien")
+	@JsonIgnore
 	private List<HoaDon> hoaDons;
 	
 	@OneToMany(mappedBy = "nhanvien")
+	@JsonIgnore
 	private List<PhieuXuat> phieuXuats;
 	
 	@OneToMany(mappedBy = "nhanvien")
+	@JsonIgnore
 	private List<PhieuNhap> phieuNhaps;
 	
 	public NhanVien() {

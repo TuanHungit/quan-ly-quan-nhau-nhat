@@ -25,7 +25,7 @@ public class LoaiMonAn {
 	private Long lma_id; 
 	private String lma_ten;
 	
-	@OneToMany(mappedBy = "loaiMonAn", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "loaiMonAn")
 	@JsonIgnore
 	private List<MonAn> monans = new ArrayList<MonAn>();
 	

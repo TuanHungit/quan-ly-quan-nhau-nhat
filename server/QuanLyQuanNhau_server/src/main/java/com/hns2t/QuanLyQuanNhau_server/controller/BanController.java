@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.hns2t.QuanLyQuanNhau_server.dao.BanRepository;
 import com.hns2t.QuanLyQuanNhau_server.exception.ResourceNotFoundException;
 import com.hns2t.QuanLyQuanNhau_server.model.Ban;
 
-@Controller
+@RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/v1/bans")
 public class BanController {
@@ -52,6 +53,7 @@ public class BanController {
 		object.setB_soghe(banDetail.getB_soghe());
 		object.setB_stt(banDetail.getB_stt());
 		object.setB_trangthai(banDetail.getB_trangthai());
+
 		Ban ban = repo.save(object);
 		return ResponseEntity.ok(ban);
 	}

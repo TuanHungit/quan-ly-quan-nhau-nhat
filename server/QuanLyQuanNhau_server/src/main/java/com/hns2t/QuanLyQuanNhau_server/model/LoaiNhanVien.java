@@ -15,7 +15,7 @@ public class LoaiNhanVien {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long lnv_id;
-	private String lnv_hoten;
+	private String lnv_ten;
 	private Double lnv_luong;
 	
 	@OneToMany(mappedBy = "loaiNhanVien")
