@@ -53,25 +53,70 @@ export default (props) => {
   const [listTable, setListTable] = useState([]);
 
   useEffect(() => {
-    setListTable(TableData);
-  }, [table]);
+    setListTable(JSON.parse(localStorage.getItem("listTable")) || TableData);
+    setBill(JSON.parse(localStorage.getItem("bill")) || []);
+  }, []);
 
   const onClickTableHandler = (e, el) => {
     setTable(el.ban_stt);
   };
 
   const onClickMenuHandler = (id, idBan, name, price) => {
-    setBill((el) =>
-      el.concat([{ idBan, bill: { id, name, price, amount: 1 } }])
-    );
-    setListTable((el) =>
-      produce((el, v) => {
-        v[table].ban_trangthai = "Đang có khách";
-      })
-    );
-    console.log(listTable);
+    setListTable((state) => {
+      return state.map((el) => {
+        if (el.id === idBan) {
+          return {
+            ...el,
+            ban_trangthai: 1,
+          };
+        }
+        return el;
+      });
+    });
+    setBill((state) => {
+      const existingMenu = state.filter(
+        (el) => el.bill.id === id && el.idBan === idBan
+      );
+
+      if (existingMenu.length > 0) {
+        return state.map((el) => {
+          if (el.bill.id === id && el.idBan === idBan) {
+            return {
+              ...el,
+              bill: {
+                ...el.bill,
+                amount: el.bill.amount + 1,
+              },
+            };
+          }
+          return el;
+        });
+      }
+      return state.concat([{ idBan, bill: { id, name, price, amount: 1 } }]);
+    });
+    localStorage.setItem("listTable", JSON.stringify(listTable));
+    localStorage.setItem("bill", JSON.stringify(bill));
   };
 
+  const onCheckOutHandler = (e) => {
+    if (table === 0) {
+      return alert("Vui lòng chọn bàn để thanh toán!");
+    }
+
+    const result = bill
+      .filter((el) => el.idBan === table)
+      .reduce(function (billCheckOut, obj) {
+        let key = obj["idBan"];
+
+        if (!billCheckOut[key]) {
+          billCheckOut[key] = [];
+        }
+        billCheckOut[key].push(obj.bill);
+        return billCheckOut;
+      }, {});
+
+    console.log({ ban_id: table, monans: result[table] });
+  };
   return (
     <div>
       <CContainer fluid style={{ height: "100vh", backgroundColor: "#fff" }}>
@@ -126,6 +171,10 @@ export default (props) => {
                                   el.ban_stt === table
                                     ? "bg-info text-light"
                                     : ""
+                                } ${
+                                  el.ban_trangthai === 1
+                                    ? "bg-danger text-light"
+                                    : ""
                                 }`}
                                 id={key}
                                 onClick={(e) => onClickTableHandler(e, el)}
@@ -152,6 +201,10 @@ export default (props) => {
                                 className={`table ${
                                   el.ban_stt === table
                                     ? "bg-info text-light"
+                                    : ""
+                                } ${
+                                  el.ban_trangthai === 1
+                                    ? "bg-danger text-light"
                                     : ""
                                 }`}
                                 id={key}
@@ -240,7 +293,9 @@ export default (props) => {
                                           vertical
                                           onClick={(e) => {
                                             const billUpdated = bill.filter(
-                                              (el) => el.bill.id !== id
+                                              (el) =>
+                                                el.bill.id !== id ||
+                                                el.idBan !== table
                                             );
                                             setBill([...billUpdated]);
                                           }}
@@ -260,12 +315,15 @@ export default (props) => {
                                           rotate={180}
                                           vertical
                                           onClick={(e) => {
-                                            setBill((el) =>
-                                              produce(el, (v) => {
+                                            setBill((el) => {
+                                              if (el[key].bill.amount === 1) {
+                                                return el;
+                                              }
+                                              return produce(el, (v) => {
                                                 v[key].bill.amount =
                                                   el[key].bill.amount - 1;
-                                              })
-                                            );
+                                              });
+                                            });
                                           }}
                                         />
                                         <p> &nbsp;{el.bill.amount}&nbsp;</p>
@@ -355,7 +413,10 @@ export default (props) => {
                               </CButton>
                             </CRow>
                             <CRow>
-                              <CCol className="text-center bg-success py-3">
+                              <CCol
+                                className="text-center bg-success py-3"
+                                onClick={onCheckOutHandler}
+                              >
                                 <h4 className="text-light">
                                   <Icon
                                     path={mdiCurrencyUsd}

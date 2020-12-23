@@ -62,7 +62,7 @@ function LoaiMonAn() {
     };
     fetchData();
   }, [success]);
- 
+
   const toggleModal = () => {
     setModal(!modal);
   };
@@ -99,7 +99,15 @@ function LoaiMonAn() {
             items={loaiMonAnList}
             fields={fields}
             striped
+            responsive
+            loading={loading}
             itemsPerPage={5}
+            itemsPerPageSelect
+            hover
+            sorter
+            columnFilter
+            tableFilter
+            footer
             pagination
             scopedSlots={{
               index: (item) => <td>{item.lma_id}</td>,
@@ -122,7 +130,7 @@ function LoaiMonAn() {
                       {/* &nbsp;Edit */}
                     </CLink>
                     <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon 
+                      <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"

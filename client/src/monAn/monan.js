@@ -9,6 +9,7 @@ import {
   CLink,
   CRow,
   CContainer,
+  CCollapse,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import Icon from "@mdi/react";
@@ -23,9 +24,15 @@ const fields = [
   { key: "ma_giaban", label: "Giá bán", _style: { width: "10%" } },
   { key: "ma_giavon", label: "Giá vốn", _style: { width: "10%" } },
   { key: "ma_donvitinh", label: "Đơn vị", _style: { width: "20%" } },
-   { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
+  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
   { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
-  { key: "action", label: "ACTION", _style: { width: "10%" } },
+  {
+    key: "show_details",
+    label: "",
+    _style: { width: "1%" },
+    sorter: false,
+    filter: false,
+  },
 ];
 const getBadge = (status) => {
   switch (status) {
@@ -42,7 +49,6 @@ const getBadge = (status) => {
   }
 };
 function MonAn() {
-
   const [monanlist, setMonAnList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +56,16 @@ function MonAn() {
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
 
+  const toggleDetails = (index) => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
+    }
+    setDetails(newDetails);
+  };
   const createSuccess = () => {
     setSuccess(!success);
   };
@@ -107,7 +123,15 @@ function MonAn() {
             items={monanlist}
             fields={fields}
             striped
-            itemsPerPage={5}
+            responsive
+            loading={loading}
+            itemsPerPage={4}
+            itemsPerPageSelect
+            hover
+            sorter
+            columnFilter
+            tableFilter
+            footer
             pagination
             scopedSlots={{
               index: (item) => <td>{item.id}</td>,
@@ -116,29 +140,42 @@ function MonAn() {
                   <CBadge color={getBadge(item.ma_ten)}>{item.ma_ten}</CBadge>
                 </td>
               ),
-              action: (item) => (
-                <td style={{ display: "flex", justifyContent: "start" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      width: "80%",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon name="cil-pencil" alt="Edit" />
-                      {/* &nbsp;Edit */}
-                    </CLink>
-                    <CButton className="c-subheader-nav-link" onClick={() => deleteMonAn(item)}>
-                      <CIcon
-                        style={{ color: "red" }}
-                        name="cil-trash"
-                        alt="Delete"
-                      />
+
+              show_details: (item, index) => {
+                return (
+                  <td className="py-2">
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      onClick={() => {
+                        toggleDetails(index);
+                      }}
+                    >
+                      {details.includes(index) ? "Hide" : "Show"}
                     </CButton>
-                  </div>
-                </td>
-              ),
+                  </td>
+                );
+              },
+              details: (item, index) => {
+                return (
+                  <CCollapse show={details.includes(index)}>
+                    <CCardBody>
+                      <h4>{item.username}</h4>
+                      <p className="text-muted">
+                        User since: {item.registered}
+                      </p>
+                      <CButton size="sm" color="info">
+                        User Settings
+                      </CButton>
+                      <CButton size="sm" color="danger" className="ml-1">
+                        Delete
+                      </CButton>
+                    </CCardBody>
+                  </CCollapse>
+                );
+              },
             }}
           />
         </CCardBody>
