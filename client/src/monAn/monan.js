@@ -224,8 +224,7 @@ function MonAn() {
                               </CRow>
                               <EditMonAn
                                 modal={modal1}
-                                list={item}
-                           
+                                listMon={item}
                                 toggleModal={toggleModal1}
                                 createSuccess={createSuccess}
                               />
@@ -243,7 +242,6 @@ function MonAn() {
             }}
           />
         </CCardBody>
-
         <CreateFood
           modal={modal}
           toggleModal={toggleModal}

@@ -23,7 +23,6 @@ import { mdiViewGridPlus } from "@mdi/js";
 import {
   getAllLoaiMonAn,
   deleteLoaiMonAn,
-  editLoaiMonAn,
 } from "../api/LoaiMonAnApi";
 import EditLoaiMon from "./editLoaiMonAn";
 import alertify from "alertifyjs";
