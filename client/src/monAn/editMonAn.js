@@ -4,7 +4,7 @@ import React, { lazy, useEffect, useState } from "react";
 //import { createPromotion } from "../../api/promotionApi";
 import alertify from "alertifyjs";
 import { editMonAn } from "../api/MonAnApi";
-import {getAllLoaiMonAn} from '../api/LoaiMonAnApi'
+import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
 import {
   CButton,
   CModal,
@@ -19,23 +19,21 @@ import {
 
 function EditMonAn(props) {
   const [files, setFiles] = useState(null);
-  const [ma_id, setMa_id] = useState(props.list.ma_id);
-  const [ma_ten, setMa_ten] = useState(props.list.ma_ten);
-  const [ma_donvitinh, setDvt] = useState(props.list.ma_donvitinh);
-  const [ma_giaban, setGiaBan] = useState(props.list.ma_giaban);
-  const [ma_giavon, setGiaVon] = useState(props.list.ma_giavon);
-  const [ma_motachitiet, setMoTaChiTiet] = useState(props.list.ma_motachitiet);
-  const [ma_hinhanh, setHinhAnh] = useState();
-  const [ma_lmaid, setLoaiMonAn] = useState();
+  const [ma_id, setId] = useState(props.listMon.ma_id);
+  const [ma_ten, setTen] = useState(props.listMon.ma_ten);
+  const [ma_donvitinh, setDvt] = useState(props.listMon.ma_donvitinh);
+  const [ma_giaban, setGiaBan] = useState(props.listMon.ma_giaban);
+  const [ma_giavon, setGiaVon] = useState(props.listMon.ma_giavon);
+  const [ma_motachitiet, setMoTaChiTiet] = useState(props.listMon.ma_motachitiet);
+  const [ma_hinhanh, setHinhAnh] = useState(props.listMon.ma_hinhanh);
+  const [ma_lmaid, setLoaiMonAn] = useState(props.listMon.ma_lmaid);
   const [loaiMonAnList, setLoaiMonAnList] = useState();
   const [success, setSuccess] = useState(false);
-
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllLoaiMonAn();
-
         setLoaiMonAnList(response);
       } catch (err) {
         setLoaiMonAnList(null);
@@ -54,24 +52,23 @@ function EditMonAn(props) {
       ma_donvitinh,
       ma_hinhanh,
       ma_motachitiet,
-      ma_lmaid,
+      // ma_lmaid,
     };
     try {
       await editMonAn(data);
-      props.toggleModal1();
+      props.toggleModal();
       props.createSuccess();
       alertify.success("Cập nhật món ăn thành công");
     } catch (err) {
       alertify.error("Có lỗi rồi");
     }
   };
-  
   return (
     <>
       <CModal show={props.modal} onClose={props.toggleModal} size="xl">
         <CModalHeader closeButton>
           {" "}
-          <h3>Cập nhập loại món ăn</h3>
+          <h3>Cập nhập món ăn</h3>
         </CModalHeader>
         <form onSubmit={onSubmit}>
           <CModalBody>
@@ -80,7 +77,7 @@ function EditMonAn(props) {
                 <CCol lg="6">
                   <CRow>
                     <CCol lg="4" className="pt-2">
-                      Id
+                      Id món ăn
                     </CCol>
                     <CCol lg="8">
                       <input
@@ -88,7 +85,7 @@ function EditMonAn(props) {
                         className="inp"
                         value={ma_id}
                         onChange={(e) => {
-                          setMa_id(e.target.value);
+                          setId(e.target.value);
                         }}
                         style={{ width: "100%" }}
                         required
@@ -107,7 +104,7 @@ function EditMonAn(props) {
                         className="inp"
                         value={ma_ten}
                         onChange={(e) => {
-                          setMa_ten(e.target.value);
+                          setTen(e.target.value);
                         }}
                         style={{ width: "100%" }}
                         required
@@ -120,7 +117,7 @@ function EditMonAn(props) {
                     </CCol>
                     <CCol lg="8">
                       <input
-                        type="text"     
+                        type="text"
                         className="inp"
                         value={ma_giaban}
                         onChange={(e) => {
@@ -156,7 +153,7 @@ function EditMonAn(props) {
                   <CCol lg="8">
                     <input
                       type="text"
-                      placeholder="Tên loại món ăn"
+            
                       className="inp"
                       value={ma_donvitinh}
                       onChange={(e) => {
@@ -167,7 +164,7 @@ function EditMonAn(props) {
                     />
                   </CCol>
                 </CRow>
-                <CRow className="field">
+                {/* <CRow className="field">
                   <CCol lg="10">
                     <CRow>
                       <CCol lg="5" className="pt-2">
@@ -176,16 +173,18 @@ function EditMonAn(props) {
                       <CCol>
                         <CSelect
                           class="form-select"
+                          value={ma_lmaid}
                           onChange={(e) => {
                             setLoaiMonAn(e.target.value);
                           }}
                           style={{ width: "100%" }}
                           required
                         >
-                          {/* <option selected>Chọn loại món ăn</option> */}
+                          <option selected>Chọn loại món ăn</option>
                           {loaiMonAnList
                             ? loaiMonAnList.map((el, key) => (
-                                <option selected
+                                <option
+                                  selected
                                   key={key}
                                   value={(el.lma_id, el.lma_ten)}
                                 >
@@ -198,6 +197,7 @@ function EditMonAn(props) {
                     </CRow>
                   </CCol>
                 </CRow>
+                */}
                 <CRow className="field">
                   <CCol lg="10">
                     <CRow>
@@ -207,7 +207,6 @@ function EditMonAn(props) {
                       <CCol>
                         <input
                           type="text"
-                          placeholder="Mô tả chi tiết món ăn"
                           className="inp"
                           value={ma_motachitiet}
                           onChange={(e) => {
@@ -220,10 +219,18 @@ function EditMonAn(props) {
                   </CCol>
                 </CRow>
                 <CRow className="field">
-                <CCol className="pt-3">
-                  <img src={'food-1.jpg'} className="c-avatar-img" alt="chicken nướng lu" />
-                </CCol>
-              </CRow>
+                  <CCol className="pt-3">
+                    <img
+                      value={ma_hinhanh}
+                      onChange={(e) => {
+                        setHinhAnh(e.target.value);
+                      }}
+                      src={"food-1.jpg"}
+                      className="c-avatar-img"
+                      alt="chicken nướng lu"
+                    />
+                  </CCol>
+                </CRow>
               </CRow>
             </CContainer>
           </CModalBody>

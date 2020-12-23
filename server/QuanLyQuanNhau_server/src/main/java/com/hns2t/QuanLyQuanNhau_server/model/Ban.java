@@ -15,6 +15,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "ban")
 public class Ban {
@@ -30,14 +32,30 @@ public class Ban {
 	@JoinTable(name = "nhanvien_ban",
 				joinColumns = @JoinColumn(name = "b_id", referencedColumnName = "b_id"),
 				inverseJoinColumns = @JoinColumn(name ="nv_id", referencedColumnName = "nv_id"))
+	@JsonIgnore
 	private List<NhanVien> nhanviens;
  	
 	@OneToMany(mappedBy = "ban")
+	@JsonIgnore
 	private List<HoaDon> hoadons;
 
 	public Ban() {
 		super();
 	}
+	
+
+	public Ban(Long b_id, Long b_stt, Integer b_soghe, TrangThaiBan b_trangthai, List<NhanVien> nhanviens,
+			List<HoaDon> hoadons) {
+		super();
+		this.b_id = b_id;
+		this.b_stt = b_stt;
+		this.b_soghe = b_soghe;
+		this.b_trangthai = b_trangthai;
+		this.nhanviens = nhanviens;
+		this.hoadons = hoadons;
+	}
+
+
 
 	public Long getB_id() {
 		return b_id;
