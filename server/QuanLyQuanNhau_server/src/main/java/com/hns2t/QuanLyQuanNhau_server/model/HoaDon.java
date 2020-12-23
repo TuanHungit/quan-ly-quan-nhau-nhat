@@ -14,13 +14,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "hoadon")
 public class HoaDon {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long hd_id;
-	//@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date hd_ngaythanhtoan;
 	private Double hd_tongtien;
 	private StatusHoaDon hd_trangthai;
@@ -38,11 +40,28 @@ public class HoaDon {
 	private Ban ban;
 	
 	@OneToMany(mappedBy = "hoaDon")
+	@JsonIgnore
 	private List<ChiTietHoaDon> chiTietHoaDons;
 	
 	public HoaDon() {
 		super();
 	}
+	
+	public HoaDon(Long hd_id, Date hd_ngaythanhtoan, Double hd_tongtien, StatusHoaDon hd_trangthai,
+			ChuongTrinhKhuyenMai chuongTrinhKhuyenMai, NhanVien hd_nhanvien, Ban ban,
+			List<ChiTietHoaDon> chiTietHoaDons) {
+		super();
+		this.hd_id = hd_id;
+		this.hd_ngaythanhtoan = hd_ngaythanhtoan;
+		this.hd_tongtien = hd_tongtien;
+		this.hd_trangthai = hd_trangthai;
+		this.chuongTrinhKhuyenMai = chuongTrinhKhuyenMai;
+		this.hd_nhanvien = hd_nhanvien;
+		this.ban = ban;
+		this.chiTietHoaDons = chiTietHoaDons;
+	}
+
+
 
 	public Long getHd_id() {
 		return hd_id;

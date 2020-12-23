@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "phieunhap")
@@ -18,6 +20,7 @@ public class PhieuNhap {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long pn_id; 
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date pn_thoigian;
 	private Double pn_tongtien;
 	
