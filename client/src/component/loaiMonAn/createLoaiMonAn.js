@@ -3,7 +3,7 @@ import React, { lazy, useEffect, useState } from "react";
 //import QuillEditor from "../editor/quillEditor";
 //import { createPromotion } from "../../api/promotionApi";
 import alertify from "alertifyjs";
-import { createOneLoaiMonAn } from "../api/LoaiMonAnApi";
+import { createOneLoaiMonAn } from "../../api/LoaiMonAnApi";
 
 import {
   CButton,

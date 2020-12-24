@@ -3,8 +3,8 @@ import React, { lazy, useEffect, useState } from "react";
 //import QuillEditor from "../editor/quillEditor";
 //import { createPromotion } from "../../api/promotionApi";
 import alertify from "alertifyjs";
-import { editMonAn } from "../api/MonAnApi";
-import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
+import { editMonAn } from "../../api/MonAnApi";
+import { getAllLoaiMonAn } from "../../api/LoaiMonAnApi";
 import {
   CButton,
   CModal,
