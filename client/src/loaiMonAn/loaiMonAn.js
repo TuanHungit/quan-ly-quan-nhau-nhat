@@ -146,9 +146,7 @@ function LoaiMonAn() {
             itemsPerPageSelect
             hover
             sorter
-            columnFilter
             tableFilter
-            footer
             pagination
             scopedSlots={{
               index: (item) => <td>{item.lma_id}</td>,
@@ -208,27 +206,9 @@ function LoaiMonAn() {
                                 <CCol lg="3">
                                   <label>Tên loại món ăn</label>
                                   <h6>{item.lma_ten}</h6>
-                                  <CImg
-                                    // src={`http://${item.ma_hinhanh}`}
-                                    src={`https://www.pexels.com/vi-vn/anh/mon-an-dia-rau-xa-lach-kh-e-m-nh-1095550/`}
-                                    alt="img"
-                                    alt="Image"
-                                    width="250px"
-                                    height="200px"
-                                  />
+                                  
                                 </CCol>
-                                <CCol lg="9">
-                                  <CRow>
-                                    <CCol lg="2">Mô tả tóm tắt:</CCol>
-                                    <CCol lg="10">
-                                      <div
-                                        dangerouslySetInnerHTML={{
-                                          __html: item.lma_motachitiet,
-                                        }}
-                                      />
-                                    </CCol>
-                                  </CRow>
-                                </CCol>
+                               
                               </CRow>
                               <EditLoaiMon
                                 modal={modal1}

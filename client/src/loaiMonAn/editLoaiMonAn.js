@@ -37,7 +37,7 @@ function EditLoaiMon(props) {
   };
   return (
     <>
-      <CModal show={props.modal} onClose={props.toggleModal} size="xl">
+      <CModal show={props.modal} onClose={props.toggleModal} size="lg">
         <CModalHeader closeButton>
           {" "}
           <h3>Cập nhập loại món ăn</h3>
@@ -61,6 +61,7 @@ function EditLoaiMon(props) {
                         }}
                         style={{ width: "100%" }}
                         required
+                        disabled
                       />
                     </CCol>
                   </CRow>

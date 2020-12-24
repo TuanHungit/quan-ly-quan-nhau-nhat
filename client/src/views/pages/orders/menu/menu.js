@@ -66,7 +66,7 @@ export default ({ onClickMenuHandler, table }) => {
                   .map((el) => (
                     <CCol lg="3">
                       <figure
-                        class="figure"
+                        className="figure"
                         onClick={(e) =>
                           onClickMenuHandler(
                             el.ma_id,
@@ -78,10 +78,10 @@ export default ({ onClickMenuHandler, table }) => {
                       >
                         <img
                           src={el.ma_hinhanh}
-                          class="figure-img img-fluid rounded"
+                          className="figure-img img-fluid rounded"
                           alt="HinhAnh"
                         />
-                        <figcaption class="figure-caption">
+                        <figcaption className="figure-caption">
                           {el.ma_ten}
                         </figcaption>
                       </figure>

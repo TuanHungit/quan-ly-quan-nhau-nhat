@@ -167,7 +167,7 @@ const CreateFood = (props) => {
                     </CCol>
                     <CCol>
                       <CSelect
-                        class="form-select"
+                        className="form-select"
                         onChange={(e) => {
                           setLoaiMonAn(e.target.value);
                         }}

@@ -27,17 +27,9 @@ const fields = [
   { key: "ma_id", label: "STT", _style: { width: "10%" } },
   { key: "ma_ten", label: "Tên", _style: { width: "15%" } },
   { key: "ma_giaban", label: "Giá bán", _style: { width: "10%" } },
-  { key: "ma_giavon", label: "Giá vốn", _style: { width: "10%" } },
+  // { key: "ma_giavon", label: "Giá vốn", _style: { width: "10%" } },
   { key: "ma_donvitinh", label: "Đơn vị", _style: { width: "20%" } },
-  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
-  { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
-  {
-    key: "show_details",
-    label: "",
-    _style: { width: "1%" },
-    sorter: false,
-    filter: false,
-  },
+
   //  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
   // { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
   {
@@ -154,9 +146,7 @@ function MonAn() {
             itemsPerPageSelect
             hover
             sorter
-            columnFilter
             tableFilter
-            footer
             pagination
             tableFilter
             sorter
@@ -217,7 +207,28 @@ function MonAn() {
                             <CContainer>
                               <CRow>
                                 <CCol lg="3">
+                                  <label>Tên món ăn</label>
                                   <h6>{item.ma_ten}</h6>
+
+                                </CCol>
+                                <CCol lg="2">
+                                  <label>Giá vốn</label>
+                                  <h6>{item.ma_giavon}</h6>
+                                </CCol>
+                                <CCol lg="4">
+
+                                  <h6>Mô tả tóm tắt:</h6>
+
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: item.ma_motachitiet,
+                                    }}
+                                  />
+
+
+                                </CCol>
+                                <CCol lg="3">
+
                                   <CImg
                                     // src={`http://${item.ma_hinhanh}`}
                                     src={"food-1.jpg"}
@@ -227,19 +238,9 @@ function MonAn() {
                                     height="200px"
                                   />
                                 </CCol>
-                                <CCol lg="9">
-                                  <CRow>
-                                    <CCol lg="2">Mô tả tóm tắt:</CCol>
-                                    <CCol lg="10">
-                                      <div
-                                        dangerouslySetInnerHTML={{
-                                          __html: item.ma_motachitiet,
-                                        }}
-                                      />
-                                    </CCol>
-                                  </CRow>
-                                </CCol>
                               </CRow>
+
+
                               <EditMonAn
                                 modal={modal1}
                                 listMon={item}
