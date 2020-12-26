@@ -177,7 +177,7 @@ const CreateFood = (props) => {
                         <option selected>Chọn loại món ăn</option>
                         {loaiMonAnList
                           ? loaiMonAnList.map((el, key) => (
-                              <option key={key} value={(el.lma_id, el.lma_ten)}>
+                              <option key={key} value={el.lma_id}>
                                 {el.lma_ten}
                               </option>
                             ))

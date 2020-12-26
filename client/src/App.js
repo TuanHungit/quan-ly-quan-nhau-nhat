@@ -4,8 +4,18 @@ import { HashRouter, Route, Switch } from "react-router-dom";
 import "./scss/style.scss";
 
 const loading = (
-  <div className="pt-3 text-center">
-    <div className="sk-spinner sk-spinner-pulse"></div>
+  <div id="content-page" className="content-page">
+    <div className="container text-center mt-5">
+      <div className="spinner-grow" role="status">
+        <span className="sr-only">Loading...</span>
+      </div>
+      <div className="spinner-grow" role="status">
+        <span className="sr-only">Loading...</span>
+      </div>
+      <div className="spinner-grow" role="status">
+        <span className="sr-only">Loading...</span>
+      </div>
+    </div>
   </div>
 );
 
