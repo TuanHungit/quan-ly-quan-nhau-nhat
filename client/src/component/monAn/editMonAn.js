@@ -3,8 +3,8 @@ import React, { lazy, useEffect, useState } from "react";
 //import QuillEditor from "../editor/quillEditor";
 //import { createPromotion } from "../../api/promotionApi";
 import alertify from "alertifyjs";
-import { editMonAn } from "../api/MonAnApi";
-import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
+import { editMonAn } from "../../api/MonAnApi";
+import { getAllLoaiMonAn } from "../../api/LoaiMonAnApi";
 import {
   CButton,
   CModal,
@@ -65,7 +65,7 @@ function EditMonAn(props) {
   };
   return (
     <>
-      <CModal show={props.modal} onClose={props.toggleModal} size="xl">
+      <CModal show={props.modal} onClose={props.toggleModal} size="lg">
         <CModalHeader closeButton>
           {" "}
           <h3>Cập nhập món ăn</h3>
@@ -76,10 +76,10 @@ function EditMonAn(props) {
               <CRow>
                 <CCol lg="6">
                   <CRow>
-                    <CCol lg="4" className="pt-2">
+                    <CCol lg="5" className="pt-2">
                       Id món ăn
                     </CCol>
-                    <CCol lg="8">
+                    <CCol lg="7">
                       <input
                         type="number"
                         className="inp"
@@ -94,10 +94,10 @@ function EditMonAn(props) {
                     </CCol>
                   </CRow>
                   <CRow>
-                    <CCol lg="4" className="pt-2">
+                    <CCol lg="5" className="pt-2">
                       Tên món ăn
                     </CCol>
-                    <CCol lg="8">
+                    <CCol lg="7">
                       <input
                         type="text"
                         placeholder="Tên món ăn"
@@ -112,10 +112,10 @@ function EditMonAn(props) {
                     </CCol>
                   </CRow>
                   <CRow>
-                    <CCol lg="4" className="pt-2">
+                    <CCol lg="5" className="pt-2">
                       Tên giá bán
                     </CCol>
-                    <CCol lg="8">
+                    <CCol lg="7">
                       <input
                         type="text"
                         className="inp"
@@ -129,10 +129,10 @@ function EditMonAn(props) {
                     </CCol>
                   </CRow>
                   <CRow>
-                    <CCol lg="4" className="pt-2">
+                    <CCol lg="5" className="pt-2">
                       Tên giá vốn
                     </CCol>
-                    <CCol lg="8">
+                    <CCol lg="7">
                       <input
                         type="text"
                         className="inp"
@@ -145,25 +145,45 @@ function EditMonAn(props) {
                       />
                     </CCol>
                   </CRow>{" "}
+                  <CRow>
+                    <CCol lg="5" className="pt-2">
+                      Đơn vị tính
+                  </CCol>
+                    <CCol lg="7">
+                      <input
+                        type="text"
+
+                        className="inp"
+                        value={ma_donvitinh}
+                        onChange={(e) => {
+                          setDvt(e.target.value);
+                        }}
+                        style={{ width: "100%" }}
+                        required
+                      />
+                    </CCol>
+                  </CRow>
+                </CCol >
+                <CCol lg="6">
+                  <CRow>
+                    <CCol lg="5" className="pt-2">
+                      Mô tả chi tiết
+                  </CCol>
+                    <CCol lg="7">
+                      <input
+                        type="text"
+                        className="inp"
+                        value={ma_motachitiet}
+                        onChange={(e) => {
+                          setMoTaChiTiet(e.target.value);
+                        }}
+                        style={{ width: "100%" }}
+                        required
+                      />
+                    </CCol>
+                  </CRow>
+
                 </CCol>
-                <CRow>
-                  <CCol lg="4" className="pt-2">
-                    Đơn vị tính
-                  </CCol>
-                  <CCol lg="8">
-                    <input
-                      type="text"
-            
-                      className="inp"
-                      value={ma_donvitinh}
-                      onChange={(e) => {
-                        setDvt(e.target.value);
-                      }}
-                      style={{ width: "100%" }}
-                      required
-                    />
-                  </CCol>
-                </CRow>
                 {/* <CRow className="field">
                   <CCol lg="10">
                     <CRow>
@@ -172,7 +192,7 @@ function EditMonAn(props) {
                       </CCol>
                       <CCol>
                         <CSelect
-                          class="form-select"
+                          className="form-select"
                           value={ma_lmaid}
                           onChange={(e) => {
                             setLoaiMonAn(e.target.value);
@@ -198,26 +218,7 @@ function EditMonAn(props) {
                   </CCol>
                 </CRow>
                 */}
-                <CRow className="field">
-                  <CCol lg="10">
-                    <CRow>
-                      <CCol lg="5" className="pt-2">
-                        Mô tả chi tiết
-                      </CCol>
-                      <CCol>
-                        <input
-                          type="text"
-                          className="inp"
-                          value={ma_motachitiet}
-                          onChange={(e) => {
-                            setMoTaChiTiet(e.target.value);
-                          }}
-                          style={{ width: "100%" }}
-                        />
-                      </CCol>
-                    </CRow>
-                  </CCol>
-                </CRow>
+
                 <CRow className="field">
                   <CCol className="pt-3">
                     <img

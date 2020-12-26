@@ -11,8 +11,8 @@ import {
   CSelect,
   CImg,
 } from "@coreui/react";
-import { createOneMonAn } from "../api/MonAnApi";
-import { getAllLoaiMonAn } from "../api/LoaiMonAnApi";
+import { createOneMonAn } from "../../api/MonAnApi";
+import { getAllLoaiMonAn } from "../../api/LoaiMonAnApi";
 
 import alertify from "alertifyjs";
 
@@ -69,7 +69,7 @@ const CreateFood = (props) => {
     <div className="create-food">
       <CModal show={props.modal} onClose={props.toggleModal}>
         <CModalHeader closeButton>
-          <h3>Thêm mới món sản phẩm</h3>
+          <h3>Thêm mới món ăn</h3>
         </CModalHeader>
         <form onSubmit={onSubmit}>
           <CModalBody>
@@ -167,7 +167,7 @@ const CreateFood = (props) => {
                     </CCol>
                     <CCol>
                       <CSelect
-                        class="form-select"
+                        className="form-select"
                         onChange={(e) => {
                           setLoaiMonAn(e.target.value);
                         }}

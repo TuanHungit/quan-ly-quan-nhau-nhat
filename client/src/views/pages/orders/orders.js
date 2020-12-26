@@ -40,7 +40,7 @@ import {
   CDropdownMenu,
 } from "@coreui/react";
 import "./orders.css";
-import { getAllBan, updateBan } from "../../../api/banApi";
+import { getBans, editBan } from "../../../api/BanApi";
 
 export default (props) => {
   const settings = {
@@ -52,7 +52,7 @@ export default (props) => {
   };
   const fetchTableData = async () => {
     try {
-      const response = await getAllBan();
+      const response = await getBans();
       setListTable(response || JSON.parse(localStorage.getItem("listTable")));
     } catch (err) {
       console.log(err);
@@ -80,7 +80,7 @@ export default (props) => {
     try {
       const existingTable = bill.filter((el) => el.idBan === idBan);
       if (existingTable.length === 0) {
-        await updateBan({ b_id: table, b_trangthai: 0 });
+        await editBan({ b_id: table, b_trangthai: 0 });
         setUpdate((state) => !state);
       }
 
@@ -153,7 +153,7 @@ export default (props) => {
     );
 
     if (billUpdated.filter((el) => el.idBan === table).length === 0) {
-      await updateBan({ b_id: table, b_trangthai: 1 });
+      await editBan({ b_id: table, b_trangthai: 1 });
       setUpdate((state) => !state);
     }
     localStorage.setItem("bill", JSON.stringify(billUpdated));

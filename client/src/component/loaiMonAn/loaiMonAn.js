@@ -17,29 +17,19 @@ import {
   CContainer,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
+import CreateLoaiMon from "./createLoaiMonAn";
 import Icon from "@mdi/react";
-import { mdiFoodForkDrink } from "@mdi/js";
-import CreateFood from "./createFood";
-import { getMonAns, deleteMonAn } from "../api/MonAnApi";
-import EditMonAn from "./editMonAn";
+import { mdiViewGridPlus } from "@mdi/js";
+import {
+  getAllLoaiMonAn,
+  deleteLoaiMonAn,
+} from "../../api/LoaiMonAnApi";
+import EditLoaiMon from "./editLoaiMonAn";
+import alertify from "alertifyjs";
 
 const fields = [
-  { key: "ma_id", label: "STT", _style: { width: "10%" } },
-  { key: "ma_ten", label: "Tên", _style: { width: "15%" } },
-  { key: "ma_giaban", label: "Giá bán", _style: { width: "10%" } },
-  { key: "ma_giavon", label: "Giá vốn", _style: { width: "10%" } },
-  { key: "ma_donvitinh", label: "Đơn vị", _style: { width: "20%" } },
-  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
-  { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
-  {
-    key: "show_details",
-    label: "",
-    _style: { width: "1%" },
-    sorter: false,
-    filter: false,
-  },
-  //  { key: "ma_hinhanh", label: "Hình ảnh", _style: { width: "20%" } },
-  // { key: "ma_motachitiet", label: "Mô tả", _style: { width: "20%" } },
+  { key: "lma_id", label: "STT", _style: { width: "10%" } },
+  { key: "lma_ten", label: "Tên", _style: { width: "80%" } },
   {
     key: "show_details",
     label: "",
@@ -63,8 +53,9 @@ const getBadge = (status) => {
       return "primary";
   }
 };
-function MonAn() {
-  const [monanlist, setMonAnList] = useState(null);
+
+function LoaiMonAn() {
+  const [loaiMonAnList, setLoaiMonAnList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [collapse, setCollapse] = useState(false);
@@ -72,6 +63,37 @@ function MonAn() {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
 
+  const createSuccess = () => {
+    setSuccess(!success);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getAllLoaiMonAn();
+        setSuccess(false);
+        setLoaiMonAnList(response);
+        setLoading(false);
+      } catch (err) {
+        setLoaiMonAnList(null);
+        setLoading(true);
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [success]);
+
+  const handleDelete = (item) => {
+    deleteLoaiMonAn(item);
+    setSuccess(!success);
+  };
+
+  const toggleModal = () => {
+    setModal(!modal);
+  };
+  const toggleModal1 = () => {
+    setModal1(!modal1);
+  };
   const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
@@ -82,45 +104,13 @@ function MonAn() {
     }
     setDetails(newDetails);
   };
-  const createSuccess = () => {
-    setSuccess(!success);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getMonAns();
-        setSuccess(false);
-        setMonAnList(response);
-        setLoading(false);
-      } catch (err) {
-        setMonAnList(null);
-        setLoading(true);
-        console.log(err);
-      }
-    };
-    fetchData();
-  }, [success]);
-
-  const handleDelete = (item) => {
-    deleteMonAn(item);
-    setSuccess(!success);
-  };
-
-  const toggleModal = () => {
-    setModal(!modal);
-  };
-  const toggleModal1 = () => {
-    setModal1(!modal1);
-  };
-
   return (
     <>
       <CCard>
-        <CCardHeader className="CCardHeader-title">
-          <CContainer>
+        <CCardHeader className="CCardHeader-title ">
+          <CContainer className="container">
             <CRow className="d-flex justify-content-between">
-              <h1>Danh sách món ăn</h1>
+              <h1>Danh sách loại món ăn</h1>
               <div className="card-header-actions">
                 <CButton
                   onClick={toggleModal}
@@ -128,44 +118,41 @@ function MonAn() {
                   variant="outline"
                   color="primary"
                   size="sm"
-                  className="CCardHeader-title-btn-createfood"
+                  className="users-title-btn-add"
                 >
                   <Icon
-                    path={mdiFoodForkDrink}
+                    path={mdiViewGridPlus}
                     size={1}
-                    title="Create Food"
+                    title="Create Admin"
                     className="mr-1"
                   />
-                  Thêm món ăn
+                  Thêm loại món ăn.
                 </CButton>
               </div>
             </CRow>
           </CContainer>
         </CCardHeader>
-
         <CCardBody>
           <CDataTable
-            items={monanlist}
+            items={loaiMonAnList}
             fields={fields}
             striped
             responsive
             loading={loading}
-            itemsPerPage={4}
+            tableFilter
+            sorter
+            hover
+            itemsPerPage={5}
             itemsPerPageSelect
             hover
             sorter
-            columnFilter
             tableFilter
-            footer
             pagination
-            tableFilter
-            sorter
-            hover
             scopedSlots={{
-              index: (item) => <td>{item.id}</td>,
+              index: (item) => <td>{item.lma_id}</td>,
               name: (item) => (
                 <td>
-                  <CBadge color={getBadge(item.ma_ten)}>{item.ma_ten}</CBadge>
+                  <CBadge color={getBadge(item.lma_ten)}>{item.lma_ten}</CBadge>
                 </td>
               ),
               show_details: (item, index) => {
@@ -217,32 +204,15 @@ function MonAn() {
                             <CContainer>
                               <CRow>
                                 <CCol lg="3">
-                                  <h6>{item.ma_ten}</h6>
-                                  <CImg
-                                    // src={`http://${item.ma_hinhanh}`}
-                                    src={"food-1.jpg"}
-                                    alt="img"
-                                    alt="Image"
-                                    width="250px"
-                                    height="200px"
-                                  />
+                                  <label>Tên loại món ăn</label>
+                                  <h6>{item.lma_ten}</h6>
+                                  
                                 </CCol>
-                                <CCol lg="9">
-                                  <CRow>
-                                    <CCol lg="2">Mô tả tóm tắt:</CCol>
-                                    <CCol lg="10">
-                                      <div
-                                        dangerouslySetInnerHTML={{
-                                          __html: item.ma_motachitiet,
-                                        }}
-                                      />
-                                    </CCol>
-                                  </CRow>
-                                </CCol>
+                               
                               </CRow>
-                              <EditMonAn
+                              <EditLoaiMon
                                 modal={modal1}
-                                listMon={item}
+                                list={item}
                                 toggleModal={toggleModal1}
                                 createSuccess={createSuccess}
                               />
@@ -250,12 +220,8 @@ function MonAn() {
                           </CTabPane>
                         </CTabContent>
                       </CTabs>
-                      <CButton
-                        type="submit"
-                        size="sm"
-                        color="info"
-                        onClick={toggleModal1}
-                      >
+
+                      <CButton size="sm" color="info" onClick={toggleModal1}>
                         Cập nhật
                       </CButton>
                     </CCardBody>
@@ -265,7 +231,8 @@ function MonAn() {
             }}
           />
         </CCardBody>
-        <CreateFood
+
+        <CreateLoaiMon
           modal={modal}
           toggleModal={toggleModal}
           createSuccess={createSuccess}
@@ -275,4 +242,4 @@ function MonAn() {
   );
 }
 
-export default MonAn;
+export default LoaiMonAn;
