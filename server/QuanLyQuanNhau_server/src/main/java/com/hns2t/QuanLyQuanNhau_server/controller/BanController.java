@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
 import com.hns2t.QuanLyQuanNhau_server.dao.BanRepository;
 import com.hns2t.QuanLyQuanNhau_server.exception.ResourceNotFoundException;
 import com.hns2t.QuanLyQuanNhau_server.model.Ban;
+import com.hns2t.QuanLyQuanNhau_server.model.TrangThaiBan;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -51,13 +54,6 @@ public class BanController {
 	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody Ban banDetail){
 		Ban object =repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
-		if(banDetail.getB_soghe()!= null) {
-			object.setB_soghe(banDetail.getB_soghe());
-		}
-		if(banDetail.getB_stt()!=null) {
-			object.setB_stt(banDetail.getB_stt());
-		}
-		
 		object.setB_trangthai(banDetail.getB_trangthai());
 
 		Ban ban = repo.save(object);
@@ -73,5 +69,25 @@ public class BanController {
 		response.put("deleted", Boolean.TRUE);
 		return ResponseEntity.ok(response);
 	}
+	
+
+//	@PutMapping("/{id}" )
+//	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody String trangThaiBan){
+//		Ban object =repo.findById(id)
+//				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
+////		if(banDetail.getB_soghe()!= null) {
+////			object.setB_soghe(banDetail.getB_soghe());
+////		}
+////		if(banDetail.getB_stt()!=null) {
+////			object.setB_stt(banDetail.getB_stt());
+////		}
+//			
+//		TrangThaiBan newTrangThaiBan = (TrangThaiBan)trangThaiBan.toString();
+//		
+//		object.setB_trangthai();
+//
+//		Ban ban = repo.save(object);
+//		return ResponseEntity.ok(ban);
+//	}
 	
 }
