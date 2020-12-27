@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
 import Menu from "./menu/menu";
@@ -14,6 +14,8 @@ import {
   mdiPlusCircle,
   mdiMinusCircle,
   mdiFoodOff,
+  mdiPencil,
+  mdiTableFurniture,
 } from "@mdi/js";
 import {
   CContainer,
@@ -38,8 +40,7 @@ import {
   CDropdownMenu,
 } from "@coreui/react";
 import "./orders.css";
-import TableData from "./tableData";
-import { shallow } from "enzyme/build";
+import { getBans, editBan } from "../../../api/BanApi";
 
 export default (props) => {
   const settings = {
@@ -49,19 +50,125 @@ export default (props) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  const [table, setTable] = useState(0);
-  const [bill, setBill] = useState([]);
-  const onClickTableHandler = (e, el) => {
-    setTable(el.ban_stt);
+  const fetchTableData = async () => {
+    try {
+      const response = await getBans();
+      setListTable(response || JSON.parse(localStorage.getItem("listTable")));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const onClickMenuHandler = (id, name, price) => {
-    setBill((el) => el.concat([{ id, name, price, amount: 1 }]));
+  const [table, setTable] = useState(0);
+  const [bill, setBill] = useState([]);
+  const [checkout, setCheckout] = useState([]);
+  const [listTable, setListTable] = useState([]);
+  const [update, setUpdate] = useState(false);
+  // const [tableStatus, setTableStatus] = useState("all");
+  useEffect(() => {
+    fetchTableData();
+    setBill(JSON.parse(localStorage.getItem("bill")) || []);
+  }, []);
+
+  useEffect(() => {
+    fetchTableData();
+  }, [update]);
+  const onClickTableHandler = (e, el) => {
+    setTable(el.b_stt);
   };
-  console.log(bill);
+  const onClickMenuHandler = async (id, idBan, name, price) => {
+    try {
+      const existingTable = bill.filter((el) => el.idBan === idBan);
+      if (existingTable.length === 0) {
+        await editBan({ b_id: table, b_trangthai: 0 });
+        setUpdate((state) => !state);
+      }
+
+      // setCheckout((state) => {
+      //   const total = existingTable.reduce(
+      //     total,
+      //     (el) => total + el.bill.price * el.bill.amount
+      //   );
+      //   return state.map((el) => {
+      //     if (el.idBan === idBan) {
+      //       return {
+      //         ...el,
+      //         total,
+      //       };
+      //     }
+      //     return { ...el, idBan };
+      //   });
+      // });
+
+      setBill((state) => {
+        const existingMenu = state.filter(
+          (el) => el.bill.id === id && el.idBan === idBan
+        );
+
+        if (existingMenu.length > 0) {
+          return state.map((el) => {
+            if (el.bill.id === id && el.idBan === idBan) {
+              return {
+                ...el,
+                bill: {
+                  ...el.bill,
+                  amount: el.bill.amount + 1,
+                },
+              };
+            }
+            return el;
+          });
+        }
+        return state.concat([{ idBan, bill: { id, name, price, amount: 1 } }]);
+      });
+
+      localStorage.setItem("bill", JSON.stringify(bill));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  console.log(checkout);
+  const onCheckOutHandler = (e) => {
+    if (table === 0) {
+      return alert("Vui lòng chọn bàn để thanh toán!");
+    }
+
+    const result = bill
+      .filter((el) => el.idBan === table)
+      .reduce(function (billCheckOut, obj) {
+        let key = obj["idBan"];
+
+        if (!billCheckOut[key]) {
+          billCheckOut[key] = [];
+        }
+        billCheckOut[key].push(obj.bill);
+        return billCheckOut;
+      }, {});
+
+    console.log({ b_id: table, monans: result[table] });
+  };
+  const onDeleteMenuHandler = async (e, id) => {
+    const billUpdated = bill.filter(
+      (el) => el.bill.id !== id || el.idBan !== table
+    );
+
+    if (billUpdated.filter((el) => el.idBan === table).length === 0) {
+      await editBan({ b_id: table, b_trangthai: 1 });
+      setUpdate((state) => !state);
+    }
+    localStorage.setItem("bill", JSON.stringify(billUpdated));
+    setBill([...billUpdated]);
+  };
+
+  // onClickTableStatusHandler = (e) => {
+  //   switch (e.target.value) {
+  //     case ('active'):
+
+  //   }
+  // }
   return (
     <div>
-      <CContainer fluid style={{ height: "100vh", backgroundColor: "#fff" }}>
+      <CContainer fluid style={{ height: "100vh" }} className="bg-info">
         <CRow>
           <CCol lg="7">
             <CTabs activeTab="roomtable">
@@ -76,72 +183,133 @@ export default (props) => {
                       horizontal
                       vertical
                     />
-                    Phòng bàn
+                    <strong> Phòng bàn</strong>
                   </CNavLink>
                 </CNavItem>
                 <CNavItem>
-                  <CNavLink data-tab="menu">Thực đơn</CNavLink>
+                  <CNavLink data-tab="menu">
+                    {" "}
+                    <strong>Thực đơn</strong>{" "}
+                  </CNavLink>
                 </CNavItem>
               </CNav>
               <CTabContent>
-                <CTabPane data-tab="roomtable">
+                <CTabPane data-tab="roomtable" className="bg-light tab-table">
                   <CContainer>
-                    <CRow className="justify-content-between pt-2">
-                      <p> Sử dụng: 3/31</p>
-                      <CDropdown className="mt-2">
-                        <CDropdownToggle caret color="info">
-                          Tất cả
-                        </CDropdownToggle>
-                        <CDropdownMenu>
-                          <CDropdownItem header>Tất cả</CDropdownItem>
-                          <CDropdownItem>Đang sử dụng</CDropdownItem>
-                          <CDropdownItem>Chưa sử dụng</CDropdownItem>
-                        </CDropdownMenu>
-                      </CDropdown>
+                    <CRow className="justify-content-between">
+                      <CCol className="d-flex justify-content-between">
+                        <p className="text-dark"> Sử dụng: 3/31</p>
+                        <CDropdown className="mt-2">
+                          <CDropdownToggle caret color="info">
+                            Tất cả
+                          </CDropdownToggle>
+                          <CDropdownMenu>
+                            <CDropdownItem header>Tất cả</CDropdownItem>
+                            <CDropdownItem>Đang sử dụng</CDropdownItem>
+                            <CDropdownItem>Chưa sử dụng</CDropdownItem>
+                          </CDropdownMenu>
+                        </CDropdown>
+                      </CCol>
                     </CRow>
                     <Slider
                       {...settings}
-                      style={{ height: "82vh" }}
+                      style={{ height: "80vh" }}
                       className="mb-5"
                     >
                       <div>
-                        <CRow style={{ height: "100%" }}>
-                          {TableData.slice(0, 24).map((el, key) => (
+                        <CRow style={{ height: "95%" }}>
+                          {listTable.slice(0, 24).map((el, key) => (
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
-                                className={`table `}
+                                className={`table  border-radius ${
+                                  el.b_stt === table ? "bg-info text-light" : ""
+                                } ${
+                                  el.b_trangthai === "DaDat"
+                                    ? "bg-danger text-light"
+                                    : ""
+                                }`}
                                 id={key}
                                 onClick={(e) => onClickTableHandler(e, el)}
                               >
-                                <CImg
-                                  src="https://static.thenounproject.com/png/262835-200.png"
-                                  alt="Hinhanh"
-                                  height="70"
-                                  fluid
-                                  className="label"
-                                  align="center"
-                                />
-                                <div className="label">Bàn {el.ban_stt}</div>
+                                <div className="d-flex justify-content-center">
+                                  <Icon
+                                    path={mdiTableFurniture}
+                                    title="User Profile"
+                                    size={2.5}
+                                    horizontal
+                                    rotate={180}
+                                    vertical
+                                    horizontal
+                                    className="label"
+                                  />
+                                </div>
+
+                                <div className="label"> Bàn {el.b_stt} </div>
                               </div>
+
+                              <span className="note font12 ">
+                                {" "}
+                                <em>
+                                  Ghi chú...{" "}
+                                  <Icon
+                                    path={mdiPencil}
+                                    title="User Profile"
+                                    size={0.7}
+                                    rotate={180}
+                                    horizontal
+                                    vertical
+                                  />
+                                </em>
+                              </span>
                             </CCol>
                           ))}
                         </CRow>
                       </div>
                       <div>
                         <CRow style={{ height: "100%" }}>
-                          {TableData.slice(24).map((el, key) => (
-                            <CCol lg="2" className="pt-5" key={key}>
-                              <div className="table">
-                                <CImg
-                                  src="https://static.thenounproject.com/png/262835-200.png"
-                                  alt="Hinhanh"
-                                  height="70"
-                                  fluid
-                                  className="label"
-                                  align="center"
-                                />
-                                <div className="label">Bàn {el.ban_stt}</div>
+                          {listTable.slice(24).map((el, key) => (
+                            <CCol lg="2" className="pt-5 " key={key}>
+                              <div
+                                className={`table  border-radius ${
+                                  el.b_stt === table ? "bg-info text-light" : ""
+                                } ${
+                                  el.b_trangthai === "DaDat"
+                                    ? "bg-danger text-light"
+                                    : ""
+                                }`}
+                                id={key}
+                                onClick={(e) => onClickTableHandler(e, el)}
+                              >
+                                <div className="d-flex justify-content-center">
+                                  <Icon
+                                    path={mdiTableFurniture}
+                                    title="User Profile"
+                                    size={2.5}
+                                    horizontal
+                                    rotate={180}
+                                    vertical
+                                    horizontal
+                                    className="label"
+                                  />
+                                </div>
+
+                                <div className="label"> Bàn {el.b_stt} </div>
                               </div>
+
+                              <span className="note font12 ">
+                                {" "}
+                                <em>
+                                  Ghi chú...{" "}
+                                  <Icon
+                                    path={mdiPencil}
+                                    title="User Profile"
+                                    size={0.7}
+                                    rotate={180}
+                                    horizontal
+                                    vertical
+                                  />
+                                </em>
+                              </span>
                             </CCol>
                           ))}
                         </CRow>
@@ -150,7 +318,7 @@ export default (props) => {
                   </CContainer>
                 </CTabPane>
                 <CTabPane data-tab="menu" className="pt-3">
-                  <Menu onClickMenuHandler={onClickMenuHandler} />
+                  <Menu onClickMenuHandler={onClickMenuHandler} table={table} />
                 </CTabPane>
               </CTabContent>
             </CTabs>
@@ -159,205 +327,207 @@ export default (props) => {
             <CTabs activeTab="bill">
               <CNav variant="tabs">
                 <CNavItem>
-                  <CNavLink data-tab="bill">Hóa đơn</CNavLink>
+                  <CNavLink data-tab="bill">
+                    {" "}
+                    <strong>Hóa đơn</strong>{" "}
+                  </CNavLink>
                 </CNavItem>
                 <CNavItem>
                   <CNavLink data-tab="menu">Hóa đơn mới</CNavLink>
                 </CNavItem>
               </CNav>
               <CTabContent>
-                <CTabPane data-tab="bill">
-                  <CContainer className="pt-3">
-                    <CRow>
-                      <CCol>
-                        <CCard style={{ height: "89vh" }}>
-                          <CCardHeader>
-                            <CRow>
-                              <CCol lg="3">
-                                {" "}
-                                <Icon
-                                  path={mdiTable}
-                                  title="User Profile"
-                                  size={1}
-                                  horizontal
-                                  vertical
-                                />
-                                Bàn {table}
-                              </CCol>
-                              <CCol lg="4">
-                                <CInput placeholder="Tìm khách hàng (F4)" />
-                              </CCol>
-                              <CCol lg="5"></CCol>
-                            </CRow>
-                          </CCardHeader>
-                          <CCardBody className="bill">
-                            {/* */}
-                            {bill.length > 0 ? (
-                              bill.map((el, key) => {
-                                const id = el.id;
-                                return (
-                                  <CRow
-                                    className="border-bottom py-2"
-                                    style={{ boxShadow: "0px 1px 1px #007fc1" }}
-                                    key={key}
+                <CTabPane data-tab="bill" className="tab-table">
+                  <CContainer className="pt-3" fluid>
+                    <CCard style={{ height: "86.5vh" }} fluid>
+                      <CCardHeader>
+                        <CRow>
+                          <CCol lg="3" className="text-dark">
+                            {" "}
+                            <Icon
+                              path={mdiTable}
+                              title="User Profile"
+                              size={1}
+                              horizontal
+                              vertical
+                            />
+                            Bàn {table}
+                          </CCol>
+                          <CCol lg="4">
+                            <CInput placeholder="Tìm khách hàng (F4)" />
+                          </CCol>
+                          <CCol lg="5"></CCol>
+                        </CRow>
+                      </CCardHeader>
+                      <CCardBody className="bill">
+                        {/* */}
+                        {bill.length > 0 ? (
+                          bill
+                            .filter((el) => el.idBan === table)
+                            .map((el, key) => {
+                              const id = el.bill.id;
+                              return (
+                                <CRow
+                                  className="border-bottom py-2 text-dark"
+                                  style={{
+                                    boxShadow: "0px 1px 1px #007fc1",
+                                  }}
+                                  key={key}
+                                >
+                                  <CCol lg="7" className="d-flex">
+                                    <Icon
+                                      path={mdiDelete}
+                                      title="User Profile"
+                                      size={1}
+                                      horizontal
+                                      rotate={180}
+                                      vertical
+                                      onClick={(e) =>
+                                        onDeleteMenuHandler(e, id)
+                                      }
+                                    />
+                                    <p>&nbsp;{key + 1}&nbsp;</p>
+                                    <p>{el.bill.name}</p>
+                                  </CCol>
+                                  <CCol
+                                    lg="5"
+                                    className="d-flex justify-content-between"
                                   >
-                                    <CCol lg="7" className="d-flex">
-                                      <Icon
-                                        path={mdiDelete}
-                                        title="User Profile"
-                                        size={1}
-                                        horizontal
-                                        rotate={180}
-                                        vertical
-                                        onClick={(e) => {
-                                          const billUpdated = bill.filter(
-                                            (el) => el.id !== id
-                                          );
-                                          setBill([...billUpdated]);
-                                        }}
-                                      />
-                                      <p>&nbsp;{key + 1}&nbsp;</p>
-                                      <p>{el.name}</p>
-                                    </CCol>
-                                    <CCol
-                                      lg="5"
-                                      className="d-flex justify-content-between"
-                                    >
-                                      <Icon
-                                        path={mdiMinusCircle}
-                                        title="User Profile"
-                                        size={1}
-                                        horizontal
-                                        rotate={180}
-                                        vertical
-                                        onClick={(e) => {
-                                          setBill((el) =>
-                                            produce(el, (v) => {
-                                              v[key].amount =
-                                                el[key].amount - 1;
-                                            })
-                                          );
-                                        }}
-                                      />
-                                      <p> &nbsp;{el.amount}&nbsp;</p>
-                                      <Icon
-                                        path={mdiPlusCircle}
-                                        title="User Profile"
-                                        size={1}
-                                        horizontal
-                                        rotate={180}
-                                        vertical
-                                        onClick={(e) => {
-                                          setBill((el) =>
-                                            produce(el, (v) => {
-                                              v[key].amount =
-                                                el[key].amount + 1;
-                                            })
-                                          );
-                                        }}
-                                      />
-                                      <p>{el.price}</p>
-                                      <p>
-                                        {" "}
-                                        <strong>{el.price}</strong>{" "}
-                                      </p>
-                                    </CCol>
-                                  </CRow>
-                                );
-                              })
-                            ) : (
-                              <div className="icon">
-                                <Icon
-                                  path={mdiFoodOff}
-                                  title="User Profile"
-                                  size={10}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />
-                              </div>
-                            )}
-                          </CCardBody>
-                          <CCardFooter>
-                            <CRow className="d-flex justify-content-between">
-                              <p>Số lượng khách </p>
-                              <p>Tổng tiền 375.000</p>
-                            </CRow>
-                            <CRow className="d-flex justify-content-between">
-                              <p className="mt-3">
-                                <Icon
-                                  path={mdiAccountCircle}
-                                  title="User Profile"
-                                  size={0.7}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />
-                                Nguyễn Tuấn Hùng
-                              </p>
-                              <p className="mt-3">
-                                <Icon
-                                  path={mdiLeadPencil}
-                                  title="User Profile"
-                                  size={0.7}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />{" "}
-                                Ghi chú
-                              </p>
-                              <p className="mt-3">
-                                <Icon
-                                  path={mdiHistory}
-                                  title="User Profile"
-                                  size={0.7}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />{" "}
-                                Lịch sử
-                              </p>
-                              <CButton
-                                color="info"
-                                shape="pill"
-                                className="m-2 "
-                              >
-                                Tách ghép đơn
-                              </CButton>
-                            </CRow>
-                            <CRow>
-                              <CCol className="text-center bg-success py-3">
-                                <h4 className="text-light">
-                                  <Icon
-                                    path={mdiCurrencyUsd}
-                                    title="User Profile"
-                                    size={1.2}
-                                    horizontal
-                                    rotate={180}
-                                    vertical
-                                  />{" "}
-                                  Thanh toán
-                                </h4>
-                              </CCol>
-                              <CCol className="text-center bg-info py-3">
-                                <h4 className="text-light">
-                                  {" "}
-                                  <Icon
-                                    path={mdiBellRing}
-                                    title="User Profile"
-                                    size={1.2}
-                                    horizontal
-                                    rotate={180}
-                                    vertical
-                                  />{" "}
-                                  Thông báo
-                                </h4>
-                              </CCol>
-                            </CRow>
-                          </CCardFooter>
-                        </CCard>
-                      </CCol>
-                    </CRow>
+                                    <Icon
+                                      path={mdiMinusCircle}
+                                      title="User Profile"
+                                      size={1}
+                                      horizontal
+                                      rotate={180}
+                                      vertical
+                                      onClick={(e) => {
+                                        setBill((el) => {
+                                          if (el[key].bill.amount === 1) {
+                                            return el;
+                                          }
+                                          return produce(el, (v) => {
+                                            v[key].bill.amount =
+                                              el[key].bill.amount - 1;
+                                          });
+                                        });
+                                      }}
+                                    />
+                                    <p> &nbsp;{el.bill.amount}&nbsp;</p>
+                                    <Icon
+                                      path={mdiPlusCircle}
+                                      title="User Profile"
+                                      size={1}
+                                      horizontal
+                                      rotate={180}
+                                      vertical
+                                      onClick={(e) => {
+                                        setBill((el) =>
+                                          produce(el, (v) => {
+                                            v[key].bill.amount =
+                                              el[key].bill.amount + 1;
+                                          })
+                                        );
+                                      }}
+                                    />
+                                    <p>{el.bill.price}</p>
+                                    <p>
+                                      {" "}
+                                      <strong>{el.bill.price}</strong>{" "}
+                                    </p>
+                                  </CCol>
+                                </CRow>
+                              );
+                            })
+                        ) : (
+                          <div className="icon">
+                            <Icon
+                              path={mdiFoodOff}
+                              title="User Profile"
+                              size={10}
+                              horizontal
+                              rotate={180}
+                              vertical
+                            />
+                          </div>
+                        )}
+                      </CCardBody>
+                      <CCardFooter className="text-dark">
+                        <CRow className="d-flex justify-content-between">
+                          <p>Số lượng khách </p>
+                          <p>Tổng tiền 375.000</p>
+                        </CRow>
+                        <CRow className="d-flex justify-content-between ">
+                          <p className="mt-3">
+                            <Icon
+                              path={mdiAccountCircle}
+                              title="User Profile"
+                              size={0.7}
+                              horizontal
+                              rotate={180}
+                              vertical
+                            />
+                            Nguyễn Tuấn Hùng
+                          </p>
+                          <p className="mt-3">
+                            <Icon
+                              path={mdiLeadPencil}
+                              title="User Profile"
+                              size={0.7}
+                              horizontal
+                              rotate={180}
+                              vertical
+                            />{" "}
+                            Ghi chú
+                          </p>
+                          <p className="mt-3">
+                            <Icon
+                              path={mdiHistory}
+                              title="User Profile"
+                              size={0.7}
+                              horizontal
+                              rotate={180}
+                              vertical
+                            />{" "}
+                            Lịch sử
+                          </p>
+                          <CButton color="info" shape="pill" className="m-2 ">
+                            Tách ghép đơn
+                          </CButton>
+                        </CRow>
+                        <CRow>
+                          <CCol
+                            className="text-center bg-success py-3 rounded-left"
+                            onClick={onCheckOutHandler}
+                          >
+                            <h4 className="text-light">
+                              <Icon
+                                path={mdiCurrencyUsd}
+                                title="User Profile"
+                                size={1.2}
+                                horizontal
+                                rotate={180}
+                                vertical
+                              />{" "}
+                              Thanh toán
+                            </h4>
+                          </CCol>
+                          <CCol className="text-center bg-info py-3 rounded-right">
+                            <h4 className="text-light">
+                              {" "}
+                              <Icon
+                                path={mdiBellRing}
+                                title="User Profile"
+                                size={1.2}
+                                horizontal
+                                rotate={180}
+                                vertical
+                              />{" "}
+                              Thông báo
+                            </h4>
+                          </CCol>
+                        </CRow>
+                      </CCardFooter>
+                    </CCard>
                   </CContainer>
                 </CTabPane>
                 <CTabPane data-tab="menu">452</CTabPane>

@@ -80,8 +80,9 @@ public class HoaDonController {
 			hoaDon.setBan(object);
 		
 			hoaDon.setHd_ngaythanhtoan(new Date());
-			repo.save(hoaDon);
+			
 			List<JSONObject> listMonans = (ArrayList<JSONObject>)json.get("monans");
+			
 			for (JSONObject monan : listMonans) {
 				ChiTietHoaDon chiTietHoaDon  = new ChiTietHoaDon();
 				Long id = (long) monan.get("id");
@@ -95,6 +96,8 @@ public class HoaDonController {
 				chiTietHoaDon.setHoaDon(hoaDon);
 				cthdRepo.save(chiTietHoaDon);
 			}
+		
+			repo.save(hoaDon);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

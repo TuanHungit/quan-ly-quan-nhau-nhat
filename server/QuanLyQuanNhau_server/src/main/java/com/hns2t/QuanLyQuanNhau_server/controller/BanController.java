@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,7 +23,7 @@ import com.hns2t.QuanLyQuanNhau_server.exception.ResourceNotFoundException;
 import com.hns2t.QuanLyQuanNhau_server.model.Ban;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/bans")
 public class BanController {
 	@Autowired
@@ -50,8 +51,13 @@ public class BanController {
 	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody Ban banDetail){
 		Ban object =repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
-		object.setB_soghe(banDetail.getB_soghe());
-		object.setB_stt(banDetail.getB_stt());
+		if(banDetail.getB_soghe()!= null) {
+			object.setB_soghe(banDetail.getB_soghe());
+		}
+		if(banDetail.getB_stt()!=null) {
+			object.setB_stt(banDetail.getB_stt());
+		}
+		
 		object.setB_trangthai(banDetail.getB_trangthai());
 
 		Ban ban = repo.save(object);

@@ -1,6 +1,6 @@
 import axios from "../common/axiosClient";
 
-export const getAllMonAn = async (options) => {
+export const getMonAns = async (options) => {
   let url = `/monans`;
   if (options) {
     url = `/monans?fields=${options.join(",")}`;
@@ -13,5 +13,14 @@ export const createOneMonAn = async (data) => {
   const response = await axios.post(url, data);
   return response.data;
 };
+export const deleteMonAn = async (data) => {
+  const url = `/monans/${data.ma_id}`;
+  const response = await axios.delete(url, data);
+  return response.data;
+};
 
-
+export const editMonAn = async (data) => {
+  const url = `/monans/${data.ma_id}`;
+  const response = await axios.put(url, data);
+  return response.data;
+};
