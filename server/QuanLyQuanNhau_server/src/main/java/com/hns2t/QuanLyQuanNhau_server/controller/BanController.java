@@ -34,20 +34,20 @@ public class BanController {
 	}
 	
 	@PostMapping("")
-	public Ban createLoaiMonAn(@RequestBody Ban ban) {
+	public Ban createBan(@RequestBody Ban ban) {
 		return repo.save(ban);
 	}
 
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Ban> getLoaiMonAn(@PathVariable Long id){
+	public ResponseEntity<Ban> getBan(@PathVariable Long id){
 		Ban object = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
 		return ResponseEntity.ok(object);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Ban> updateLoaiMonAn(@PathVariable Long id, @RequestBody Ban banDetail){
+	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody Ban banDetail){
 		Ban object =repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
 		object.setB_soghe(banDetail.getB_soghe());
