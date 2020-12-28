@@ -40,8 +40,6 @@ import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 public class MonAnController {
 	@Autowired
 	private MonAnRepository repo;
-	@Value( "${file.upload-dir}" )
-	private String UPLOADED_FOLDER;
 	@Autowired
 	private ServletContext servletContext;
 	

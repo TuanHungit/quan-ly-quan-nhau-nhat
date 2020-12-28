@@ -20,35 +20,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class LoadImageController {
-	@Value( "${file.upload-dir}" )
-	private String UPLOADED_FOLDER;
 	@Autowired
 	private ServletContext servletContext;
-	
-	@PostMapping({"/upload"}) 
-	public String save(@RequestParam("file") MultipartFile file) {  
-		if (file.isEmpty()) {
-			return("Please select a file to upload");
-		}
-		try {
-			byte[] bytes = file.getBytes();
-		
-			Path path = Paths.get(UPLOADED_FOLDER +  file.getOriginalFilename());
-			Files.write(path, bytes);
-		} catch (IOException e) {
-			e.printStackTrace();			
-		}
-		
-		return "OK";
-	}
-	@GetMapping("/storefiles/{fileName:.+}")
+
+	@GetMapping("/image/{fileName:.+}")
 	public void downloadFile(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("fileName") String fileName) {
-		String dataDirectory = UPLOADED_FOLDER;
 		Path file = Paths.get(servletContext.getRealPath("/WEB-INF/image/").toString(), fileName);
 		System.out.println("Download file");
 		if (Files.exists(file)) {
-			// response.setContentType("application/txt");
 			response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 			try {
 				Files.copy(file, response.getOutputStream());
