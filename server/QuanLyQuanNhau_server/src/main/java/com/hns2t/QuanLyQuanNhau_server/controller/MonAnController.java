@@ -1,9 +1,19 @@
 package com.hns2t.QuanLyQuanNhau_server.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jasper.tagplugins.jstl.core.If;
+import org.junit.experimental.theories.FromDataPoints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,7 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.hns2t.QuanLyQuanNhau_server.dao.MonAnRepository;
 import com.hns2t.QuanLyQuanNhau_server.exception.ResourceNotFoundException;
@@ -26,17 +40,45 @@ import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 public class MonAnController {
 	@Autowired
 	private MonAnRepository repo;
+	@Value( "${file.upload-dir}" )
+	private String UPLOADED_FOLDER;
+	@Autowired
+	private ServletContext servletContext;
 	
 	@GetMapping("")
 	public List<MonAn> getAll(){
 		return repo.findAll();
 	}
 	
+//	@PostMapping("")
+//	public MonAn createMonAn(@RequestBody MonAn monAn) {
+//		return repo.save(monAn);
+//	}
+	
 	@PostMapping("")
-	public MonAn createMonAn(@RequestBody MonAn monAn) {
+	public MonAn createMonAn(@RequestParam("ma_ten") String ma_ten,@RequestParam("ma_giavon") Double ma_giavon,
+			@RequestParam("ma_giaban") Double ma_giaban,@RequestParam("ma_donvitinh") String ma_donvitinh,
+			@RequestParam("ma_hinhanh") MultipartFile image,
+			@RequestParam("ma_motachitiet") String ma_motachitiet) throws IOException {
+		MonAn monAn=new MonAn();
+		monAn.ma_ten=ma_ten;
+		monAn.ma_giavon=ma_giavon;
+		monAn.ma_giaban=ma_giaban;
+		monAn.ma_donvitinh=ma_donvitinh;
+		monAn.ma_hinhanh="";
+		if (image.isEmpty()) {
+			monAn.ma_hinhanh="";
+		}else {
+			monAn=repo.save(monAn);
+			byte[] bytes = image.getBytes();
+			Path path= Paths.get(servletContext.getRealPath("/WEB-INF/image/").toString()+monAn.getMa_id() +"_"+ image.getOriginalFilename());
+			Files.write(path, bytes);
+			monAn.ma_hinhanh= monAn.getMa_id() +"_"+ image.getOriginalFilename();
+		}
+		monAn.ma_motachitiet=ma_motachitiet;
 		return repo.save(monAn);
 	}
-
+	
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<MonAn> getMonAn(@PathVariable Long id){

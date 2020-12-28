@@ -22,13 +22,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class MonAn {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long ma_id; 
-	private String ma_ten;
-	private Double ma_giavon;
-	private Double ma_giaban;
-	private String ma_donvitinh;
-	private Byte ma_hinhanh;
-	private String ma_motachitiet;
+	public Long ma_id; 
+	public String ma_ten;
+	public Double ma_giavon;
+	public Double ma_giaban;
+	public String ma_donvitinh;
+	public String ma_hinhanh;
+	public String ma_motachitiet;
 	
 	@ManyToOne
 	@JoinColumn(name = "ma_lmaid")
@@ -46,12 +46,13 @@ public class MonAn {
 	@JsonIgnore
 	private List<NguyenLieu> nguyenLieus;
 	
+	
 	public MonAn() {
 		super();
 	}
-
 	
-	public MonAn(Long ma_id, String ma_ten, Double ma_giavon, Double ma_giaban, String ma_donvitinh, Byte ma_hinhanh,
+
+	public MonAn(Long ma_id, String ma_ten, Double ma_giavon, Double ma_giaban, String ma_donvitinh, String ma_hinhanh,
 			String ma_motachitiet, LoaiMonAn loaiMonAn, List<ChiTietHoaDon> chiTietHoaDons,
 			List<NguyenLieu> nguyenLieus) {
 		super();
@@ -66,7 +67,6 @@ public class MonAn {
 		this.chiTietHoaDons = chiTietHoaDons;
 		this.nguyenLieus = nguyenLieus;
 	}
-
 
 	public Long getMa_id() {
 		return ma_id;
@@ -108,11 +108,11 @@ public class MonAn {
 		this.ma_donvitinh = ma_donvitinh;
 	}
 
-	public Byte getMa_hinhanh() {
+	public String getMa_hinhanh() {
 		return ma_hinhanh;
 	}
 
-	public void setMa_hinhanh(Byte ma_hinhanh) {
+	public void setMa_hinhanh(String ma_hinhanh) {
 		this.ma_hinhanh = ma_hinhanh;
 	}
 
