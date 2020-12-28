@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
-import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.hns2t.QuanLyQuanNhau_server.dao.BanRepository;
 import com.hns2t.QuanLyQuanNhau_server.dao.ChiTietHoaDonRepository;
 import com.hns2t.QuanLyQuanNhau_server.dao.HoaDonRepository;
@@ -39,7 +38,6 @@ import com.hns2t.QuanLyQuanNhau_server.model.Ban;
 import com.hns2t.QuanLyQuanNhau_server.model.ChiTietHoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
-import com.hns2t.QuanLyQuanNhau_server.model.TrangThaiBan;
 
 
 @RestController
@@ -80,8 +78,9 @@ public class HoaDonController {
 			hoaDon.setBan(object);
 		
 			hoaDon.setHd_ngaythanhtoan(new Date());
-			repo.save(hoaDon);
+			
 			List<JSONObject> listMonans = (ArrayList<JSONObject>)json.get("monans");
+			
 			for (JSONObject monan : listMonans) {
 				ChiTietHoaDon chiTietHoaDon  = new ChiTietHoaDon();
 				Long id = (long) monan.get("id");
@@ -95,12 +94,26 @@ public class HoaDonController {
 				chiTietHoaDon.setHoaDon(hoaDon);
 				cthdRepo.save(chiTietHoaDon);
 			}
+		
+			repo.save(hoaDon);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return new ResponseEntity<>(hoaDon, HttpStatus.OK);
 	}
+	
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<HoaDon> updateHoaDon(@PathVariable(value = "id") Long id, @RequestBody HoaDon hoaDonDetail){
+		HoaDon object =repo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
+		object.setHd_tongtien(hoaDonDetail.getHd_tongtien());
+		object.setHd_trangthai(hoaDonDetail.getHd_trangthai());
+		HoaDon hoaDon = repo.save(object);
+		return ResponseEntity.ok(hoaDon);
+	}
+	
 //	@ResponseStatus(HttpStatus.CREATED)
 //	@PostMapping("{id}/cthd")
 //	public HoaDon createChiTietHoaDon(@PathVariable(value = "id") Long id, @RequestBody List<ChiTietHoaDon> chiTietHoaDons) {
@@ -128,16 +141,7 @@ public class HoaDonController {
 //		return ResponseEntity.ok(object);
 //	}
 //	
-//	@PutMapping("/{id}")
-//	public ResponseEntity<HoaDon> updateHoaDon(@PathVariable(value = "id") Long id, @RequestBody HoaDon hoaDonDetail, @PathParam(value = "ban") Long ban){
-//		HoaDon object =repo.findById(id)
-//				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
-//		object.setHd_ngaythanhtoan(hoaDonDetail.getHd_ngaythanhtoan());
-//		object.setHd_tongtien(hoaDonDetail.getHd_tongtien());
-//		object.setHd_trangthai(hoaDonDetail.getHd_trangthai());
-//		HoaDon hoaDon = repo.save(object);
-//		return ResponseEntity.ok(hoaDon);
-//	}
+
 //	
 //	@DeleteMapping("/{id}")
 //	public ResponseEntity<Map<String, Boolean>> deleteHoaDon(@PathVariable Long id){

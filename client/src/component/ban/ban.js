@@ -13,20 +13,17 @@ import {
 import CIcon from "@coreui/icons-react";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
-// import DestinationCreate from './createDestination'
-// import { getAllDestinations } from "../../api/destinationApi";
+import { getBans, deleteBan } from "../../api/banApi";
+import CreateBan from "./createBan";
+
 const fields = [
-  { key: "ban_id", label: "STT", _style: { width: "20%" } },
-  { key: "ban_stt", label: "Số bàn", _style: { width: "20%" } },
-  { key: "ban_soghe", label: "Số ghế", _style: { width: "20%" } },
-  { key: "ban_trangthai", label: "Trạng thái", _style: { width: "30%" } },
+  // { key: "b_id", label: "STT", _style: { width: "20%" } },
+  { key: "b_stt", label: "STT", _style: { width: "20%" } },
+  { key: "b_soghe", label: "Số ghế", _style: { width: "20%" } },
+  { key: "b_trangthai", label: "Trạng thái", _style: { width: "30%" } },
   { key: "action", label: "ACTION", _style: { width: "10%" } },
 ];
-const banlist = [
-  { ban_id: "1", ban_stt: "001", ban_soghe: "4", ban_trangthai: "Inactive" },
-  { ban_id: "2", ban_stt: "002", ban_soghe: "10", ban_trangthai: "Active" },
-  { ban_id: "3", ban_stt: "003", ban_soghe: "4", ban_trangthai: "Order" },
-];
+
 const getBadge = (status) => {
   switch (status) {
     case "Inactive":
@@ -39,8 +36,8 @@ const getBadge = (status) => {
       return "primary";
   }
 };
-function LoaiMonAn() {
-  const [destinationsList, setDestinationsList] = useState(null);
+function Ban() {
+  const [banlist, setBanList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [collapse, setCollapse] = useState(false);
@@ -50,21 +47,27 @@ function LoaiMonAn() {
   const createSuccess = () => {
     setSuccess(!success);
   };
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await getAllDestinations();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getBans();
 
-  //       setDestinationsList(response);
-  //       setLoading(false);
-  //     } catch (err) {
-  //       setDestinationsList(null);
-  //       setLoading(true);
-  //       console.log(err);
-  //     }
-  //   };
-  //    fetchData();
-  // }, [success]);
+        setBanList(response);
+        setSuccess(false);
+        setLoading(false);
+      } catch (err) {
+        setBanList(null);
+        setLoading(true);
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [success]);
+
+  const handleDelete = (item) => {
+    deleteBan(item);
+    setSuccess(!success);
+  };
 
   const toggleModal = () => {
     setModal(!modal);
@@ -76,7 +79,7 @@ function LoaiMonAn() {
         <CCardHeader className="CCardHeader-title ">
           <CContainer className="container">
             <CRow className="d-flex justify-content-between">
-              <h1>Danh sách loại món ăn</h1>
+              <h1>Danh sách bàn</h1>
               <div className="card-header-actions">
                 <CButton
                   onClick={toggleModal}
@@ -92,7 +95,7 @@ function LoaiMonAn() {
                     title="Create Admin"
                     className="mr-1"
                   />
-                  Thêm bàn.
+                  Thêm bàn
                 </CButton>
               </div>
             </CRow>
@@ -104,6 +107,8 @@ function LoaiMonAn() {
             items={banlist}
             fields={fields}
             striped
+            tableFilter
+            sorter
             itemsPerPage={5}
             pagination
             scopedSlots={{
@@ -127,7 +132,7 @@ function LoaiMonAn() {
                   </CBadge>
                 </td>
               ),
-              action: () => (
+              action: (item) => (
                 <td style={{ display: "flex", justifyContent: "start" }}>
                   <div
                     style={{
@@ -136,27 +141,29 @@ function LoaiMonAn() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <CLink className="c-subheader-nav-link" href="#">
-                      <CIcon name="cil-pencil" alt="Edit" />
-                      {/* &nbsp;Edit */}
-                    </CLink>
-                    <CLink className="c-subheader-nav-link" href="#">
+                    <span className="c-subheader-nav-link" href="#">
                       <CIcon
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"
+                        onClick={(e) => handleDelete(item)}
                       />
                       {/* &nbsp;Edit */}
-                    </CLink>
+                    </span>
                   </div>
                 </td>
               ),
             }}
           />
         </CCardBody>
+        <CreateBan
+          modal={modal}
+          toggleModal={toggleModal}
+          createSuccess={createSuccess}
+        />
       </CCard>
     </>
   );
 }
 
-export default LoaiMonAn;
+export default Ban;

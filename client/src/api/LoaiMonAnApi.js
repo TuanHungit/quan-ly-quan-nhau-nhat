@@ -24,4 +24,8 @@ export const editLoaiMonAn = async (data) => {
   return response.data;
 };
 
-
+export const getMonAnFomLoaiMonAn = async (id) => {
+  const url = `/loaimonans/${id}/monans`;
+  const response = await axios.get(url);
+  return response.data;
+};
