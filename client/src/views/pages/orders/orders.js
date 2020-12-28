@@ -40,7 +40,7 @@ import {
   CDropdownMenu,
 } from "@coreui/react";
 import "./orders.css";
-import { getBans, editBan } from "../../../api/BanApi";
+import { getBans, editBan } from "../../../api/banApi";
 
 export default (props) => {
   const settings = {
