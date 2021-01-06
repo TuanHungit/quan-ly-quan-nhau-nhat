@@ -11,7 +11,7 @@ import {
   CSelect,
   CImg,
 } from "@coreui/react";
-import { createOneBan } from "../../api/BanApi";
+import { createOneBan } from "../../api/banApi";
 
 import alertify from "alertifyjs";
 

@@ -13,7 +13,7 @@ import {
 import CIcon from "@coreui/icons-react";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
-import { getBans, deleteBan } from "../../api/BanApi";
+import { getBans, deleteBan } from "../../api/banApi";
 import CreateBan from "./createBan";
 
 const fields = [
