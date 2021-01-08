@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.hns2t.QuanLyQuanNhau_server.dao.MonAnRepository;
 import com.hns2t.QuanLyQuanNhau_server.exception.ResourceNotFoundException;
+import com.hns2t.QuanLyQuanNhau_server.model.LoaiMonAn;
 import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 
 @RestController
@@ -57,14 +58,15 @@ public class MonAnController {
 	public MonAn createMonAn(@RequestParam("ma_ten") String ma_ten,@RequestParam("ma_giavon") Double ma_giavon,
 			@RequestParam("ma_giaban") Double ma_giaban,@RequestParam("ma_donvitinh") String ma_donvitinh,
 			@RequestParam("ma_hinhanh") MultipartFile image,
-			@RequestParam("ma_motachitiet") String ma_motachitiet) throws IOException {
+			@RequestParam("ma_motachitiet") String ma_motachitiet,
+			@RequestParam("ma_lmaid") LoaiMonAn loaiMonAn) throws IOException {
 		MonAn monAn=new MonAn();
 		monAn.ma_ten=ma_ten;
 		monAn.ma_giavon=ma_giavon;
 		monAn.ma_giaban=ma_giaban;
 		monAn.ma_donvitinh=ma_donvitinh;
 		monAn.ma_hinhanh="";
-		monAn=repo.save(monAn);
+		monAn.setLoaiMonAn(loaiMonAn);
 		if (!image.isEmpty()) {
 			monAn=repo.save(monAn);
 			byte[] bytes = image.getBytes();

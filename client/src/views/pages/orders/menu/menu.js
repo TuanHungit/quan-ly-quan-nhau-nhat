@@ -92,6 +92,7 @@ export default ({ onClickMenuHandler, table }) => {
         {category.length > 0
           ? category.map((el, key) => {
               const categoryId = el.lma_id;
+              console.log(el)
               return (
                 <CTabPane
                   data-tab={el.lma_id}
@@ -114,7 +115,7 @@ export default ({ onClickMenuHandler, table }) => {
                         >
                           <img
                             src={
-                              "https://cdn-app.kiotviet.vn/sample/coffee/6.jpg"
+                              "http://localhost:8080/image/"+el.ma_hinhanh
                             }
                             class="figure-img img-fluid rounded"
                             alt="HinhAnh"
