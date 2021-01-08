@@ -46,6 +46,10 @@ public class TaiKhoan {
 		this.tk_nhanVien = tk_nhanVien;
 	}
 
+	public TaiKhoan(TaiKhoan taiKhoan) {
+		super();
+	}
+
 	public long getTk_id() {
 		return tk_id;
 	}
