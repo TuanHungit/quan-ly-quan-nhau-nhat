@@ -209,14 +209,12 @@ function MonAn() {
                                 <CCol lg="3">
                                   <label>Tên món ăn</label>
                                   <h6>{item.ma_ten}</h6>
-
                                 </CCol>
                                 <CCol lg="2">
                                   <label>Giá vốn</label>
                                   <h6>{item.ma_giavon}</h6>
                                 </CCol>
                                 <CCol lg="4">
-
                                   <h6>Mô tả tóm tắt:</h6>
 
                                   <div
@@ -224,24 +222,18 @@ function MonAn() {
                                       __html: item.ma_motachitiet,
                                     }}
                                   />
-
-
                                 </CCol>
                                 <CCol lg="3">
-
-                                  {/* <CImg
-                                    // src={`http://${item.ma_hinhanh}`}
-                                    src={"food-1.jpg"}
+                                  <CImg
+                                    src={`http://localhost:8080/image/${item.ma_hinhanh}`}
                                     alt="img"
                                     alt="Image"
-
-
                                     width="250px"
                                     height="200px"
-                                  /> */}
+                                    alt={item.ma_hinhanh}   
+                                  />
                                 </CCol>
                               </CRow>
-
 
                               <EditMonAn
                                 modal={modal1}
