@@ -1,24 +1,25 @@
 package com.hns2t.QuanLyQuanNhau_server.dto;
 
 public class LoginRequest {
-	private String tk_tendangnhap;
-	private String tk_matkhau;
-	public LoginRequest(String tk_tendangnhap, String tk_matkhau) {
+	private String username;
+	private String password;
+	public LoginRequest(String username, String password) {
 		super();
-		this.tk_tendangnhap = tk_tendangnhap;
-		this.tk_matkhau = tk_matkhau;
+		this.username = username;
+		this.password = password;
 	}
-	public String getTk_tendangnhap() {
-		return tk_tendangnhap;
+	public String getUsername() {
+		return username;
 	}
-	public void setTk_tendangnhap(String tk_tendangnhap) {
-		this.tk_tendangnhap = tk_tendangnhap;
+	public void setUsername(String username) {
+		this.username = username;
 	}
-	public String getTk_matkhau() {
-		return tk_matkhau;
+	public String getPassword() {
+		return password;
 	}
-	public void setTk_matkhau(String tk_matkhau) {
-		this.tk_matkhau = tk_matkhau;
+	public void setPassword(String password) {
+		this.password = password;
 	}
+	
 	  
 }

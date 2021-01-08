@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react'
+// import DefaultLayout from './defaultLayout';
 import {
   Redirect,
   Route,
   Switch
 } from 'react-router-dom'
 import { CContainer, CFade } from '@coreui/react'
-
+import { connect } from 'react-redux'
 // routes config
 import routes from '../routes'
   
@@ -14,14 +15,14 @@ const loading = (
     <div className="sk-spinner sk-spinner-pulse"></div>
   </div>
 )
-
-const TheContent = () => {
+const TheContent = (props) => {
+  const {isLoggedIn} = props;
   return (
     <main className="c-main">
       <CContainer fluid>
         <Suspense fallback={loading}>
           <Switch>
-            {routes.map((route, idx) => {
+            {isLoggedIn && routes.map((route, idx) => {
               return route.component && (
                 <Route
                   key={idx}
@@ -35,12 +36,15 @@ const TheContent = () => {
                   )} />
               )
             })}
-            <Redirect from="/" to="/dashboard" />
+            <Redirect from="/" to="/login" />
           </Switch>
         </Suspense>
       </CContainer>
     </main>
   )
 }
+const mapStateToProps=(state) => ({
+  isLoggedIn:state.auth.isLoggedIn
+});
+export default connect(mapStateToProps)(React.memo(TheContent))
 
-export default React.memo(TheContent)

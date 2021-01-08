@@ -1,4 +1,7 @@
-import React from 'react'
+import React, {useState} from 'react'
+import {Redirect} from 'react-router-dom';
+import ActionTypes from './../store/actions'
+import { connect } from 'react-redux'
 import {
   CBadge,
   CDropdown,
@@ -8,14 +11,23 @@ import {
   CImg
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { mdiCardAccountDetailsOutline } from '@mdi/js';
 
-const TheHeaderDropdown = () => {
+const TheHeaderDropdown = (props) => {
+  const [isLogouted , setIsLogouted] = useState(true);
+  const { onUserLogOut} = props;
+  const submitLogOut= async (e)=>{
+    e.preventDefault();
+    onUserLogOut()
+    setIsLogouted(false);
+  };
   return (
     <CDropdown
       inNav
       className="c-header-nav-items mx-2"
       direction="down"
     >
+    
       <CDropdownToggle className="c-header-nav-link" caret={false}>
         <div className="c-avatar">
           <CImg
@@ -26,7 +38,7 @@ const TheHeaderDropdown = () => {
         </div>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownItem
+        {/* <CDropdownItem
           header
           tag="div"
           color="light"
@@ -78,15 +90,21 @@ const TheHeaderDropdown = () => {
           <CIcon name="cil-file" className="mfe-2" /> 
           Projects
           <CBadge color="primary" className="mfs-auto">42</CBadge>
-        </CDropdownItem>
+        </CDropdownItem> */}
         <CDropdownItem divider />
-        <CDropdownItem>
+        <CDropdownItem  onClick={submitLogOut}>
           <CIcon name="cil-lock-locked" className="mfe-2" /> 
-          Lock Account
+          {isLogouted?"LogOut":"LogIn"}
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
   )
 }
-
-export default TheHeaderDropdown
+const mapDispatchToProps = dispatch => ({
+  onUserLogOut: () =>
+    dispatch({
+      type: ActionTypes.LOGOUT_USER,
+    }),
+})
+export default connect(null, mapDispatchToProps)(TheHeaderDropdown)
+// export default TheHeaderDropdown

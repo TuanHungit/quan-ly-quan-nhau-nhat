@@ -41,6 +41,8 @@ const User = React.lazy(() => import('./views/users/User'));
 const Monan = React.lazy(() => import('./component/monAn/monan.js'));
 const Ban = React.lazy(() => import('./component/ban/ban.js'));
 
+
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },

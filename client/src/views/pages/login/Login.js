@@ -1,7 +1,10 @@
 import React , {useState, useEffect} from 'react'
+import { Redirect, Route } from "react-router-dom";
 import { Link } from 'react-router-dom'
-import { LogIn } from "../../../api/TaiKhoanApi";
+import TaiKhoanService from './../../../api/TaiKhoanService';
 import alertify from "alertifyjs";
+import ActionTypes from './../../../store/actions'
+import { connect } from 'react-redux'
 import {
   CButton,
   CCard,
@@ -21,23 +24,28 @@ import CIcon from '@coreui/icons-react'
 const Login = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { onUserLogin,isLoggedIn} = props;
   const submitLogin= async (e)=>{
+    e.preventDefault();
     const loginRequest={
       username,
       password
     };
-    try {
-      e.preventDefault();
-      await LogIn(loginRequest);
-      props.toggleModal();
-      props.createSuccess();
-      alertify.success("Đăng nhập thành công");
-    } catch (error) {
-      alertify.error("Có lỗi rồi");
-    }
-  }
+    TaiKhoanService.login(loginRequest).then(result=>{
+      console.log(result);
+      if (result.code==0){
+        onUserLogin(result)
+        props.history.push('/dashboard')
+      }
+      else{
+        alert(result.message)
+      }
+    })
+  };
   return (
-    <div className="c-app c-default-layout flex-row align-items-center">
+    isLoggedIn?<Redirect to="/dashboard"/>:
+    <div>
+      <div className="c-app c-default-layout flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md="8">
@@ -90,8 +98,21 @@ const Login = (props) => {
           </CCol>
         </CRow>
       </CContainer>
+    </div> 
     </div>
   )
 }
+const mapDispatchToProps = dispatch => ({
+  onUserLogin: (currentUser) =>
+    dispatch({
+      type: ActionTypes.LOGIN_USER,
+      currentUser,
+    }),
+})
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.auth.isLoggedIn,
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
 
-export default Login

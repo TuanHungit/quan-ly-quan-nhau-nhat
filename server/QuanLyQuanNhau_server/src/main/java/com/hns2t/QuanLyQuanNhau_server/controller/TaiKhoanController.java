@@ -60,10 +60,10 @@ public class TaiKhoanController {
 	@PostMapping("/login")
 	public LoginResponse login(@RequestBody LoginRequest loginRequest) {
 		LoginResponse loginResponse = new LoginResponse();
-		TaiKhoan taiKhoan=repo.findByTenTaiKhoan(loginRequest.getTk_tendangnhap());
+		TaiKhoan taiKhoan=repo.findByTenTaiKhoan(loginRequest.getUsername());
 		if (taiKhoan!=null) {
-			if (taiKhoan.getTk_matkhau().equals(loginRequest.getTk_matkhau())) {
-				String token = getJWTToken(loginRequest.getTk_tendangnhap());
+			if (taiKhoan.getTk_matkhau().equals(loginRequest.getPassword())) {
+				String token = getJWTToken(taiKhoan.getTk_tendangnhap());
 				loginResponse.setTk_tendangnhap(taiKhoan.getTk_tendangnhap());
 				loginResponse.setToken(token);
 				loginResponse.setCode(0);
