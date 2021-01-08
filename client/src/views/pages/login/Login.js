@@ -1,5 +1,7 @@
-import React from 'react'
+import React , {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
+import { LogIn } from "../../../api/TaiKhoanApi";
+import alertify from "alertifyjs";
 import {
   CButton,
   CCard,
@@ -16,7 +18,24 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 
-const Login = () => {
+const Login = (props) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const submitLogin= async (e)=>{
+    const loginRequest={
+      username,
+      password
+    };
+    try {
+      e.preventDefault();
+      await LogIn(loginRequest);
+      props.toggleModal();
+      props.createSuccess();
+      alertify.success("Đăng nhập thành công");
+    } catch (error) {
+      alertify.error("Có lỗi rồi");
+    }
+  }
   return (
     <div className="c-app c-default-layout flex-row align-items-center">
       <CContainer>
@@ -34,7 +53,7 @@ const Login = () => {
                           <CIcon name="cil-user" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="text" placeholder="Username" autoComplete="username" />
+                      <CInput type="text" placeholder="Username" autoComplete="username" onChange={e => setUsername(e.target.value)} />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupPrepend>
@@ -42,11 +61,11 @@ const Login = () => {
                           <CIcon name="cil-lock-locked" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="password" placeholder="Password" autoComplete="current-password" />
+                      <CInput type="password" placeholder="Password" autoComplete="current-password" onChange={e => setPassword(e.target.value)} />
                     </CInputGroup>
                     <CRow>
                       <CCol xs="6">
-                        <CButton color="primary" className="px-4">Login</CButton>
+                        <CButton onClick={submitLogin} color="primary" className="px-4">Login</CButton>
                       </CCol>
                       <CCol xs="6" className="text-right">
                         <CButton color="link" className="px-0">Forgot password?</CButton>
