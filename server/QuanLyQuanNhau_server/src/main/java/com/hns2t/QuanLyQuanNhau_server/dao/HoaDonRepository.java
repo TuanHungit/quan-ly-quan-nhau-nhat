@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 
 public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
 
-	@Query(value = "Select * From hoadon",nativeQuery = true)
-	public List<Object[]> getListHoaDon();
+	@Query("select hd from HoaDon hd where DATE_FORMAT (hd.hd_ngaythanhtoan, '%Y-%m-%d') = :fromDate")
+	List<HoaDon> findAllBetweenDate(@Param("fromDate")  String fromDate); 
 }
