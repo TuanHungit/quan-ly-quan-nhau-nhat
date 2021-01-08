@@ -90,7 +90,7 @@ export default ({ onClickMenuHandler, table }) => {
       </CNav>
       <CTabContent className="tab-content">
         {category.length > 0
-          ? categoryData.map((el, key) => {
+          ? category.map((el, key) => {
               const categoryId = el.lma_id;
               return (
                 <CTabPane
