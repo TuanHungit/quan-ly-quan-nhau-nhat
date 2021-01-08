@@ -26,6 +26,7 @@ import {
 } from "../../api/LoaiMonAnApi";
 import EditLoaiMon from "./editLoaiMonAn";
 import alertify from "alertifyjs";
+import DeleteLoaiMonAn from "./deleteLoaiMonAn";
 
 const fields = [
   { key: "lma_id", label: "STT", _style: { width: "10%" } },
@@ -62,11 +63,12 @@ function LoaiMonAn() {
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [modalDel, setModalDel] = useState(false);
+  const [delItem, setItem] = useState();
 
-  const createSuccess = () => {
+  const actionSuccess = () => {
     setSuccess(!success);
   };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,6 +96,10 @@ function LoaiMonAn() {
   const toggleModal1 = () => {
     setModal1(!modal1);
   };
+    const toggleModalDelete = (item) => {
+      setItem(item);
+      setModalDel(!modalDel);
+    };
   const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
@@ -183,7 +189,7 @@ function LoaiMonAn() {
                   >
                     <span
                       className="c-subheader-nav-link"
-                      onClick={(e) => handleDelete(item)}
+                      onClick={(e) => toggleModalDelete(item)}
                     >
                       <CIcon
                         style={{ color: "red" }}
@@ -206,15 +212,13 @@ function LoaiMonAn() {
                                 <CCol lg="3">
                                   <label>Tên loại món ăn</label>
                                   <h6>{item.lma_ten}</h6>
-                                  
                                 </CCol>
-                               
                               </CRow>
                               <EditLoaiMon
                                 modal={modal1}
                                 list={item}
                                 toggleModal={toggleModal1}
-                                createSuccess={createSuccess}
+                                createSuccess={actionSuccess}
                               />
                             </CContainer>
                           </CTabPane>
@@ -235,7 +239,13 @@ function LoaiMonAn() {
         <CreateLoaiMon
           modal={modal}
           toggleModal={toggleModal}
-          createSuccess={createSuccess}
+          createSuccess={actionSuccess}
+        />
+        <DeleteLoaiMonAn
+          modal={modalDel}
+          toggleModal={toggleModalDelete}
+          deleteSuccess={actionSuccess}
+          itemDeleted={delItem}
         />
       </CCard>
     </>
