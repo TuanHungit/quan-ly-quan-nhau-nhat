@@ -234,6 +234,8 @@ function MonAn() {
                                     src={"food-1.jpg"}
                                     alt="img"
                                     alt="Image"
+
+
                                     width="250px"
                                     height="200px"
                                   /> */}

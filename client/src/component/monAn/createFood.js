@@ -11,7 +11,7 @@ import {
   CSelect,
   CImg,
   CLabel,
-  CInputFile
+  CInputFile,
 } from "@coreui/react";
 import { createOneMonAn } from "../../api/MonAnApi";
 import { getAllLoaiMonAn } from "../../api/LoaiMonAnApi";
@@ -31,6 +31,11 @@ const CreateFood = (props) => {
   const [success, setSuccess] = useState(false);
 
   const [collapse, setCollapse] = useState(false);
+
+   const handleChange = (e) => {
+     setHinhAnh(e.target.files[0]);
+   };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = {
@@ -44,7 +49,20 @@ const CreateFood = (props) => {
     };
     console.log(data);
     try {
-      await createOneMonAn(data);
+      const formData = new FormData();
+      formData.append("ma_ten", ma_ten);
+      formData.append("ma_giaban", ma_giaban);
+      formData.append("ma_giavon", ma_giavon);
+      formData.append("ma_donvitinh", ma_donvitinh);
+      formData.append("ma_hinhanh", ma_hinhanh);
+      formData.append("ma_motachitiet", ma_motachitiet);
+      formData.append("ma_lmaid", ma_lmaid);
+
+      await createOneMonAn(formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       props.toggleModal();
       props.createSuccess();
       alertify.success("Thêm món ăn thành công");
@@ -52,6 +70,8 @@ const CreateFood = (props) => {
       alertify.error("Lỗi nghen");
     }
   };
+
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -215,9 +235,14 @@ const CreateFood = (props) => {
                     File input
                   </CLabel>
                   <CCol xs="12" md="9">
-                    <input type="file" id="file-input" name="file-input" />
+                    <input
+                      type="file"
+                      id="file-input"
+                      name="file-input"
+                      onChange={handleChange}
+                    />
                   </CCol>
-                  <img
+                  {/* <img
                     onChange={(e) => {
                       setHinhAnh(e.target.value);
                     }}
@@ -225,7 +250,7 @@ const CreateFood = (props) => {
                     // src={"food-1.jpg"}
                     className="c-avatar-img"
                     // alt="chicken nướng lu"
-                  />
+                  /> */}
                 </CCol>
               </CRow>
             </CContainer>
