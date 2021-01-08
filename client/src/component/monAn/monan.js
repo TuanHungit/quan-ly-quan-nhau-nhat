@@ -229,14 +229,14 @@ function MonAn() {
                                 </CCol>
                                 <CCol lg="3">
 
-                                  <CImg
+                                  {/* <CImg
                                     // src={`http://${item.ma_hinhanh}`}
                                     src={"food-1.jpg"}
                                     alt="img"
                                     alt="Image"
                                     width="250px"
                                     height="200px"
-                                  />
+                                  /> */}
                                 </CCol>
                               </CRow>
 
