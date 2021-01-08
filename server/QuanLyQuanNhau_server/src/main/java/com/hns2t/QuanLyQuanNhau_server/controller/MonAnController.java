@@ -64,9 +64,7 @@ public class MonAnController {
 		monAn.ma_giaban=ma_giaban;
 		monAn.ma_donvitinh=ma_donvitinh;
 		monAn.ma_hinhanh="";
-		if (image.isEmpty()) {
-			monAn.ma_hinhanh="";
-		}else {
+		if (!image.isEmpty()) {
 			monAn=repo.save(monAn);
 			byte[] bytes = image.getBytes();
 			Path path= Paths.get(servletContext.getRealPath("/WEB-INF/image/").toString()+monAn.getMa_id() +"_"+ image.getOriginalFilename());
@@ -74,7 +72,7 @@ public class MonAnController {
 			monAn.ma_hinhanh= monAn.getMa_id() +"_"+ image.getOriginalFilename();
 		}
 		monAn.ma_motachitiet=ma_motachitiet;
-		return repo.save(monAn);
+		return monAn;
 	}
 	
 	
