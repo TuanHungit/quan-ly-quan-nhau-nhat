@@ -1,0 +1,54 @@
+.button-next {
+  background-color: white;
+  color: #f4557e;
+  width: 60px;
+  height: 35px;
+  border: 1px solid #f4557e;
+  border-radius: 17px;
+}
+.button-next-all {
+  background-color: #f4557e;
+  color: white;
+  width: 60px;
+  height: 35px;
+  border: 1px solid #f4557e;
+  border-radius: 17px;
+}
+.button-next:hover {
+  background-color: #f4557e;
+  color: white;
+}
+.button-next-all:hover {
+  background-color: white;
+  color: #f4557e;
+}
+
+.completed-button-next {
+  background-color: white;
+  color: #57ad52;
+  width: 60px;
+  height: 35px;
+  border: 1px solid #57ad52;
+  border-radius: 17px;
+}
+.completed-button-next-all {
+  background-color: #57ad52;
+  color: white;
+  width: 60px;
+  height: 35px;
+  border: 1px solid #57ad52;
+  border-radius: 17px;
+}
+.completed-button-next:hover {
+  background-color: #57ad52;
+  color: white;
+}
+.completed-button-next-all:hover {
+  background-color: white;
+  color: #57ad52;
+}
+
+.content {
+  overflow: hidden;
+  overflow-y: scroll;
+}

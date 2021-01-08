@@ -24,7 +24,3 @@ export const editMonAn = async (data) => {
   const response = await axios.put(url, data);
   return response.data;
 };
-
-
-
-
