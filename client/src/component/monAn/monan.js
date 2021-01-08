@@ -22,6 +22,7 @@ import { mdiFoodForkDrink } from "@mdi/js";
 import CreateFood from "./createFood";
 import { getMonAns, deleteMonAn } from "../../api/MonAnApi";
 import EditMonAn from "./editMonAn";
+import DeleteMonAn from "./deleteMonAn";
 
 const fields = [
   { key: "ma_id", label: "STT", _style: { width: "10%" } },
@@ -63,7 +64,8 @@ function MonAn() {
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
-
+  const [modalDel, setModalDel] = useState(false);
+  const [delItem, setItem] = useState();
   const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
@@ -74,7 +76,7 @@ function MonAn() {
     }
     setDetails(newDetails);
   };
-  const createSuccess = () => {
+  const actionSuccess = () => {
     setSuccess(!success);
   };
 
@@ -82,22 +84,18 @@ function MonAn() {
     const fetchData = async () => {
       try {
         const response = await getMonAns();
-        setSuccess(false);
+        setSuccess(true);
         setMonAnList(response);
         setLoading(false);
       } catch (err) {
         setMonAnList(null);
         setLoading(true);
+         setSuccess(false);
         console.log(err);
       }
     };
     fetchData();
   }, [success]);
-
-  const handleDelete = (item) => {
-    deleteMonAn(item);
-    setSuccess(!success);
-  };
 
   const toggleModal = () => {
     setModal(!modal);
@@ -105,7 +103,10 @@ function MonAn() {
   const toggleModal1 = () => {
     setModal1(!modal1);
   };
-
+  const toggleModalDelete = (item) => {
+    setItem(item);
+    setModalDel(!modalDel);
+  };
   return (
     <>
       <CCard>
@@ -186,7 +187,7 @@ function MonAn() {
                   >
                     <span
                       className="c-subheader-nav-link"
-                      onClick={(e) => handleDelete(item)}
+                      onClick={(e)=>toggleModalDelete(item)}
                     >
                       <CIcon
                         style={{ color: "red" }}
@@ -209,14 +210,12 @@ function MonAn() {
                                 <CCol lg="3">
                                   <label>Tên món ăn</label>
                                   <h6>{item.ma_ten}</h6>
-
                                 </CCol>
                                 <CCol lg="2">
                                   <label>Giá vốn</label>
                                   <h6>{item.ma_giavon}</h6>
                                 </CCol>
                                 <CCol lg="4">
-
                                   <h6>Mô tả tóm tắt:</h6>
 
                                   <div
@@ -224,28 +223,24 @@ function MonAn() {
                                       __html: item.ma_motachitiet,
                                     }}
                                   />
-
-
                                 </CCol>
                                 <CCol lg="3">
-
                                   <CImg
-                                    // src={`http://${item.ma_hinhanh}`}
-                                    src={"food-1.jpg"}
+                                    src={`http://localhost:8080/image/${item.ma_hinhanh}`}
                                     alt="img"
                                     alt="Image"
                                     width="250px"
                                     height="200px"
+                                    alt={item.ma_hinhanh}
                                   />
                                 </CCol>
                               </CRow>
-
 
                               <EditMonAn
                                 modal={modal1}
                                 listMon={item}
                                 toggleModal={toggleModal1}
-                                createSuccess={createSuccess}
+                                createSuccess={actionSuccess}
                               />
                             </CContainer>
                           </CTabPane>
@@ -269,7 +264,13 @@ function MonAn() {
         <CreateFood
           modal={modal}
           toggleModal={toggleModal}
-          createSuccess={createSuccess}
+          createSuccess={actionSuccess}
+        />
+        <DeleteMonAn
+          modal={modalDel}
+          toggleModal={toggleModalDelete}
+          deleteSuccess={actionSuccess}
+          itemDeleted={delItem}
         />
       </CCard>
     </>

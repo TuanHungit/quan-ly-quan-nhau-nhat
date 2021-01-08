@@ -40,8 +40,6 @@ import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 public class MonAnController {
 	@Autowired
 	private MonAnRepository repo;
-	@Value( "${file.upload-dir}" )
-	private String UPLOADED_FOLDER;
 	@Autowired
 	private ServletContext servletContext;
 	
@@ -66,9 +64,8 @@ public class MonAnController {
 		monAn.ma_giaban=ma_giaban;
 		monAn.ma_donvitinh=ma_donvitinh;
 		monAn.ma_hinhanh="";
-		if (image.isEmpty()) {
-			monAn.ma_hinhanh="";
-		}else {
+		monAn=repo.save(monAn);
+		if (!image.isEmpty()) {
 			monAn=repo.save(monAn);
 			byte[] bytes = image.getBytes();
 			Path path= Paths.get(servletContext.getRealPath("/WEB-INF/image/").toString()+monAn.getMa_id() +"_"+ image.getOriginalFilename());
@@ -76,7 +73,8 @@ public class MonAnController {
 			monAn.ma_hinhanh= monAn.getMa_id() +"_"+ image.getOriginalFilename();
 		}
 		monAn.ma_motachitiet=ma_motachitiet;
-		return repo.save(monAn);
+		monAn=repo.save(monAn);
+		return monAn;
 	}
 	
 	

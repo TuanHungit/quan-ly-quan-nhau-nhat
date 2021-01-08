@@ -148,11 +148,10 @@ function EditMonAn(props) {
                   <CRow>
                     <CCol lg="5" className="pt-2">
                       Đơn vị tính
-                  </CCol>
+                    </CCol>
                     <CCol lg="7">
                       <input
                         type="text"
-
                         className="inp"
                         value={ma_donvitinh}
                         onChange={(e) => {
@@ -163,12 +162,12 @@ function EditMonAn(props) {
                       />
                     </CCol>
                   </CRow>
-                </CCol >
+                </CCol>
                 <CCol lg="6">
                   <CRow>
                     <CCol lg="5" className="pt-2">
                       Mô tả chi tiết
-                  </CCol>
+                    </CCol>
                     <CCol lg="7">
                       <input
                         type="text"
@@ -182,7 +181,6 @@ function EditMonAn(props) {
                       />
                     </CCol>
                   </CRow>
-
                 </CCol>
                 {/* <CRow className="field">
                   <CCol lg="10">
@@ -226,7 +224,7 @@ function EditMonAn(props) {
                       onChange={(e) => {
                         setHinhAnh(e.target.value);
                       }}
-                      src={"food-1.jpg"}
+                      src={`http://localhost:8080/image/${ma_hinhanh}`}
                       className="c-avatar-img"
                       alt="chicken nướng lu"
                     />

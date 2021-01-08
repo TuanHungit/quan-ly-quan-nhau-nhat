@@ -31,45 +31,49 @@ import com.hns2t.QuanLyQuanNhau_server.model.TrangThaiBan;
 public class BanController {
 	@Autowired
 	private BanRepository repo;
-	
+
 	@GetMapping("")
-	public List<Ban> getAll(){
+	public List<Ban> getAll() {
 		return repo.findAll();
 	}
-	
+
 	@PostMapping("")
 	public Ban createBan(@RequestBody Ban ban) {
 		return repo.save(ban);
 	}
 
-	
 	@GetMapping("/{id}")
-	public ResponseEntity<Ban> getBan(@PathVariable Long id){
+	public ResponseEntity<Ban> getBan(@PathVariable Long id) {
 		Ban object = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
 		return ResponseEntity.ok(object);
 	}
-	
+
 	@PutMapping("/{id}")
-	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody Ban banDetail){
-		Ban object =repo.findById(id)
+	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody Ban banDetail) {
+		Ban object = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
+		if (banDetail.getB_soghe() != null) {
+			object.setB_stt(banDetail.getB_stt());
+			object.setB_soghe(banDetail.getB_soghe());
+		}
+		if (banDetail.getB_stt() != null) {
+			object.setB_stt(banDetail.getB_stt());
+		}
 		object.setB_trangthai(banDetail.getB_trangthai());
 
 		Ban ban = repo.save(object);
 		return ResponseEntity.ok(ban);
 	}
-	
+
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Map<String, Boolean>> deleteBan(@PathVariable Long id){
-		Ban ban = repo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
+	public ResponseEntity<Map<String, Boolean>> deleteBan(@PathVariable Long id) {
+		Ban ban = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
 		repo.delete(ban);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("deleted", Boolean.TRUE);
 		return ResponseEntity.ok(response);
 	}
-	
 
 //	@PutMapping("/{id}" )
 //	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody String trangThaiBan){
@@ -89,5 +93,5 @@ public class BanController {
 //		Ban ban = repo.save(object);
 //		return ResponseEntity.ok(ban);
 //	}
-	
+
 }

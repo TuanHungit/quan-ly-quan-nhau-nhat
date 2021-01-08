@@ -15,7 +15,7 @@ public class HoaDonService {
 	@Autowired
 	private HoaDonRepository repo;
 	
-	public List<Object[]> getAll(){
-		return repo.getListHoaDon();
-	}
+//	public List<Object[]> getAll(){
+//		return repo.getListHoaDon();
+//	}
 }

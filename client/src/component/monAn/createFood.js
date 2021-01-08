@@ -10,6 +10,8 @@ import {
   CCol,
   CSelect,
   CImg,
+  CLabel,
+  CInputFile,
 } from "@coreui/react";
 import { createOneMonAn } from "../../api/MonAnApi";
 import { getAllLoaiMonAn } from "../../api/LoaiMonAnApi";
@@ -29,6 +31,11 @@ const CreateFood = (props) => {
   const [success, setSuccess] = useState(false);
 
   const [collapse, setCollapse] = useState(false);
+
+   const handleChange = (e) => {
+     setHinhAnh(e.target.files[0]);
+   };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = {
@@ -42,7 +49,20 @@ const CreateFood = (props) => {
     };
     console.log(data);
     try {
-      await createOneMonAn(data);
+      const formData = new FormData();
+      formData.append("ma_ten", ma_ten);
+      formData.append("ma_giaban", ma_giaban);
+      formData.append("ma_giavon", ma_giavon);
+      formData.append("ma_donvitinh", ma_donvitinh);
+      formData.append("ma_hinhanh", ma_hinhanh);
+      formData.append("ma_motachitiet", ma_motachitiet);
+      formData.append("ma_lmaid", ma_lmaid);
+
+      await createOneMonAn(formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       props.toggleModal();
       props.createSuccess();
       alertify.success("Thêm món ăn thành công");
@@ -50,6 +70,8 @@ const CreateFood = (props) => {
       alertify.error("Lỗi nghen");
     }
   };
+
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -209,15 +231,26 @@ const CreateFood = (props) => {
               </CRow>
               <CRow className="field">
                 <CCol className="pt-3">
-                  <img
+                  <CLabel col md="3" htmlFor="file-input">
+                    File input
+                  </CLabel>
+                  <CCol xs="12" md="9">
+                    <input
+                      type="file"
+                      id="file-input"
+                      name="file-input"
+                      onChange={handleChange}
+                    />
+                  </CCol>
+                  {/* <img
                     onChange={(e) => {
-                      setDvt(e.target.value);
+                      setHinhAnh(e.target.value);
                     }}
-                    value={"food-1.jpg"}
-                    src={"food-1.jpg"}
+                    // value={"food-1.jpg"}
+                    // src={"food-1.jpg"}
                     className="c-avatar-img"
-                    alt="chicken nướng lu"
-                  />
+                    // alt="chicken nướng lu"
+                  /> */}
                 </CCol>
               </CRow>
             </CContainer>

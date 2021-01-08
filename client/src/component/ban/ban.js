@@ -13,8 +13,9 @@ import {
 import CIcon from "@coreui/icons-react";
 import Icon from "@mdi/react";
 import { mdiViewGridPlus } from "@mdi/js";
-import { getBans, deleteBan } from "../../api/banApi";
+import { getBans } from "../../api/BanApi";
 import CreateBan from "./createBan";
+import DeleteBan from "./deleteBan";
 
 const fields = [
   // { key: "b_id", label: "STT", _style: { width: "20%" } },
@@ -43,10 +44,13 @@ function Ban() {
   const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modal, setModal] = useState(false);
-
-  const createSuccess = () => {
+  const [modalDel, setModalDel] = useState(false);
+  const [delItem, setItem] = useState();
+  
+  const actionSuccess = () => {
     setSuccess(!success);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,15 +68,14 @@ function Ban() {
     fetchData();
   }, [success]);
 
-  const handleDelete = (item) => {
-    deleteBan(item);
-    setSuccess(!success);
-  };
 
   const toggleModal = () => {
     setModal(!modal);
   };
-
+  const toggleModalDelete = (item) => {
+    setItem(item);
+    setModalDel(!modalDel);
+  };
   return (
     <>
       <CCard>
@@ -146,7 +149,7 @@ function Ban() {
                         style={{ color: "red" }}
                         name="cil-trash"
                         alt="Delete"
-                        onClick={(e) => handleDelete(item)}
+                        onClick={(e) => toggleModalDelete(item)}
                       />
                       {/* &nbsp;Edit */}
                     </span>
@@ -159,7 +162,13 @@ function Ban() {
         <CreateBan
           modal={modal}
           toggleModal={toggleModal}
-          createSuccess={createSuccess}
+          createSuccess={actionSuccess}
+        />
+        <DeleteBan
+          modal={modalDel}
+          toggleModal={toggleModalDelete}
+          deleteSuccess={actionSuccess}
+          itemDeleted={delItem}
         />
       </CCard>
     </>
