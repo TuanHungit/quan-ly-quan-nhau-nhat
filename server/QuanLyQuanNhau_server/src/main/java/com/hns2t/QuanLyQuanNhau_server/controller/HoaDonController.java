@@ -85,7 +85,7 @@ public class HoaDonController {
 			
 			for (JSONObject monan : listMonans) {
 				ChiTietHoaDon chiTietHoaDon  = new ChiTietHoaDon();
-				Long id = (long) monan.get("id");
+				Long id =Long.parseLong(monan.get("id").toString());
 				MonAn monAn = monAnRepo.findById(id)
 						.orElseThrow(() -> new ResourceNotFoundException("Mon an khong ton tai with: " + id));
 				int soLuong = Integer.parseInt(monan.get("amount").toString());
@@ -103,9 +103,6 @@ public class HoaDonController {
 		}
 		return new ResponseEntity<>(hoaDon, HttpStatus.OK);
 	}
-	
-	
-	
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<HoaDon> updateHoaDon(@PathVariable(value = "id") Long id, @RequestBody HoaDon hoaDonDetail){
@@ -130,15 +127,19 @@ public class HoaDonController {
 	
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("{id}/cthd")
-	public HoaDon createChiTietHoaDon(@PathVariable(value = "id") Long id, @RequestBody List<ChiTietHoaDon> chiTietHoaDons) {
+	public HoaDon createChiTietHoaDon(@PathVariable(value = "id") Long id, @RequestBody List<JSONObject> chiTietHoaDons) {
 		HoaDon hoaDon = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
-		
-		for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
-			chiTietHoaDon.setHoaDon(hoaDon);
-			chiTietHoaDon.setMonAn(chiTietHoaDon.getMonAn());
-			hoaDon.getChiTietHoaDons().add(chiTietHoaDon);
-			repo.save(hoaDon);
+		for (JSONObject chiTietHoaDon : chiTietHoaDons) {
+			ChiTietHoaDon chiTietHoaDon1  = new ChiTietHoaDon();
+			Long monAnId = Long.parseLong(chiTietHoaDon.get("id").toString());
+			MonAn monAn = monAnRepo.findById(monAnId)
+					.orElseThrow(() -> new ResourceNotFoundException("Mon an khong ton tai with: " + id));
+			chiTietHoaDon1.setMonAn(monAn);
+			chiTietHoaDon1.setCthd_soluong(Integer.parseInt(chiTietHoaDon.get("amount").toString()));
+			chiTietHoaDon1.setCthd_gia(Double.parseDouble(chiTietHoaDon.get("price").toString()));
+			chiTietHoaDon1.setHoaDon(hoaDon);
+			cthdRepo.save(chiTietHoaDon1);
 		}
 		return repo.save(hoaDon);
 	}
