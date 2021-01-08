@@ -46,7 +46,9 @@
     "react-dom": "^16.13.1",
     "react-redux": "7.2.1",
     "react-router-dom": "^5.2.0",
+    "react-sidebar": "^3.0.2",
     "react-slick": "^0.27.13",
+    "react-to-print": "^2.12.2",
     "redux": "^4.0.5"
   },
   "devDependencies": {

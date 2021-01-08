@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
-import Menu from "./menu/menu";
 import { produce } from "immer";
 import {
   mdiAccountCircle,
@@ -13,7 +12,7 @@ import {
   mdiDelete,
   mdiPlusCircle,
   mdiMinusCircle,
-  mdiFoodOff,
+  mdiFood,
   mdiPencil,
   mdiTableFurniture,
 } from "@mdi/js";
@@ -39,9 +38,14 @@ import {
   CDropdownItem,
   CDropdownMenu,
 } from "@coreui/react";
+
 import "./orders.css";
 import { getBans, editBan } from "../../../api/BanApi";
-
+import Menu from "./menu/menu";
+import Checkout from "./payment/checkout";
+import Sidebar from "react-sidebar";
+import ToPriceForView from "../../../common/convertPriceForView";
+import ToDateForView from "../../../common/convertDateForView";
 export default (props) => {
   const settings = {
     dots: true,
@@ -59,6 +63,7 @@ export default (props) => {
     }
   };
 
+  const [paymentSideBarOpen, setPaymentSideBarOpen] = useState(false);
   const [table, setTable] = useState(0);
   const [bill, setBill] = useState([]);
   const [checkout, setCheckout] = useState([]);
@@ -127,12 +132,14 @@ export default (props) => {
       console.log(err);
     }
   };
-  console.log(checkout);
+  const onSetSidebarOpen = () => {
+    setPaymentSideBarOpen((state) => !state);
+  };
   const onCheckOutHandler = (e) => {
     if (table === 0) {
       return alert("Vui lòng chọn bàn để thanh toán!");
     }
-
+    setPaymentSideBarOpen((state) => !state);
     const result = bill
       .filter((el) => el.idBan === table)
       .reduce(function (billCheckOut, obj) {
@@ -160,14 +167,122 @@ export default (props) => {
     setBill([...billUpdated]);
   };
 
-  // onClickTableStatusHandler = (e) => {
-  //   switch (e.target.value) {
-  //     case ('active'):
-
-  //   }
-  // }
+  const Bill = () =>
+    bill.filter((el) => el.idBan === table).length > 0 ? (
+      bill
+        .filter((el) => el.idBan === table)
+        .map((el, key) => {
+          const id = el.bill.id;
+          return (
+            <CRow
+              className=" pt-3 text-dark"
+              style={{
+                boxShadow: "0px 1px 1px black",
+              }}
+              key={key}
+            >
+              <CCol lg="7" className="d-flex">
+                <Icon
+                  path={mdiDelete}
+                  title="User Profile"
+                  size={1}
+                  horizontal
+                  rotate={180}
+                  vertical
+                  onClick={(e) => onDeleteMenuHandler(e, id)}
+                />
+                <p>
+                  &nbsp;&nbsp; &nbsp;<strong>{key + 1}</strong> &nbsp;&nbsp;
+                </p>
+                <p>{el.bill.name}</p>
+              </CCol>
+              <CCol lg="5" className="d-flex justify-content-between">
+                <Icon
+                  path={mdiMinusCircle}
+                  title="User Profile"
+                  size={1}
+                  horizontal
+                  rotate={180}
+                  vertical
+                  onClick={(e) => {
+                    setBill((el) => {
+                      if (el[key].bill.amount === 1) {
+                        return el;
+                      }
+                      return produce(el, (v) => {
+                        v[key].bill.amount = el[key].bill.amount - 1;
+                      });
+                    });
+                  }}
+                />
+                <p> &nbsp;{el.bill.amount}&nbsp;</p>
+                <Icon
+                  path={mdiPlusCircle}
+                  title="User Profile"
+                  size={1}
+                  horizontal
+                  rotate={180}
+                  vertical
+                  onClick={(e) => {
+                    setBill((el) =>
+                      produce(el, (v) => {
+                        v[key].bill.amount = el[key].bill.amount + 1;
+                      })
+                    );
+                  }}
+                />
+                <p>{ToPriceForView(el.bill.price)}</p>
+                <p>
+                  <strong>
+                    {ToPriceForView(el.bill.price * el.bill.amount)}
+                  </strong>{" "}
+                </p>
+              </CCol>
+            </CRow>
+          );
+        })
+    ) : (
+      <>
+        <div
+          className=" text-secondary d-flex justify-content-center"
+          style={{ zIndex: "0" }}
+        >
+          <Icon
+            path={mdiFood}
+            title="User Profile"
+            size={10}
+            horizontal
+            rotate={180}
+            vertical
+            className="icon"
+          />
+        </div>
+        <div className=" text-secondary d-flex justify-content-center">
+          {" "}
+          <h4>Chưa có món ăn nào</h4>
+        </div>
+        <div className=" text-secondary d-flex justify-content-center">
+          {" "}
+          <h6>Vui lòng chọn món ăn trong thực đơn</h6>
+        </div>
+      </>
+    );
   return (
-    <div>
+    <Sidebar
+      sidebar={<Checkout menu={<Bill />} />}
+      open={paymentSideBarOpen}
+      pullRight
+      transitions
+      onSetOpen={onSetSidebarOpen}
+      styles={{
+        sidebar: {
+          background: "white",
+          borderTopLeftRadius: "20px",
+          borderBottomLeftRadius: "20px",
+          width: "65%",
+        },
+      }}
+    >
       <CContainer fluid style={{ height: "100vh" }} className="bg-info">
         <CRow>
           <CCol lg="7">
@@ -194,7 +309,10 @@ export default (props) => {
                 </CNavItem>
               </CNav>
               <CTabContent>
-                <CTabPane data-tab="roomtable" className="bg-light tab-table">
+                <CTabPane
+                  data-tab="roomtable"
+                  className="bg-light tab-table-orders"
+                >
                   <CContainer>
                     <CRow className="justify-content-between">
                       <CCol className="d-flex justify-content-between">
@@ -223,9 +341,14 @@ export default (props) => {
                               <div
                                 className={`table  border-radius ${
                                   el.b_stt === table ? "bg-info text-light" : ""
+                                }  ${
+                                  el.b_trangthai === "DaDat" &&
+                                  el.b_stt === table
+                                    ? "bg-danger text-light"
+                                    : ""
                                 } ${
                                   el.b_trangthai === "DaDat"
-                                    ? "bg-danger text-light"
+                                    ? "bg-none text-danger"
                                     : ""
                                 }`}
                                 id={key}
@@ -337,7 +460,7 @@ export default (props) => {
                 </CNavItem>
               </CNav>
               <CTabContent>
-                <CTabPane data-tab="bill" className="tab-table">
+                <CTabPane data-tab="bill" className="tab-table-orders">
                   <CContainer className="pt-3" fluid>
                     <CCard style={{ height: "86.5vh" }} fluid>
                       <CCardHeader>
@@ -360,96 +483,7 @@ export default (props) => {
                         </CRow>
                       </CCardHeader>
                       <CCardBody className="bill">
-                        {/* */}
-                        {bill.length > 0 ? (
-                          bill
-                            .filter((el) => el.idBan === table)
-                            .map((el, key) => {
-                              const id = el.bill.id;
-                              return (
-                                <CRow
-                                  className="border-bottom py-2 text-dark"
-                                  style={{
-                                    boxShadow: "0px 1px 1px #007fc1",
-                                  }}
-                                  key={key}
-                                >
-                                  <CCol lg="7" className="d-flex">
-                                    <Icon
-                                      path={mdiDelete}
-                                      title="User Profile"
-                                      size={1}
-                                      horizontal
-                                      rotate={180}
-                                      vertical
-                                      onClick={(e) =>
-                                        onDeleteMenuHandler(e, id)
-                                      }
-                                    />
-                                    <p>&nbsp;{key + 1}&nbsp;</p>
-                                    <p>{el.bill.name}</p>
-                                  </CCol>
-                                  <CCol
-                                    lg="5"
-                                    className="d-flex justify-content-between"
-                                  >
-                                    <Icon
-                                      path={mdiMinusCircle}
-                                      title="User Profile"
-                                      size={1}
-                                      horizontal
-                                      rotate={180}
-                                      vertical
-                                      onClick={(e) => {
-                                        setBill((el) => {
-                                          if (el[key].bill.amount === 1) {
-                                            return el;
-                                          }
-                                          return produce(el, (v) => {
-                                            v[key].bill.amount =
-                                              el[key].bill.amount - 1;
-                                          });
-                                        });
-                                      }}
-                                    />
-                                    <p> &nbsp;{el.bill.amount}&nbsp;</p>
-                                    <Icon
-                                      path={mdiPlusCircle}
-                                      title="User Profile"
-                                      size={1}
-                                      horizontal
-                                      rotate={180}
-                                      vertical
-                                      onClick={(e) => {
-                                        setBill((el) =>
-                                          produce(el, (v) => {
-                                            v[key].bill.amount =
-                                              el[key].bill.amount + 1;
-                                          })
-                                        );
-                                      }}
-                                    />
-                                    <p>{el.bill.price}</p>
-                                    <p>
-                                      {" "}
-                                      <strong>{el.bill.price}</strong>{" "}
-                                    </p>
-                                  </CCol>
-                                </CRow>
-                              );
-                            })
-                        ) : (
-                          <div className="icon">
-                            <Icon
-                              path={mdiFoodOff}
-                              title="User Profile"
-                              size={10}
-                              horizontal
-                              rotate={180}
-                              vertical
-                            />
-                          </div>
-                        )}
+                        <Bill />
                       </CCardBody>
                       <CCardFooter className="text-dark">
                         <CRow className="d-flex justify-content-between">
@@ -496,7 +530,7 @@ export default (props) => {
                         </CRow>
                         <CRow>
                           <CCol
-                            className="text-center bg-success py-3 rounded-left"
+                            className="text-center bg-success py-3 rounded-left checkout-button"
                             onClick={onCheckOutHandler}
                           >
                             <h4 className="text-light">
@@ -530,12 +564,11 @@ export default (props) => {
                     </CCard>
                   </CContainer>
                 </CTabPane>
-                <CTabPane data-tab="menu">452</CTabPane>
               </CTabContent>
             </CTabs>
           </CCol>
         </CRow>
       </CContainer>
-    </div>
+    </Sidebar>
   );
 };
