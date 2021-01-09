@@ -37,7 +37,7 @@ import com.hns2t.QuanLyQuanNhau_server.model.Ban;
 import com.hns2t.QuanLyQuanNhau_server.model.ChiTietHoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
-import com.pusher.rest.Pusher;
+import com.hns2t.QuanLyQuanNhau_server.model.NhanVien;
 
 
 @RestController
@@ -83,8 +83,7 @@ public class HoaDonController {
 			hoaDon.setBan(object);
 			hoaDon.setHd_ngaythanhtoan(new Date());
 			repo.save(hoaDon);
-			List<JSONObject> listMonans = (ArrayList<JSONObject>)json.get("monans");
-			
+			List<JSONObject> listMonans = (ArrayList<JSONObject>)json.get("monans");		
 			for (JSONObject monan : listMonans) {
 				ChiTietHoaDon chiTietHoaDon  = new ChiTietHoaDon();
 				Long id =Long.parseLong(monan.get("id").toString());
@@ -98,13 +97,6 @@ public class HoaDonController {
 				chiTietHoaDon.setHoaDon(hoaDon);
 				cthdRepo.save(chiTietHoaDon);
 			}
-			
-			Pusher pusher = new Pusher("1134980", "418932f279b2ed1937ab", "d6a796c3c689a6843ddd");
-			pusher.setCluster("ap1");
-			pusher.setEncrypted(true);
-
-			pusher.trigger("my-channel", "my-event", Collections.singletonMap("message", json));
-	
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

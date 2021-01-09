@@ -30,12 +30,14 @@ import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import javax.validation.Valid;
 
+import com.hns2t.QuanLyQuanNhau_server.dao.NhanVienRepository;
 import com.hns2t.QuanLyQuanNhau_server.dao.TaiKhoanRepository;
 import com.hns2t.QuanLyQuanNhau_server.dto.LoginRequest;
 import com.hns2t.QuanLyQuanNhau_server.dto.LoginResponse;
 import com.hns2t.QuanLyQuanNhau_server.exception.ResourceNotFoundException;
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.LoaiMonAn;
+import com.hns2t.QuanLyQuanNhau_server.model.NhanVien;
 import com.hns2t.QuanLyQuanNhau_server.model.TaiKhoan;
 import com.hns2t.QuanLyQuanNhau_server.service.HoaDonService;
 import com.hns2t.QuanLyQuanNhau_server.service.LoaiMonAnService;
@@ -51,20 +53,25 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class TaiKhoanController {
 	
 	@Autowired
-	private TaiKhoanRepository repo;
+	private TaiKhoanRepository repoTK;
+	@Autowired
+	private NhanVienRepository repoNV;
+	
 	
 	@GetMapping("")
 	public List<TaiKhoan> getAll() {
-		return repo.findAll();
+		return repoTK.findAll();
 	}
 	@PostMapping("/login")
 	public LoginResponse login(@RequestBody LoginRequest loginRequest) {
 		LoginResponse loginResponse = new LoginResponse();
-		TaiKhoan taiKhoan=repo.findByTenTaiKhoan(loginRequest.getUsername());
+		TaiKhoan taiKhoan=repoTK.findByTenTaiKhoan(loginRequest.getUsername());
 		if (taiKhoan!=null) {
 			if (taiKhoan.getTk_matkhau().equals(loginRequest.getPassword())) {
 				String token = getJWTToken(taiKhoan.getTk_tendangnhap());
 				loginResponse.setTk_tendangnhap(taiKhoan.getTk_tendangnhap());
+				NhanVien nhanVien =repoNV.findNhanVienBuTk_id(taiKhoan.getTk_id());
+				loginResponse.setNv_id(nhanVien.getNv_id());
 				loginResponse.setToken(token);
 				loginResponse.setCode(0);
 				loginResponse.setMessage("Login success!");
