@@ -16,12 +16,13 @@ import ToPriceForView from "../../../../common/convertPriceForView";
 import InvoiceToPrint from "./invoiceToPrint/invoiceToPrint";
 const generatorPrice = (price) => {
   const priceArr = [];
-  if (price % 2 == 0) {
+  if (price % 2 !== 0) {
     priceArr.push(price + 1000);
   }
-  [1, 2, 3, 10, 20].map((el) =>
+  [1, 2, 3, 5, 10].map((el) =>
     priceArr.push(Math.floor(price / 10000) * 10000 + el * 10000)
   );
+
   return priceArr;
 };
 const pageStyle = `
@@ -54,9 +55,9 @@ const pageStyle = `
 }
 
 `;
-export default ({ menu }) => {
+export default ({ menu, total }) => {
   const [excessCash, setExcessCash] = useState(0);
-  const [customerCash, setCustomerCash] = useState(465000);
+  const [customerCash, setCustomerCash] = useState(0);
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -123,7 +124,7 @@ export default ({ menu }) => {
                 Tổng tiền hàng{" "}
                 <span className="border rounded-circle px-2">{` ${6}`}</span>
               </p>
-              <p>465.000</p>
+              <p>{ToPriceForView(total)}</p>
             </div>
             <div className="d-flex justify-content-between ">
               <p>Giảm giá </p>
@@ -134,7 +135,7 @@ export default ({ menu }) => {
                 <strong> Khách cần trả </strong>
               </p>
               <p style={{ color: "#0090da", fontSize: "18px" }}>
-                {ToPriceForView(465000)}
+                {ToPriceForView(total)}
               </p>
             </div>
             <div className="d-flex justify-content-between ">
@@ -156,7 +157,7 @@ export default ({ menu }) => {
               </strong>
             </div>
             <CRow className="py-4 ">
-              {generatorPrice(465000).map((el, key) => (
+              {generatorPrice(total).map((el, key) => (
                 <CCol lg="4" className="pb-2" key={key}>
                   <CButton
                     variant="outline"
@@ -167,8 +168,8 @@ export default ({ menu }) => {
                     }}
                     value={el}
                     onClick={(e) => {
-                      setExcessCash(e.target.value - 465000);
-                      setCustomerCash(e.target.value);
+                      setExcessCash(e.target.value - total);
+                      setCustomerCash(e.target.value - 0);
                     }}
                     className="py-2"
                   >

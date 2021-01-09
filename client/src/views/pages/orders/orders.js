@@ -54,6 +54,7 @@ export default (props) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
   const fetchTableData = async () => {
     try {
       const response = await getBans();
@@ -70,6 +71,8 @@ export default (props) => {
   const [listTable, setListTable] = useState([]);
   const [update, setUpdate] = useState(false);
   const [updatedMenu, setUpdatedMenu] = useState(false);
+  const [total, setTotal] = useState(0);
+
   useEffect(() => {
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
@@ -78,15 +81,24 @@ export default (props) => {
   useEffect(() => {
     fetchTableData();
   }, [update]);
+
   const onClickTableHandler = (e, el) => {
     setTable(el);
+    calculateTotalOfBill(el.b_id);
   };
+
   useEffect(() => {
     if (updatedMenu) {
       localStorage.setItem("bill", JSON.stringify(bill));
+      calculateTotalOfBill(table.b_id);
     }
     setUpdatedMenu(false);
   }, [updatedMenu]);
+
+  const onSetSidebarOpen = () => {
+    setPaymentSideBarOpen((state) => !state);
+  };
+
   const onClickMenuHandler = async (id, idBan, name, price) => {
     try {
       const existingTable = bill.filter((el) => el.idBan === idBan);
@@ -94,22 +106,6 @@ export default (props) => {
         await editBan({ b_id: table.b_id, b_trangthai: 0 });
         setUpdate((state) => !state);
       }
-
-      // setCheckout((state) => {
-      //   const total = existingTable.reduce(
-      //     total,
-      //     (el) => total + el.bill.price * el.bill.amount
-      //   );
-      //   return state.map((el) => {
-      //     if (el.idBan === idBan) {
-      //       return {
-      //         ...el,
-      //         total,
-      //       };
-      //     }
-      //     return { ...el, idBan };
-      //   });
-      // });
 
       setBill((state) => {
         const existingMenu = state.filter(
@@ -137,9 +133,7 @@ export default (props) => {
       console.log(err);
     }
   };
-  const onSetSidebarOpen = () => {
-    setPaymentSideBarOpen((state) => !state);
-  };
+
   const onCheckOutHandler = (e) => {
     if (table.b_id === 0) {
       return alert("Vui lòng chọn bàn để thanh toán!");
@@ -171,7 +165,9 @@ export default (props) => {
     }
     localStorage.setItem("bill", JSON.stringify(billUpdated));
     setBill([...billUpdated]);
+    setUpdatedMenu(true);
   };
+
   const submitNotifications = () => {
     const result = bill
       .filter((el) => el.idBan === table.b_id)
@@ -190,6 +186,19 @@ export default (props) => {
       }, {});
 
     console.log({ b_id: table.b_id, monans: result[table.b_id] });
+  };
+
+  const calculateTotalOfBill = (idBan) => {
+    const existingBill = bill.filter((el) => el.idBan === idBan);
+    if (existingBill.length === 0) {
+      setTotal(0);
+      return;
+    }
+
+    let totalBill = existingBill.reduce(function (total, el) {
+      return total + el.bill.price * el.bill.amount;
+    }, 0);
+    setTotal(totalBill);
   };
 
   const Bill = () =>
@@ -294,7 +303,7 @@ export default (props) => {
     );
   return (
     <Sidebar
-      sidebar={<Checkout menu={<Bill />} />}
+      sidebar={<Checkout menu={<Bill />} total={total} />}
       open={paymentSideBarOpen}
       pullRight
       transitions
@@ -420,13 +429,18 @@ export default (props) => {
                           {listTable.slice(24).map((el, key) => (
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
-                                className={`table.b_id  border-radius ${
-                                  el.b_stt === table.b_id
+                                className={`table  border-radius ${
+                                  el.b_id === table.b_id
                                     ? "bg-info text-light"
+                                    : ""
+                                }  ${
+                                  el.b_trangthai === "DaDat" &&
+                                  el.b_id === table.b_id
+                                    ? "bg-danger text-light"
                                     : ""
                                 } ${
                                   el.b_trangthai === "DaDat"
-                                    ? "bg-danger text-light"
+                                    ? "bg-none text-danger"
                                     : ""
                                 }`}
                                 id={key}
@@ -520,7 +534,9 @@ export default (props) => {
                       <CCardFooter className="text-dark">
                         <CRow className="d-flex justify-content-between">
                           <p>Số lượng khách </p>
-                          <p>Tổng tiền 375.000</p>
+                          <p>
+                            Tổng tiền: <strong>{ToPriceForView(total)}</strong>{" "}
+                          </p>
                         </CRow>
                         <CRow className="d-flex justify-content-between ">
                           <p className="mt-3">
