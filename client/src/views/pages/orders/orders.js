@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
-import Menu from "./menu/menu";
 import { produce } from "immer";
 import {
   mdiAccountCircle,
@@ -13,7 +12,7 @@ import {
   mdiDelete,
   mdiPlusCircle,
   mdiMinusCircle,
-  mdiFoodOff,
+  mdiFood,
   mdiPencil,
   mdiTableFurniture,
 } from "@mdi/js";
@@ -39,9 +38,14 @@ import {
   CDropdownItem,
   CDropdownMenu,
 } from "@coreui/react";
+
 import "./orders.css";
 import { getBans, editBan } from "../../../api/BanApi";
-
+import Menu from "./menu/menu";
+import Checkout from "./payment/checkout";
+import Sidebar from "react-sidebar";
+import ToPriceForView from "../../../common/convertPriceForView";
+import ToDateForView from "../../../common/convertDateForView";
 export default (props) => {
   const settings = {
     dots: true,
@@ -59,12 +63,13 @@ export default (props) => {
     }
   };
 
+  const [paymentSideBarOpen, setPaymentSideBarOpen] = useState(false);
   const [table, setTable] = useState(0);
   const [bill, setBill] = useState([]);
   const [checkout, setCheckout] = useState([]);
   const [listTable, setListTable] = useState([]);
   const [update, setUpdate] = useState(false);
-  // const [tableStatus, setTableStatus] = useState("all");
+  const [updatedMenu, setUpdatedMenu] = useState(false);
   useEffect(() => {
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
@@ -74,13 +79,19 @@ export default (props) => {
     fetchTableData();
   }, [update]);
   const onClickTableHandler = (e, el) => {
-    setTable(el.b_stt);
+    setTable(el);
   };
+  useEffect(() => {
+    if(updatedMenu){
+      localStorage.setItem("bill", JSON.stringify(bill));
+    }
+    setUpdatedMenu(false);
+  }, [updatedMenu]);
   const onClickMenuHandler = async (id, idBan, name, price) => {
     try {
       const existingTable = bill.filter((el) => el.idBan === idBan);
       if (existingTable.length === 0) {
-        await editBan({ b_id: table, b_trangthai: 0 });
+        await editBan({ b_id: table.b_id, b_trangthai: 0 });
         setUpdate((state) => !state);
       }
 
@@ -121,20 +132,22 @@ export default (props) => {
         }
         return state.concat([{ idBan, bill: { id, name, price, amount: 1 } }]);
       });
-
-      localStorage.setItem("bill", JSON.stringify(bill));
+      setUpdatedMenu(true)
+     
     } catch (err) {
       console.log(err);
     }
   };
-  console.log(checkout);
+  const onSetSidebarOpen = () => {
+    setPaymentSideBarOpen((state) => !state);
+  };
   const onCheckOutHandler = (e) => {
-    if (table === 0) {
+    if (table.b_id === 0) {
       return alert("Vui lòng chọn bàn để thanh toán!");
     }
-
+    setPaymentSideBarOpen((state) => !state);
     const result = bill
-      .filter((el) => el.idBan === table)
+      .filter((el) => el.idBan === table.b_id)
       .reduce(function (billCheckOut, obj) {
         let key = obj["idBan"];
 
@@ -145,29 +158,155 @@ export default (props) => {
         return billCheckOut;
       }, {});
 
-    console.log({ b_id: table, monans: result[table] });
+   console.log({ b_id: table.b_id, monans: result[table.b_id] });
   };
+
+
   const onDeleteMenuHandler = async (e, id) => {
     const billUpdated = bill.filter(
-      (el) => el.bill.id !== id || el.idBan !== table
+      (el) => el.bill.id !== id || el.idBan !== table.b_id
     );
 
-    if (billUpdated.filter((el) => el.idBan === table).length === 0) {
-      await editBan({ b_id: table, b_trangthai: 1 });
+    if (billUpdated.filter((el) => el.idBan === table.b_id).length === 0) {
+      await editBan({ b_id: table.b_id, b_trangthai: 1 });
       setUpdate((state) => !state);
     }
     localStorage.setItem("bill", JSON.stringify(billUpdated));
     setBill([...billUpdated]);
   };
+  const submitNotifications =()=>{
 
-  // onClickTableStatusHandler = (e) => {
-  //   switch (e.target.value) {
-  //     case ('active'):
+    const result = bill
+      .filter((el) => el.idBan === table.b_id)
+      .reduce(function (billCheckOut, obj) {
+        let key = obj["idBan"];
 
-  //   }
-  // }
+        if (!billCheckOut[key]) {
+          billCheckOut[key] = [];
+        }
+        billCheckOut[key].push({id: obj.bill.id, price: obj.bill.price, amount: obj.bill.amount});
+        return billCheckOut;
+      }, {});
+
+   console.log({ b_id: table.b_id, monans: result[table.b_id] });
+  }
+
+  const Bill = () =>
+    bill.filter((el) => el.idBan === table.b_id).length > 0 ? (
+      bill
+        .filter((el) => el.idBan === table.b_id)
+        .map((el, key) => {
+          const id = el.bill.id;
+          return (
+            <CRow
+              className=" pt-3 text-dark"
+              style={{
+                boxShadow: "0px 1px 1px black",
+              }}
+              key={key}
+            >
+              <CCol lg="7" className="d-flex">
+                <Icon
+                  path={mdiDelete}
+                  title="User Profile"
+                  size={1}
+                  horizontal
+                  rotate={180}
+                  vertical
+                  onClick={(e) => onDeleteMenuHandler(e, id)}
+                />
+                <p>
+                  &nbsp;&nbsp; &nbsp;<strong>{key + 1}</strong> &nbsp;&nbsp;
+                </p>
+                <p>{el.bill.name}</p>
+              </CCol>
+              <CCol lg="5" className="d-flex justify-content-between">
+                <Icon
+                  path={mdiMinusCircle}
+                  title="User Profile"
+                  size={1}
+                  horizontal
+                  rotate={180}
+                  vertical
+                  onClick={(e) => {
+                    setBill((el) => {
+                      if (el[key].bill.amount === 1) {
+                        return el;
+                      }
+                      return produce(el, (v) => {
+                        v[key].bill.amount = el[key].bill.amount - 1;
+                      });
+                    });
+                  }}
+                />
+                <p> &nbsp;{el.bill.amount}&nbsp;</p>
+                <Icon
+                  path={mdiPlusCircle}
+                  title="User Profile"
+                  size={1}
+                  horizontal
+                  rotate={180}
+                  vertical
+                  onClick={(e) => {
+                    setBill((el) =>
+                      produce(el, (v) => {
+                        v[key].bill.amount = el[key].bill.amount + 1;
+                      })
+                    );
+                  }}
+                />
+                <p>{ToPriceForView(el.bill.price)}</p>
+                <p>
+                  <strong>
+                    {ToPriceForView(el.bill.price * el.bill.amount)}
+                  </strong>{" "}
+                </p>
+              </CCol>
+            </CRow>
+          );
+        })
+    ) : (
+      <>
+        <div
+          className=" text-secondary d-flex justify-content-center"
+          style={{ zIndex: "0" }}
+        >
+          <Icon
+            path={mdiFood}
+            title="User Profile"
+            size={10}
+            horizontal
+            rotate={180}
+            vertical
+            className="icon"
+          />
+        </div>
+        <div className=" text-secondary d-flex justify-content-center">
+          {" "}
+          <h4>Chưa có món ăn nào</h4>
+        </div>
+        <div className=" text-secondary d-flex justify-content-center">
+          {" "}
+          <h6>Vui lòng chọn món ăn trong thực đơn</h6>
+        </div>
+      </>
+    );
   return (
-    <div>
+    <Sidebar
+      sidebar={<Checkout menu={<Bill />} />}
+      open={paymentSideBarOpen}
+      pullRight
+      transitions
+      onSetOpen={onSetSidebarOpen}
+      styles={{
+        sidebar: {
+          background: "white",
+          borderTopLeftRadius: "20px",
+          borderBottomLeftRadius: "20px",
+          width: "65%",
+        },
+      }}
+    >
       <CContainer fluid style={{ height: "100vh" }} className="bg-info">
         <CRow>
           <CCol lg="7">
@@ -194,7 +333,10 @@ export default (props) => {
                 </CNavItem>
               </CNav>
               <CTabContent>
-                <CTabPane data-tab="roomtable" className="bg-light tab-table">
+                <CTabPane
+                  data-tab="roomtable"
+                  className="bg-light tab-table-orders"
+                >
                   <CContainer>
                     <CRow className="justify-content-between">
                       <CCol className="d-flex justify-content-between">
@@ -222,10 +364,15 @@ export default (props) => {
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
                                 className={`table  border-radius ${
-                                  el.b_stt === table ? "bg-info text-light" : ""
+                                  el.b_id === table.b_id ? "bg-info text-light" : ""
+                                }  ${
+                                  el.b_trangthai === "DaDat" &&
+                                  el.b_id === table.b_id
+                                    ? "bg-danger text-light"
+                                    : ""
                                 } ${
                                   el.b_trangthai === "DaDat"
-                                    ? "bg-danger text-light"
+                                    ? "bg-none text-danger"
                                     : ""
                                 }`}
                                 id={key}
@@ -270,8 +417,8 @@ export default (props) => {
                           {listTable.slice(24).map((el, key) => (
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
-                                className={`table  border-radius ${
-                                  el.b_stt === table ? "bg-info text-light" : ""
+                                className={`table.b_id  border-radius ${
+                                  el.b_stt === table.b_id ? "bg-info text-light" : ""
                                 } ${
                                   el.b_trangthai === "DaDat"
                                     ? "bg-danger text-light"
@@ -318,7 +465,7 @@ export default (props) => {
                   </CContainer>
                 </CTabPane>
                 <CTabPane data-tab="menu" className="pt-3">
-                  <Menu onClickMenuHandler={onClickMenuHandler} table={table} />
+                  <Menu onClickMenuHandler={onClickMenuHandler} table={table.b_id} />
                 </CTabPane>
               </CTabContent>
             </CTabs>
@@ -337,7 +484,7 @@ export default (props) => {
                 </CNavItem>
               </CNav>
               <CTabContent>
-                <CTabPane data-tab="bill" className="tab-table">
+                <CTabPane data-tab="bill" className="tab-table-orders">
                   <CContainer className="pt-3" fluid>
                     <CCard style={{ height: "86.5vh" }} fluid>
                       <CCardHeader>
@@ -351,7 +498,7 @@ export default (props) => {
                               horizontal
                               vertical
                             />
-                            Bàn {table}
+                            Bàn {table.b_stt}
                           </CCol>
                           <CCol lg="4">
                             <CInput placeholder="Tìm khách hàng (F4)" />
@@ -360,96 +507,7 @@ export default (props) => {
                         </CRow>
                       </CCardHeader>
                       <CCardBody className="bill">
-                        {/* */}
-                        {bill.length > 0 ? (
-                          bill
-                            .filter((el) => el.idBan === table)
-                            .map((el, key) => {
-                              const id = el.bill.id;
-                              return (
-                                <CRow
-                                  className="border-bottom py-2 text-dark"
-                                  style={{
-                                    boxShadow: "0px 1px 1px #007fc1",
-                                  }}
-                                  key={key}
-                                >
-                                  <CCol lg="7" className="d-flex">
-                                    <Icon
-                                      path={mdiDelete}
-                                      title="User Profile"
-                                      size={1}
-                                      horizontal
-                                      rotate={180}
-                                      vertical
-                                      onClick={(e) =>
-                                        onDeleteMenuHandler(e, id)
-                                      }
-                                    />
-                                    <p>&nbsp;{key + 1}&nbsp;</p>
-                                    <p>{el.bill.name}</p>
-                                  </CCol>
-                                  <CCol
-                                    lg="5"
-                                    className="d-flex justify-content-between"
-                                  >
-                                    <Icon
-                                      path={mdiMinusCircle}
-                                      title="User Profile"
-                                      size={1}
-                                      horizontal
-                                      rotate={180}
-                                      vertical
-                                      onClick={(e) => {
-                                        setBill((el) => {
-                                          if (el[key].bill.amount === 1) {
-                                            return el;
-                                          }
-                                          return produce(el, (v) => {
-                                            v[key].bill.amount =
-                                              el[key].bill.amount - 1;
-                                          });
-                                        });
-                                      }}
-                                    />
-                                    <p> &nbsp;{el.bill.amount}&nbsp;</p>
-                                    <Icon
-                                      path={mdiPlusCircle}
-                                      title="User Profile"
-                                      size={1}
-                                      horizontal
-                                      rotate={180}
-                                      vertical
-                                      onClick={(e) => {
-                                        setBill((el) =>
-                                          produce(el, (v) => {
-                                            v[key].bill.amount =
-                                              el[key].bill.amount + 1;
-                                          })
-                                        );
-                                      }}
-                                    />
-                                    <p>{el.bill.price}</p>
-                                    <p>
-                                      {" "}
-                                      <strong>{el.bill.price}</strong>{" "}
-                                    </p>
-                                  </CCol>
-                                </CRow>
-                              );
-                            })
-                        ) : (
-                          <div className="icon">
-                            <Icon
-                              path={mdiFoodOff}
-                              title="User Profile"
-                              size={10}
-                              horizontal
-                              rotate={180}
-                              vertical
-                            />
-                          </div>
-                        )}
+                        <Bill />
                       </CCardBody>
                       <CCardFooter className="text-dark">
                         <CRow className="d-flex justify-content-between">
@@ -496,7 +554,7 @@ export default (props) => {
                         </CRow>
                         <CRow>
                           <CCol
-                            className="text-center bg-success py-3 rounded-left"
+                            className="text-center bg-success py-3 rounded-left checkout-button"
                             onClick={onCheckOutHandler}
                           >
                             <h4 className="text-light">
@@ -511,8 +569,11 @@ export default (props) => {
                               Thanh toán
                             </h4>
                           </CCol>
-                          <CCol className="text-center bg-info py-3 rounded-right">
-                            <h4 className="text-light">
+                          <CCol 
+                          className="text-center bg-info py-3 rounded-right checkout-button"
+                          onClick={submitNotifications}
+                          >
+                            <h4 className="text-light"  >
                               {" "}
                               <Icon
                                 path={mdiBellRing}
@@ -522,6 +583,7 @@ export default (props) => {
                                 rotate={180}
                                 vertical
                               />{" "}
+                             
                               Thông báo
                             </h4>
                           </CCol>
@@ -530,12 +592,11 @@ export default (props) => {
                     </CCard>
                   </CContainer>
                 </CTabPane>
-                <CTabPane data-tab="menu">452</CTabPane>
               </CTabContent>
             </CTabs>
           </CCol>
         </CRow>
       </CContainer>
-    </div>
+    </Sidebar>
   );
 };
