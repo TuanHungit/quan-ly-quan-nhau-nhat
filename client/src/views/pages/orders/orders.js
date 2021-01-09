@@ -69,7 +69,7 @@ export default (props) => {
   const [checkout, setCheckout] = useState([]);
   const [listTable, setListTable] = useState([]);
   const [update, setUpdate] = useState(false);
-  // const [tableStatus, setTableStatus] = useState("all");
+  const [updatedMenu, setUpdatedMenu] = useState(false);
   useEffect(() => {
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
@@ -79,13 +79,19 @@ export default (props) => {
     fetchTableData();
   }, [update]);
   const onClickTableHandler = (e, el) => {
-    setTable(el.idBan);
+    setTable(el);
   };
+  useEffect(() => {
+    if (updatedMenu) {
+      localStorage.setItem("bill", JSON.stringify(bill));
+    }
+    setUpdatedMenu(false);
+  }, [updatedMenu]);
   const onClickMenuHandler = async (id, idBan, name, price) => {
     try {
       const existingTable = bill.filter((el) => el.idBan === idBan);
       if (existingTable.length === 0) {
-        await editBan({ b_id: table, b_trangthai: 0 });
+        await editBan({ b_id: table.b_id, b_trangthai: 0 });
         setUpdate((state) => !state);
       }
 
@@ -126,8 +132,7 @@ export default (props) => {
         }
         return state.concat([{ idBan, bill: { id, name, price, amount: 1 } }]);
       });
-
-      localStorage.setItem("bill", JSON.stringify(bill));
+      setUpdatedMenu(true);
     } catch (err) {
       console.log(err);
     }
@@ -136,12 +141,12 @@ export default (props) => {
     setPaymentSideBarOpen((state) => !state);
   };
   const onCheckOutHandler = (e) => {
-    if (table === 0) {
+    if (table.b_id === 0) {
       return alert("Vui lòng chọn bàn để thanh toán!");
     }
     setPaymentSideBarOpen((state) => !state);
     const result = bill
-      .filter((el) => el.idBan === table)
+      .filter((el) => el.idBan === table.b_id)
       .reduce(function (billCheckOut, obj) {
         let key = obj["idBan"];
 
@@ -152,25 +157,45 @@ export default (props) => {
         return billCheckOut;
       }, {});
 
-    console.log({ b_id: table, monans: result[table] });
+    console.log({ b_id: table.b_id, monans: result[table.b_id] });
   };
+
   const onDeleteMenuHandler = async (e, id) => {
     const billUpdated = bill.filter(
-      (el) => el.bill.id !== id || el.idBan !== table
+      (el) => el.bill.id !== id || el.idBan !== table.b_id
     );
 
-    if (billUpdated.filter((el) => el.idBan === table).length === 0) {
-      await editBan({ b_id: table, b_trangthai: 1 });
+    if (billUpdated.filter((el) => el.idBan === table.b_id).length === 0) {
+      await editBan({ b_id: table.b_id, b_trangthai: 1 });
       setUpdate((state) => !state);
     }
     localStorage.setItem("bill", JSON.stringify(billUpdated));
     setBill([...billUpdated]);
   };
+  const submitNotifications = () => {
+    const result = bill
+      .filter((el) => el.idBan === table.b_id)
+      .reduce(function (billCheckOut, obj) {
+        let key = obj["idBan"];
+
+        if (!billCheckOut[key]) {
+          billCheckOut[key] = [];
+        }
+        billCheckOut[key].push({
+          id: obj.bill.id,
+          price: obj.bill.price,
+          amount: obj.bill.amount,
+        });
+        return billCheckOut;
+      }, {});
+
+    console.log({ b_id: table.b_id, monans: result[table.b_id] });
+  };
 
   const Bill = () =>
-    bill.filter((el) => el.idBan === table).length > 0 ? (
+    bill.filter((el) => el.idBan === table.b_id).length > 0 ? (
       bill
-        .filter((el) => el.idBan === table)
+        .filter((el) => el.idBan === table.b_id)
         .map((el, key) => {
           const id = el.bill.id;
           return (
@@ -340,10 +365,12 @@ export default (props) => {
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
                                 className={`table  border-radius ${
-                                  el.b_stt === table ? "bg-info text-light" : ""
+                                  el.b_id === table.b_id
+                                    ? "bg-info text-light"
+                                    : ""
                                 }  ${
                                   el.b_trangthai === "DaDat" &&
-                                  el.b_stt === table
+                                  el.b_id === table.b_id
                                     ? "bg-danger text-light"
                                     : ""
                                 } ${
@@ -393,8 +420,10 @@ export default (props) => {
                           {listTable.slice(24).map((el, key) => (
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
-                                className={`table  border-radius ${
-                                  el.b_stt === table ? "bg-info text-light" : ""
+                                className={`table.b_id  border-radius ${
+                                  el.b_stt === table.b_id
+                                    ? "bg-info text-light"
+                                    : ""
                                 } ${
                                   el.b_trangthai === "DaDat"
                                     ? "bg-danger text-light"
@@ -441,7 +470,10 @@ export default (props) => {
                   </CContainer>
                 </CTabPane>
                 <CTabPane data-tab="menu" className="pt-3">
-                  <Menu onClickMenuHandler={onClickMenuHandler} table={table} />
+                  <Menu
+                    onClickMenuHandler={onClickMenuHandler}
+                    table={table.b_id}
+                  />
                 </CTabPane>
               </CTabContent>
             </CTabs>
@@ -474,7 +506,7 @@ export default (props) => {
                               horizontal
                               vertical
                             />
-                            Bàn {table}
+                            Bàn {table.b_stt}
                           </CCol>
                           <CCol lg="4">
                             <CInput placeholder="Tìm khách hàng (F4)" />
@@ -545,7 +577,10 @@ export default (props) => {
                               Thanh toán
                             </h4>
                           </CCol>
-                          <CCol className="text-center bg-info py-3 rounded-right">
+                          <CCol
+                            className="text-center bg-info py-3 rounded-right checkout-button"
+                            onClick={submitNotifications}
+                          >
                             <h4 className="text-light">
                               {" "}
                               <Icon

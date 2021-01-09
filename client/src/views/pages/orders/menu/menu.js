@@ -113,7 +113,7 @@ export default ({ onClickMenuHandler, table }) => {
                             )
                           }
                         >
-                          <img
+                          <img 
                             src={
                               "http://localhost:8080/image/"+el.ma_hinhanh
                             }

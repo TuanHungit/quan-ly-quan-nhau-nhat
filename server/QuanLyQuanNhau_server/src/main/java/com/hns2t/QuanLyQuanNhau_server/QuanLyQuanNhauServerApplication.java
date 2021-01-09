@@ -26,9 +26,9 @@ public class QuanLyQuanNhauServerApplication {
 //				.and()
 //				.csrf().disable()
 //				.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-//				//.authorizeRequests()
-//				//.antMatchers(HttpMethod.POST, "/api/v1/taikhoans/login").permitAll()
-//				//.anyRequest().authenticated();
+//				.authorizeRequests()
+//				.antMatchers(HttpMethod.POST, "/api/v1/taikhoans/login").permitAll()
+//				.anyRequest().authenticated();
 //		}	
 //	}
 	public static void main(String[] args) {

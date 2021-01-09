@@ -75,6 +75,7 @@ public class MonAnController {
 			monAn.ma_hinhanh= monAn.getMa_id() +"_"+ image.getOriginalFilename();
 		}
 		monAn.ma_motachitiet=ma_motachitiet;
+		
 		monAn=repo.save(monAn);
 		return monAn;
 	}

@@ -29,7 +29,6 @@ public class MonAn {
 	public String ma_donvitinh;
 	public String ma_hinhanh;
 	public String ma_motachitiet;
-	
 	@ManyToOne
 	@JoinColumn(name = "ma_lmaid")
     @JsonBackReference
