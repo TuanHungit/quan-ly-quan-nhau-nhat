@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import com.hns2t.QuanLyQuanNhau_server.model.Ban;
 import com.hns2t.QuanLyQuanNhau_server.model.ChiTietHoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
+import com.pusher.rest.Pusher;
 
 
 @RestController
@@ -96,6 +98,12 @@ public class HoaDonController {
 				chiTietHoaDon.setHoaDon(hoaDon);
 				cthdRepo.save(chiTietHoaDon);
 			}
+			
+			Pusher pusher = new Pusher("1134980", "418932f279b2ed1937ab", "d6a796c3c689a6843ddd");
+			pusher.setCluster("ap1");
+			pusher.setEncrypted(true);
+
+			pusher.trigger("my-channel", "my-event", Collections.singletonMap("message", json));
 	
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -103,6 +111,8 @@ public class HoaDonController {
 		}
 		return new ResponseEntity<>(hoaDon, HttpStatus.OK);
 	}
+	
+
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<HoaDon> updateHoaDon(@PathVariable(value = "id") Long id, @RequestBody HoaDon hoaDonDetail){

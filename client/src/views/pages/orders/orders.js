@@ -79,7 +79,7 @@ export default (props) => {
     fetchTableData();
   }, [update]);
   const onClickTableHandler = (e, el) => {
-    setTable(el.b_stt);
+    setTable(el.idBan);
   };
   const onClickMenuHandler = async (id, idBan, name, price) => {
     try {
