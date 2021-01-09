@@ -4,6 +4,7 @@ import store from './../store/index';
 const url={
     baseUrl:'http://localhost:8080/api/v1/',
     login :'taikhoans/login',
+    hoadon:'hoadons'
 }
 const instance=axios.create({
     baseURL:url.baseUrl,

@@ -46,6 +46,7 @@ import Checkout from "./payment/checkout";
 import Sidebar from "react-sidebar";
 import ToPriceForView from "../../../common/convertPriceForView";
 import ToDateForView from "../../../common/convertDateForView";
+import HoaDonService from './../../../api/HoaDonService';
 export default (props) => {
   const settings = {
     dots: true,
@@ -184,9 +185,20 @@ export default (props) => {
         });
         return billCheckOut;
       }, {});
+      try {
+        HoaDonService.createBill({
+          ban_id: table.b_id,
+          hd_tongtien:12345,
+          hd_trangthai:1, 
+          hd_nhanvienid:JSON.parse((localStorage.getItem("userInfo"))).nv_id, 
+          monans: result[table.b_id]
+        }).then(res=>alert("Đã thông báo cho bếp!"));
+        
 
-    console.log({ b_id: table.b_id, monans: result[table.b_id] });
-  };
+      } catch (error) {
+        alert("Thông báo thất bại!")
+      }
+  }
 
   const calculateTotalOfBill = (idBan) => {
     const existingBill = bill.filter((el) => el.idBan === idBan);
