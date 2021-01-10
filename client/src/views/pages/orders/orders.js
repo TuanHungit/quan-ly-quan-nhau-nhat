@@ -74,28 +74,28 @@ export default (props) => {
   const [updatedMenu, setUpdatedMenu] = useState(false);
   const [total, setTotal] = useState(0);
   const [billId, setBillId] = useState(0);
+  const [noti, setNoti] = useState(true);
   useEffect(() => {
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
   }, []);
 
   useEffect(() => {
-    fetchTableData();
+    if (update) {
+      fetchTableData();
+      setUpdate(false);
+    }
   }, [update]);
 
   const onClickTableHandler = (e, el) => {
     setTable(el);
     calculateTotalOfBill(el.b_id);
-    try {
-      HoaDonService.getHoaDonIdByTable(el.b_id).then((res) => {
-        if (res) {
-          console.log(res);
-          setBillId(res);
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    HoaDonService.getHoaDonIdByTable(el.b_id).then((res) => {
+      if (res) {
+        return setBillId(res);
+      }
+      setBillId(0);
+    });
   };
 
   useEffect(() => {
@@ -140,6 +140,7 @@ export default (props) => {
         return state.concat([{ idBan, bill: { id, name, price, amount: 1 } }]);
       });
       setUpdatedMenu(true);
+      setNoti(true);
     } catch (err) {
       console.log(err);
     }
@@ -180,31 +181,45 @@ export default (props) => {
   };
 
   const submitNotifications = () => {
-    const result = bill
-      .filter((el) => el.idBan === table.b_id)
-      .reduce(function (billCheckOut, obj) {
-        let key = obj["idBan"];
+    const existingBill = bill.filter((el) => el.idBan === table.b_id);
 
-        if (!billCheckOut[key]) {
-          billCheckOut[key] = [];
-        }
-        billCheckOut[key].push({
-          id: obj.bill.id,
-          price: obj.bill.price,
-          amount: obj.bill.amount,
+    if (existingBill.length > 0) {
+      try {
+        const result = existingBill.reduce(function (billCheckOut, obj) {
+          let key = obj["idBan"];
+
+          if (!billCheckOut[key]) {
+            billCheckOut[key] = [];
+          }
+          billCheckOut[key].push({
+            id: obj.bill.id,
+            price: obj.bill.price,
+            amount: obj.bill.amount,
+          });
+          return billCheckOut;
+        }, {});
+        HoaDonService.getHoaDonIdByTable(table.b_id).then((res) => {
+          if (res) {
+            alert("Bàn đã có hóa đơn.");
+          } else {
+            HoaDonService.createBill({
+              ban_id: table.b_id,
+              hd_tongtien: total,
+              hd_trangthai: 1,
+              hd_nhanvienid: JSON.parse(localStorage.getItem("userInfo")).nv_id,
+              monans: result[table.b_id],
+            }).then((res) => {
+              setBillId(res.hd_id);
+              setNoti(false);
+              alert("Đã thông báo cho bếp!");
+            });
+          }
         });
-        return billCheckOut;
-      }, {});
-    try {
-      HoaDonService.createBill({
-        ban_id: table.b_id,
-        hd_tongtien: total,
-        hd_trangthai: 1,
-        hd_nhanvienid: JSON.parse(localStorage.getItem("userInfo")).nv_id,
-        monans: result[table.b_id],
-      }).then((res) => alert("Đã thông báo cho bếp!"));
-    } catch (error) {
-      alert("Thông báo thất bại!");
+      } catch (error) {
+        alert("Thông báo thất bại!");
+      }
+    } else {
+      alert("Bàn không có món ăn!");
     }
   };
 
@@ -331,6 +346,8 @@ export default (props) => {
           banId={table.b_id}
           setUpdate={setUpdate}
           setBillId={setBillId}
+          setBill={setBill}
+          onSetSidebarOpen={onSetSidebarOpen}
         />
       }
       open={paymentSideBarOpen}
@@ -435,7 +452,11 @@ export default (props) => {
                                 <div className="label"> Bàn {el.b_stt} </div>
                               </div>
 
-                              <span className="note font12 ">
+                              <span
+                                className={`note  ${
+                                  el.b_id === table.b_id ? `note1` : null
+                                } font12 `}
+                              >
                                 {" "}
                                 <em>
                                   Ghi chú...{" "}
@@ -491,7 +512,11 @@ export default (props) => {
                                 <div className="label"> Bàn {el.b_stt} </div>
                               </div>
 
-                              <span className="note font12 ">
+                              <span
+                                className={`note  ${
+                                  el.b_id === table.b_id ? `note1` : null
+                                } font12 `}
+                              >
                                 {" "}
                                 <em>
                                   Ghi chú...{" "}
@@ -560,7 +585,29 @@ export default (props) => {
                       <CCardBody className="bill">
                         <Bill />
                       </CCardBody>
-                      <CCardFooter className="text-dark">
+                      <CCardFooter className="text-dark ">
+                        {noti ? (
+                          <CRow style={{ backgroundColor: "#fee7b1" }}>
+                            <p
+                              style={{ position: "relative" }}
+                              className="mt-2"
+                            >
+                              {" "}
+                              <Icon
+                                path={mdiBellRing}
+                                title="User Profile"
+                                size={0.8}
+                                horizontal
+                                rotate={180}
+                                color="red"
+                                vertical
+                              />{" "}
+                              Bạn vừa cập nhật đơn hàng. Click{" "}
+                              <strong>Thông báo</strong> để lưu thay đổi và đồng
+                              bộ trên hệ thống.
+                            </p>
+                          </CRow>
+                        ) : null}
                         <CRow className="d-flex justify-content-between">
                           <p>Số lượng khách </p>
                           <p>
@@ -606,8 +653,9 @@ export default (props) => {
                           </CButton>
                         </CRow>
                         <CRow>
-                          <CCol
-                            className={`text-center bg-success py-3 rounded-left checkout-button disable`}
+                          <CButton
+                            className={`text-center bg-success py-3 rounded-left checkout-button`}
+                            disabled={billId === 0}
                             onClick={onCheckOutHandler}
                           >
                             <h4 className="text-light">
@@ -621,13 +669,14 @@ export default (props) => {
                               />{" "}
                               Thanh toán
                             </h4>
-                          </CCol>
-                          <CCol
-                            className="text-center bg-info py-3 rounded-right checkout-button"
+                          </CButton>
+
+                          <CButton
+                            className={`text-center bg-info py-3 rounded-left checkout-button`}
+                            // disabled={billId !== 0}
                             onClick={submitNotifications}
                           >
                             <h4 className="text-light">
-                              {" "}
                               <Icon
                                 path={mdiBellRing}
                                 title="User Profile"
@@ -638,7 +687,7 @@ export default (props) => {
                               />{" "}
                               Thông báo
                             </h4>
-                          </CCol>
+                          </CButton>
                         </CRow>
                       </CCardFooter>
                     </CCard>

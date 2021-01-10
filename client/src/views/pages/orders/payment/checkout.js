@@ -58,23 +58,48 @@ const pageStyle = `
 }
 `;
 
-export default ({ menu, total, billId, banId, setUpdate, setBillId }) => {
+export default ({
+  menu,
+  total,
+  billId,
+  banId,
+  setUpdate,
+  setBillId,
+  setBill,
+  onSetSidebarOpen,
+}) => {
   const [excessCash, setExcessCash] = useState(0);
   const [customerCash, setCustomerCash] = useState(0);
   const componentRef = useRef();
+
+  const onAfterPrintHanlder = () => {
+    const billUpdated = Object.values(
+      JSON.parse(localStorage.getItem("bill"))
+    ).filter((el) => el.idBan !== banId);
+
+    localStorage.setItem("bill", JSON.stringify(billUpdated));
+    setBill(billUpdated);
+    onSetSidebarOpen();
+  };
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     pageStyle: pageStyle,
+    onAfterPrint: onAfterPrintHanlder,
   });
 
   const onCheckOutHandler = async () => {
     try {
       HoaDonServices.updateBillStatus(billId).then((res) => {
-        editBan({ b_id: banId, b_trangthai: 1 }).then((res) => handlePrint());
-        setUpdate((state) => !state);
-        setBillId(0);
+        editBan({ b_id: banId, b_trangthai: 1 }).then((res) => {
+          setUpdate(true);
+          setBillId(0);
+
+          handlePrint();
+        });
       });
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="m-4 checkout-content" style={{ height: "90%" }}>

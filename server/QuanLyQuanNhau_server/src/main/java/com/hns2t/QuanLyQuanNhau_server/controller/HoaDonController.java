@@ -174,7 +174,7 @@ public class HoaDonController {
 
 //	
 //	@DeleteMapping("/{id}")
-//	public ResponseEntity<Map<String, Boolean>> deleteHoaDon(@PathVariable Long id){
+//	public ResponseEntity<Map<String, Bo olean>> deleteHoaDon(@PathVariable Long id){
 //		HoaDon hoaDon = repo.findById(id)
 //				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
 //		repo.delete(hoaDon);
