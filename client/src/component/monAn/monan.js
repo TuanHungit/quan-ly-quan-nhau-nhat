@@ -75,6 +75,7 @@ function MonAn() {
       newDetails = [...details, index];
     }
     setDetails(newDetails);
+    console.log(details);
   };
   const actionSuccess = () => {
     setSuccess(!success);
@@ -90,7 +91,7 @@ function MonAn() {
       } catch (err) {
         setMonAnList(null);
         setLoading(true);
-         setSuccess(false);
+        setSuccess(false);
         console.log(err);
       }
     };
@@ -187,7 +188,7 @@ function MonAn() {
                   >
                     <span
                       className="c-subheader-nav-link"
-                      onClick={(e)=>toggleModalDelete(item)}
+                      onClick={(e) => toggleModalDelete(item)}
                     >
                       <CIcon
                         style={{ color: "red" }}
