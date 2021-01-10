@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
+import alertify from "alertifyjs";
 import { produce } from "immer";
 import {
   mdiAccountCircle,
@@ -47,6 +48,7 @@ import Sidebar from "react-sidebar";
 import ToPriceForView from "../../../common/convertPriceForView";
 import ToDateForView from "../../../common/convertDateForView";
 import HoaDonService from "./../../../api/HoaDonService";
+
 export default (props) => {
   const settings = {
     dots: true,
@@ -148,7 +150,15 @@ export default (props) => {
 
   const onCheckOutHandler = (e) => {
     if (table.b_id === 0) {
-      return alert("Vui lòng chọn bàn để thanh toán!");
+      return alertify.confirm(
+        "Vui lòng chọn bàn để thanh toán.",
+        function () {
+          alertify.success("Ok");
+        },
+        function () {
+          alertify.error("Hủy");
+        }
+      );
     }
     setPaymentSideBarOpen((state) => !state);
     const result = bill
@@ -200,7 +210,9 @@ export default (props) => {
         }, {});
         HoaDonService.getHoaDonIdByTable(table.b_id).then((res) => {
           if (res) {
-            alert("Bàn đã có hóa đơn.");
+            alertify.confirm("Đã thông báo cho nhà bếp.", function () {
+              alertify.success("Ok");
+            });
           } else {
             HoaDonService.createBill({
               ban_id: table.b_id,
@@ -211,15 +223,17 @@ export default (props) => {
             }).then((res) => {
               setBillId(res.hd_id);
               setNoti(false);
-              alert("Đã thông báo cho bếp!");
+              alertify.success("Đã thông báo cho nhà bếp.");
             });
           }
         });
       } catch (error) {
-        alert("Thông báo thất bại!");
+        alertify.error("Thông báo thất bại!");
       }
     } else {
-      alert("Bàn không có món ăn!");
+      alertify.confirm("Bàn chưa có hóa đơn.", function () {
+        alertify.success("Ok");
+      });
     }
   };
 
