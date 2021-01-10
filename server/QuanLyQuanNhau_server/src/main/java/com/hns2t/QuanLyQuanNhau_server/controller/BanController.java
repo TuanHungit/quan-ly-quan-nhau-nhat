@@ -75,23 +75,4 @@ public class BanController {
 		return ResponseEntity.ok(response);
 	}
 
-//	@PutMapping("/{id}" )
-//	public ResponseEntity<Ban> updateBan(@PathVariable Long id, @RequestBody String trangThaiBan){
-//		Ban object =repo.findById(id)
-//				.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + id));
-////		if(banDetail.getB_soghe()!= null) {
-////			object.setB_soghe(banDetail.getB_soghe());
-////		}
-////		if(banDetail.getB_stt()!=null) {
-////			object.setB_stt(banDetail.getB_stt());
-////		}
-//			
-//		TrangThaiBan newTrangThaiBan = (TrangThaiBan)trangThaiBan.toString();
-//		
-//		object.setB_trangthai();
-//
-//		Ban ban = repo.save(object);
-//		return ResponseEntity.ok(ban);
-//	}
-
 }
