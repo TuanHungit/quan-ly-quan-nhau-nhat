@@ -68,9 +68,30 @@ public class HoaDonController {
 	}
 	
 	@GetMapping("/date")
-	public List<HoaDon> getAllBetweenDate(@Param("fromDate") String fromDate){
-		return repo.findAllBetweenDate(fromDate);
+	public List<HoaDon> getAllWithDate(@Param("fromDate") String fromDate){
+		return repo.findAllWithDate(fromDate);
 	}
+	
+	@GetMapping("/month")
+	public List<HoaDon> getAllWithMonth(@Param("fromMonth") String fromMonth){
+		return repo.findAllWithMonth(fromMonth);
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<HoaDon> getHoaDon(@PathVariable Long id) {
+		HoaDon object =repo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
+		return ResponseEntity.ok(object);
+	}
+	
+	@GetMapping("/{id}/cthd")
+	public ResponseEntity<?> getChiTietHoaDon(@PathVariable Long id) {
+		HoaDon object =repo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
+		Object objects = repo.findListChiTietHoaDonById(id);
+		return ResponseEntity.ok(objects);
+	}
+	
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "")
 	public ResponseEntity<HoaDon> createHoaDon(@RequestBody  String inputJson) {
@@ -126,11 +147,11 @@ public class HoaDonController {
 	}
 	
 	@PutMapping("/{id}/thanhtoan")
-	public ResponseEntity<HoaDon> thanhToanHoaDon(@PathVariable(value = "id") Long id, @RequestBody HoaDon hoaDonDetail){
+	public ResponseEntity<HoaDon> thanhToanHoaDon(@PathVariable(value = "id") Long id){
 		HoaDon object =repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
-		object.setHd_tongtien(hoaDonDetail.getHd_tongtien());
-		object.setHd_trangthai(hoaDonDetail.getHd_trangthai());
+//		object.setHd_tongtien(hoaDonDetail.getHd_tongtien());
+		object.setHd_trangthai(StatusHoaDon.ThanhToan);
 		object.setHd_ngaythanhtoan(new Date());
 		HoaDon hoaDon = repo.save(object);
 		return ResponseEntity.ok(hoaDon);
@@ -155,18 +176,10 @@ public class HoaDonController {
 		return repo.save(hoaDon);
 	}
 	
-//	@GetMapping("/cthd")
-//	public List<ChiTietHoaDon> getAllChiTietHoaDons(){
-//		return cthdRepo.findAll();
-//	}
-//	
-//	@GetMapping("/{id}")
-//	public ResponseEntity<HoaDon> getHoaDon(@PathVariable Long id){
-//		HoaDon object = repo.findById(id)
-//				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
-//		return ResponseEntity.ok(object);
-//	}
-//	
+	@GetMapping("bans/{id}")
+	public Long getAllChiTietHoaDons(@PathVariable(value = "id") Long id){
+		return repo.getIdByTable(id);
+	}
 
 //	
 //	@DeleteMapping("/{id}")
@@ -179,4 +192,5 @@ public class HoaDonController {
 //		return ResponseEntity.ok(response);
 //	}
 //	
+
 }

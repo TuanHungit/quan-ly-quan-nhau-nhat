@@ -14,6 +14,8 @@ import "./checkout.css";
 import ToDateForView from "../../../../common/convertDateForView";
 import ToPriceForView from "../../../../common/convertPriceForView";
 import InvoiceToPrint from "./invoiceToPrint/invoiceToPrint";
+import HoaDonServices from "../../../../api/HoaDonService";
+import { editBan } from "../../../../api/BanApi";
 const generatorPrice = (price) => {
   const priceArr = [];
   if (price % 2 !== 0) {
@@ -25,6 +27,7 @@ const generatorPrice = (price) => {
 
   return priceArr;
 };
+
 const pageStyle = `
   @media all {
   .page-break {
@@ -53,9 +56,9 @@ const pageStyle = `
   margin: 20mm;
   
 }
-
 `;
-export default ({ menu, total }) => {
+
+export default ({ menu, total, billId, banId, setUpdate, setBillId }) => {
   const [excessCash, setExcessCash] = useState(0);
   const [customerCash, setCustomerCash] = useState(0);
   const componentRef = useRef();
@@ -63,6 +66,16 @@ export default ({ menu, total }) => {
     content: () => componentRef.current,
     pageStyle: pageStyle,
   });
+
+  const onCheckOutHandler = async () => {
+    try {
+      HoaDonServices.updateBillStatus(billId).then((res) => {
+        editBan({ b_id: banId, b_trangthai: 1 }).then((res) => handlePrint());
+        setUpdate((state) => !state);
+        setBillId(0);
+      });
+    } catch (err) {}
+  };
   return (
     <div className="m-4 checkout-content" style={{ height: "90%" }}>
       <CContainer>
@@ -199,7 +212,7 @@ export default ({ menu, total }) => {
                   height: "65px",
                   fontSize: "18px",
                 }}
-                onClick={handlePrint}
+                onClick={onCheckOutHandler}
               >
                 <Icon
                   path={mdiCurrencyUsd}
