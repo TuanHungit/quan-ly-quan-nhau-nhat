@@ -46,7 +46,7 @@ import Checkout from "./payment/checkout";
 import Sidebar from "react-sidebar";
 import ToPriceForView from "../../../common/convertPriceForView";
 import ToDateForView from "../../../common/convertDateForView";
-import HoaDonService from './../../../api/HoaDonService';
+import HoaDonService from "./../../../api/HoaDonService";
 export default (props) => {
   const settings = {
     dots: true,
@@ -73,7 +73,7 @@ export default (props) => {
   const [update, setUpdate] = useState(false);
   const [updatedMenu, setUpdatedMenu] = useState(false);
   const [total, setTotal] = useState(0);
-
+  const [billId, setBillId] = useState(0);
   useEffect(() => {
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
@@ -86,6 +86,16 @@ export default (props) => {
   const onClickTableHandler = (e, el) => {
     setTable(el);
     calculateTotalOfBill(el.b_id);
+    try {
+      HoaDonService.getHoaDonIdByTable(el.b_id).then((res) => {
+        if (res) {
+          console.log(res);
+          setBillId(res);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -185,20 +195,18 @@ export default (props) => {
         });
         return billCheckOut;
       }, {});
-      try {
-        HoaDonService.createBill({
-          ban_id: table.b_id,
-          hd_tongtien:total,
-          hd_trangthai:1, 
-          hd_nhanvienid:JSON.parse((localStorage.getItem("userInfo"))).nv_id, 
-          monans: result[table.b_id]
-        }).then(res=>alert("Đã thông báo cho bếp!"));
-        
-
-      } catch (error) {
-        alert("Thông báo thất bại!")
-      }
-  }
+    try {
+      HoaDonService.createBill({
+        ban_id: table.b_id,
+        hd_tongtien: total,
+        hd_trangthai: 1,
+        hd_nhanvienid: JSON.parse(localStorage.getItem("userInfo")).nv_id,
+        monans: result[table.b_id],
+      }).then((res) => alert("Đã thông báo cho bếp!"));
+    } catch (error) {
+      alert("Thông báo thất bại!");
+    }
+  };
 
   const calculateTotalOfBill = (idBan) => {
     const existingBill = bill.filter((el) => el.idBan === idBan);
@@ -315,7 +323,16 @@ export default (props) => {
     );
   return (
     <Sidebar
-      sidebar={<Checkout menu={<Bill />} total={total} />}
+      sidebar={
+        <Checkout
+          menu={<Bill />}
+          total={total}
+          billId={billId}
+          banId={table.b_id}
+          setUpdate={setUpdate}
+          setBillId={setBillId}
+        />
+      }
       open={paymentSideBarOpen}
       pullRight
       transitions
@@ -590,7 +607,7 @@ export default (props) => {
                         </CRow>
                         <CRow>
                           <CCol
-                            className="text-center bg-success py-3 rounded-left checkout-button"
+                            className={`text-center bg-success py-3 rounded-left checkout-button disable`}
                             onClick={onCheckOutHandler}
                           >
                             <h4 className="text-light">
