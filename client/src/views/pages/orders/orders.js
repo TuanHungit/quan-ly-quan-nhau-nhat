@@ -188,7 +188,7 @@ export default (props) => {
       try {
         HoaDonService.createBill({
           ban_id: table.b_id,
-          hd_tongtien:12345,
+          hd_tongtien:total,
           hd_trangthai:1, 
           hd_nhanvienid:JSON.parse((localStorage.getItem("userInfo"))).nv_id, 
           monans: result[table.b_id]

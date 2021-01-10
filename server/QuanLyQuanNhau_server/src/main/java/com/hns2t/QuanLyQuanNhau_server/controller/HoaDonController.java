@@ -38,6 +38,7 @@ import com.hns2t.QuanLyQuanNhau_server.model.ChiTietHoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 import com.hns2t.QuanLyQuanNhau_server.model.NhanVien;
+import com.hns2t.QuanLyQuanNhau_server.model.StatusHoaDon;
 
 
 @RestController
@@ -78,10 +79,18 @@ public class HoaDonController {
 		try {
 			JSONObject json = (JSONObject) parser.parse(inputJson);
 			Long ban_id =(long) json.get("ban_id");
+			Long hd_tongtien = (long) json.get("hd_tongtien");
+			Long hd_nhanvienid = (long) json.get("hd_nhanvienid");
+			 
 			Ban object = banRepo.findById(ban_id)
 					.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + ban_id));
+			NhanVien objectNV = nhanVienRepo.findById(hd_nhanvienid)
+					.orElseThrow(() -> new ResourceNotFoundException("Nhan vien khong ton tai with: " + hd_nhanvienid));
 			hoaDon.setBan(object);
 			hoaDon.setHd_ngaythanhtoan(new Date());
+			hoaDon.setHd_tongtien((double)hd_tongtien);
+			hoaDon.setHd_trangthai(StatusHoaDon.ChuaThanhToan);
+			hoaDon.setHd_nhanvien(objectNV);
 			repo.save(hoaDon);
 			List<JSONObject> listMonans = (ArrayList<JSONObject>)json.get("monans");		
 			for (JSONObject monan : listMonans) {
