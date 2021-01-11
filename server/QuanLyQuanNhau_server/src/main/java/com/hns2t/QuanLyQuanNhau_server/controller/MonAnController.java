@@ -65,7 +65,7 @@ public class MonAnController {
 		monAn.ma_giavon=ma_giavon;
 		monAn.ma_giaban=ma_giaban;
 		monAn.ma_donvitinh=ma_donvitinh;
-		monAn.ma_hinhanh="";
+		monAn.ma_hinhanh="default.jpg";
 		monAn.setLoaiMonAn(loaiMonAn);
 		if (!image.isEmpty()) {
 			monAn=repo.save(monAn);
@@ -75,7 +75,6 @@ public class MonAnController {
 			monAn.ma_hinhanh= monAn.getMa_id() +"_"+ image.getOriginalFilename();
 		}
 		monAn.ma_motachitiet=ma_motachitiet;
-		
 		monAn=repo.save(monAn);
 		return monAn;
 	}
