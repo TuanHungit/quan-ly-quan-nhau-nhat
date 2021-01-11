@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -52,7 +53,8 @@ public class HoaDonController {
 	Pusher pusher = PusherService.getPusher();
 	@Autowired
 	private HoaDonRepository repo;
-	
+	@Autowired
+	private ChiTietHoaDonRepository cthdrepo ;
 	@Autowired
 	private NhanVienRepository nhanVienRepo;
 	
@@ -108,7 +110,7 @@ public class HoaDonController {
 				Double hd_tongtien = Double.parseDouble(json.get("hd_tongtien").toString());
 				hoaDon.setHd_tongtien(hd_tongtien);
 			}
-			
+	
 			if(json.get("hd_nhanvienid") != null) {
 				Long hd_nhanvienid = Long.parseLong(json.get("hd_nhanvienid").toString());		
 				NhanVien objectNV = nhanVienRepo.findById(hd_nhanvienid)
@@ -177,6 +179,7 @@ public class HoaDonController {
 	public HoaDon createChiTietHoaDon(@PathVariable(value = "id") Long id, @RequestBody List<JSONObject> chiTietHoaDons) {
 		HoaDon hoaDon = repo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
+	
 		for (JSONObject chiTietHoaDon : chiTietHoaDons) {
 			ChiTietHoaDon chiTietHoaDon1  = new ChiTietHoaDon();
 			Long monAnId = Long.parseLong(chiTietHoaDon.get("id").toString());
@@ -187,7 +190,9 @@ public class HoaDonController {
 			chiTietHoaDon1.setCthd_gia(Double.parseDouble(chiTietHoaDon.get("price").toString()));
 			chiTietHoaDon1.setHoaDon(hoaDon);
 			cthdRepo.saveAndFlush(chiTietHoaDon1);
+			pusher.trigger("my-channel", "notice", Collections.singletonMap("message",chiTietHoaDon1));
 		}
+		
 		return repo.save(hoaDon);
 	}
 	

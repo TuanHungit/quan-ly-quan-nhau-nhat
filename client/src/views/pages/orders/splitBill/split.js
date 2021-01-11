@@ -24,7 +24,7 @@ import {
 } from "@coreui/react";
 import "./split.css";
 import ToPriceForView from "../../../../common/convertPriceForView";
-
+import HoaDonService from "../../../../api/HoaDonService";
 export default ({
   modalSplitBill,
   onSetModalSplitBill,
@@ -41,22 +41,25 @@ export default ({
     if (b_id_split_to === 0) {
       return alertify.error("Vui lòng chọn bàn để ghép đơn!");
     }
-    const billSplitTo = [];
-    const billUpdated = bill.map((el) => {
-      if (el.idBan === b_id_split) {
-        //   billSplitTo.push();
-        el.idBan = b_id_split_to;
-        billSplitTo.push({ ...el, idBan: b_id_split_to });
-      }
-      return el;
-    });
 
-    updateStatusTable(b_id_split, 1);
-    setBill(billUpdated);
-    setUpdatedMenu(true);
-    setUpdate(true);
-    onSetModalSplitBill();
-    alertify.success("Tách ghép đơn thành công!");
+    HoaDonService.deleteBill(b_id_split).then((res) => {
+      const billSplitTo = [];
+      const billUpdated = bill.map((el) => {
+        if (el.idBan === b_id_split) {
+          //   billSplitTo.push();
+          el.idBan = b_id_split_to;
+          billSplitTo.push({ ...el, idBan: b_id_split_to });
+        }
+        return el;
+      });
+      updateStatusTable(b_id_split, 1);
+      setBill(billUpdated);
+
+      setUpdatedMenu(true);
+      setUpdate(true);
+      onSetModalSplitBill();
+      alertify.success("Tách ghép đơn thành công!");
+    });
   };
   return (
     <CModal show={modalSplitBill} onClose={onSetModalSplitBill} size="lg">

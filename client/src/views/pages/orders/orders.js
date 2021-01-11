@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import Icon from "@mdi/react";
 import alertify from "alertifyjs";
 
-import { channel, privateChanel } from "../../../common/pusher";
+import { channel } from "../../../common/pusher";
 import { produce } from "immer";
 import {
   mdiAccountCircle,
@@ -183,6 +183,7 @@ export default (props) => {
                 bill: {
                   ...el.bill,
                   amount: el.bill.amount + 1,
+                  status: 0,
                 },
               };
             }
@@ -231,10 +232,14 @@ export default (props) => {
         const billUpdated = bill.filter(
           (el) => el.bill.id !== id || el.idBan !== table.b_id
         );
-
-        if (billUpdated.filter((el) => el.idBan === table.b_id).length === 0) {
-          updateStatusTable(table.b_id, 1);
-          setUpdate((state) => !state);
+        const billTable = billUpdated.filter((el) => el.idBan === table.b_id);
+        if (billTable.length === 0) {
+          HoaDonService.getHoaDonIdByTable(table.b_id).then((res) => {
+            HoaDonService.deleteBill(res).then((res) => {
+              setUpdate((state) => !state);
+              updateStatusTable(table.b_id, 1);
+            });
+          });
         }
         localStorage.setItem("bill", JSON.stringify(billUpdated));
         setBill([...billUpdated]);
@@ -323,7 +328,7 @@ export default (props) => {
               }}
               key={key}
             >
-              <CCol lg="7" className="d-flex">
+              <CCol lg="6" className="d-flex">
                 <Icon
                   path={mdiDelete}
                   title="User Profile"
@@ -338,7 +343,8 @@ export default (props) => {
                 </p>
                 <p>{el.bill.name}</p>
               </CCol>
-              <CCol lg="5" className="d-flex justify-content-between">
+
+              <CCol lg="2" className="d-flex justify-content-between">
                 <Icon
                   path={mdiMinusCircle}
                   title="User Profile"
@@ -373,6 +379,8 @@ export default (props) => {
                     );
                   }}
                 />
+              </CCol>
+              <CCol lg="4" className="d-flex justify-content-between">
                 <p>{ToPriceForView(el.bill.price)}</p>
                 <p>
                   <strong>
@@ -441,8 +449,6 @@ export default (props) => {
           <CCol lg="7">
             <CTabs activeTab="roomtable">
               <CNav variant="tabs">
-
-                
                 <CNavItem>
                   <CNavLink data-tab="roomtable">
                     {" "}
@@ -463,10 +469,6 @@ export default (props) => {
                     <strong>Thực đơn</strong>{" "}
                   </CNavLink>
                 </CNavItem>
-
-
-
-
               </CNav>
               <CTabContent>
                 <CTabPane
