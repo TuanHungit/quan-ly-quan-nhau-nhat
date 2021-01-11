@@ -6,6 +6,7 @@ const url = {
   login: "taikhoans/login",
   hoadon: "hoadons",
   message: "messages",
+  chitiethoadon: "cthds",
 };
 const instance = axios.create({
   baseURL: url.baseUrl,

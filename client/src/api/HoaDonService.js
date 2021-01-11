@@ -18,13 +18,21 @@ const updateMenuOfBill = async (hoaDonId, data) => {
     .post(`${api.url.hoadon}/${hoaDonId}/cthd`, data)
     .then((res) => res.data);
 };
-// const deleteBill = async () => {
-//   return api.
-// }
+const deleteBill = async (hoaDonId) => {
+  return api.delete(`${api.url.hoadon}/${hoaDonId}`).then((res) => res.data);
+};
+
+const addMoreCTDH = async (hoaDonId, data) => {
+  return api
+    .post(`${api.url.hoadon}/${hoaDonId}/cthd`, data)
+    .then((res) => res.data);
+};
 const HoaDonService = {
   createBill,
   updateBillStatus,
   getHoaDonIdByTable,
   updateMenuOfBill,
+  deleteBill,
+  addMoreCTDH,
 };
 export default HoaDonService;

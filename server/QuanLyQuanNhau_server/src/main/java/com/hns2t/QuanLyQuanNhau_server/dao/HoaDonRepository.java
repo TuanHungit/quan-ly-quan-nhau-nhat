@@ -5,6 +5,10 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.hns2t.QuanLyQuanNhau_server.model.ChiTietHoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 
 public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
@@ -15,7 +19,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
 	@Query("SELECT hd.hd_id FROM HoaDon hd WHERE hd.ban.b_id = ?1 AND hd.hd_trangthai='1'")
 	Long getIdByTable( Long tableId);
 	
-	@Query(value =  "SELECT ma.ma_ten, cthd.cthd_soluong, cthd.cthd_gia \r\n"
+	@Query(value =  "SELECT cthd.cthd_id, ma.ma_ten, cthd.cthd_soluong, cthd.cthd_gia \r\n"
 			+ "FROM hoadon hd  \r\n"
 			+ "join cthd cthd on hd.hd_id = cthd.cthd_hdid \r\n"
 			+ "join monan ma on ma.ma_id = cthd.cthd_monanid\r\n"
