@@ -191,6 +191,7 @@ public class HoaDonController {
 		return repo.save(hoaDon);
 	}
 	
+	
 	@GetMapping("bans/{id}")
 	public Long getAllChiTietHoaDons(@PathVariable(value = "id") Long id){
 		return repo.getIdByTable(id);
