@@ -6,22 +6,22 @@ import org.springframework.web.client.HttpStatusCodeException;
 public class LoginResponse {
 	 private String tk_tendangnhap;
 	 private long nv_id;
+	 private String nv_ten;
 	 private String token;
 	 private int code;
 	 private String message;
-	public LoginResponse(String tk_tendangnhap, long nv_id, String token, int code, String message) {
+	public LoginResponse(String tk_tendangnhap, long nv_id, String nv_ten, String token, int code, String message) {
 		super();
 		this.tk_tendangnhap = tk_tendangnhap;
 		this.nv_id = nv_id;
+		this.nv_ten = nv_ten;
 		this.token = token;
 		this.code = code;
 		this.message = message;
 	}
-	
 	public LoginResponse() {
 		super();
 	}
-
 	public String getTk_tendangnhap() {
 		return tk_tendangnhap;
 	}
@@ -31,8 +31,14 @@ public class LoginResponse {
 	public long getNv_id() {
 		return nv_id;
 	}
-	public void setNv_id(Long nv_id) {
+	public void setNv_id(long nv_id) {
 		this.nv_id = nv_id;
+	}
+	public String getNv_ten() {
+		return nv_ten;
+	}
+	public void setNv_ten(String nv_ten) {
+		this.nv_ten = nv_ten;
 	}
 	public String getToken() {
 		return token;
@@ -53,4 +59,5 @@ public class LoginResponse {
 		this.message = message;
 	}
 	 
+	
 }

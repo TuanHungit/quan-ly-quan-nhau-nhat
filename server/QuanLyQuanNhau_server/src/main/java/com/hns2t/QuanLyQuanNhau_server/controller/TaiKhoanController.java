@@ -72,6 +72,7 @@ public class TaiKhoanController {
 				loginResponse.setTk_tendangnhap(taiKhoan.getTk_tendangnhap());
 				NhanVien nhanVien =repoNV.findNhanVienBuTk_id(taiKhoan.getTk_id());
 				loginResponse.setNv_id(nhanVien.getNv_id());
+				loginResponse.setNv_ten(nhanVien.getNv_hoten());
 				loginResponse.setToken(token);
 				loginResponse.setCode(0);
 				loginResponse.setMessage("Login success!");
