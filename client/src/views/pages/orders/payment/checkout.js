@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import Icon from "@mdi/react";
 import { useReactToPrint } from "react-to-print";
+import alertify from "alertifyjs";
 import {
   mdiCalendarBlankOutline,
   mdiTable,
@@ -39,7 +40,8 @@ const pageStyle = `
   html, body {
     height: initial !important;
     overflow: initial !important;
-    -webkit-print-color-adjust: exact;
+    -webkit-print-colorimport { alertify } from 'alertifyjs';
+-adjust: exact;
   }
 }
 
@@ -80,6 +82,7 @@ export default ({
     localStorage.setItem("bill", JSON.stringify(billUpdated));
     setBill(billUpdated);
     onSetSidebarOpen();
+    alertify.success("Thanh toán thành công!");
   };
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
