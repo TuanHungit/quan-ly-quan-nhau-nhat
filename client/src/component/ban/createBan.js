@@ -91,7 +91,7 @@ const CreateBan = (props) => {
                 </CRow>
               </CCol>
             </CRow>
-            <CRow className="field">
+            {/* <CRow className="field">
               <CCol lg="10">
                 <CRow>
                   <CCol lg="5" className="pt-2">
@@ -112,7 +112,7 @@ const CreateBan = (props) => {
                   </CCol>
                 </CRow>
               </CCol>
-            </CRow>
+            </CRow> */}
           </CContainer>
         </CModalBody>
         <CModalFooter>

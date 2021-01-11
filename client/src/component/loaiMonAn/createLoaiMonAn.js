@@ -30,7 +30,6 @@ import {
 function CreateLoaiMon(props) {
   const [files, setFiles] = useState(null);
   const [lma_ten, setLma_ten] = useState("");
- 
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -57,12 +56,13 @@ function CreateLoaiMon(props) {
           <CModalBody>
             <CContainer>
               <CRow>
-                <CCol lg="6">
+                <CCol>
                   <CRow>
+                  <CCol lg="1"></CCol>
                     <CCol lg="4" className="pt-2">
-                     Tên loại
+                      Tên loại
                     </CCol>
-                    <CCol lg="8">
+                    <CCol lg="6">
                       <input
                         type="text"
                         placeholder="Nhập tên loại món ăn"
@@ -70,12 +70,13 @@ function CreateLoaiMon(props) {
                         onChange={(e) => {
                           setLma_ten(e.target.value);
                         }}
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", height:"30px" }}
                         required
                       />
                     </CCol>
+                    <CCol lg="1" ></CCol>
                   </CRow>
-                   </CCol>
+                </CCol>
                 {/* <CCol lg="6" className="pt-2">
                   <QuillEditor
                     title="Mô tả về khuyến mãi"

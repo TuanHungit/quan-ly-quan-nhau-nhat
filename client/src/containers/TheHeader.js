@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import {
   CHeader,
@@ -12,6 +12,8 @@ import {
   CLink,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
+import { connect } from 'react-redux'
+
 
 // routes config
 import routes from "../routes";
@@ -23,10 +25,10 @@ import {
   TheHeaderDropdownTasks,
 } from "./index";
 
-const TheHeader = () => {
+const TheHeader = (props) => {
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
-
+  const {username} = props;
   const toggleSidebar = () => {
     const val = [true, "responsive"].includes(sidebarShow)
       ? false
@@ -40,7 +42,7 @@ const TheHeader = () => {
       : "responsive";
     dispatch({ type: "set", sidebarShow: val });
   };
-
+ 
   return (
     <CHeader withSubheader>
       <CToggler
@@ -73,6 +75,7 @@ const TheHeader = () => {
         {/* <TheHeaderDropdownNotif />
         <TheHeaderDropdownTasks />
         <TheHeaderDropdownMssg /> */}
+        <strong>{username.nv_ten}</strong>
         <TheHeaderDropdown />
       </CHeaderNav>
 
@@ -102,5 +105,10 @@ const TheHeader = () => {
     </CHeader>
   );
 };
-
-export default TheHeader;
+const mapStateToProps = (state) => {
+  return {
+    username: state.auth.currentUser,
+  };
+};
+export default connect( mapStateToProps)(TheHeader)
+// export default TheHeader;

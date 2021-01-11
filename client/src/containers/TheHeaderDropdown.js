@@ -27,7 +27,7 @@ const TheHeaderDropdown = (props) => {
       className="c-header-nav-items mx-2"
       direction="down"
     >
-    
+     
       <CDropdownToggle className="c-header-nav-link" caret={false}>
         <div className="c-avatar">
           <CImg
@@ -38,7 +38,7 @@ const TheHeaderDropdown = (props) => {
         </div>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        {/* <CDropdownItem
+         <CDropdownItem
           header
           tag="div"
           color="light"
@@ -46,7 +46,7 @@ const TheHeaderDropdown = (props) => {
         >
           <strong>Account</strong>
         </CDropdownItem>
-        <CDropdownItem>
+        {/* <CDropdownItem>
           <CIcon name="cil-bell" className="mfe-2" /> 
           Updates
           <CBadge color="info" className="mfs-auto">42</CBadge>
@@ -91,7 +91,7 @@ const TheHeaderDropdown = (props) => {
           Projects
           <CBadge color="primary" className="mfs-auto">42</CBadge>
         </CDropdownItem> */}
-        <CDropdownItem divider />
+        {/* <CDropdownItem divider /> */}
         <CDropdownItem  onClick={submitLogOut}>
           <CIcon name="cil-lock-locked" className="mfe-2" /> 
           {isLogouted?"LogOut":"LogIn"}
