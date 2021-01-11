@@ -39,13 +39,16 @@ import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.MonAn;
 import com.hns2t.QuanLyQuanNhau_server.model.NhanVien;
 import com.hns2t.QuanLyQuanNhau_server.model.StatusHoaDon;
+import com.hns2t.QuanLyQuanNhau_server.service.PusherService;
+import com.pusher.rest.Pusher;
+import com.sun.xml.bind.v2.schemagen.xmlschema.Any;
 
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/v1/hoadons")
 public class HoaDonController {
-	
+	Pusher pusher = PusherService.getPusher();
 	@Autowired
 	private HoaDonRepository repo;
 	
@@ -126,7 +129,11 @@ public class HoaDonController {
 				chiTietHoaDon.setCthd_gia(gia);
 				chiTietHoaDon.setHoaDon(hoaDon);
 				cthdRepo.save(chiTietHoaDon);
+
 			}
+
+		
+			pusher.trigger("my-channel", "notice", Collections.singletonMap("message",json));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -180,6 +187,8 @@ public class HoaDonController {
 	public Long getAllChiTietHoaDons(@PathVariable(value = "id") Long id){
 		return repo.getIdByTable(id);
 	}
+	
+	
 
 //	
 //	@DeleteMapping("/{id}")

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Icon from "@mdi/react";
-
+import { produce } from "immer";
 import { mdiChevronDoubleRight, mdiChevronRight } from "@mdi/js";
+import ToDateForView from "../../../common/convertDateForView";
+import { channel } from "../../../common/pusher";
 import {
   CContainer,
   CRow,
@@ -14,68 +16,119 @@ import {
   CTabPane,
 } from "@coreui/react";
 import "./kitchen.css";
-import { produce } from "immer";
-export default (props) => {
-  const [listMenu, setListMenu] = useState([
-    {
-      id: 1,
-      cthd_ten: "CBánh mỳ bỏ lò dăm bông & phomai",
-      ctdh_soluong: 3,
-      b_id: 10,
-      time: "10 ngày trước",
-      creatdAt: "DH000006 - 26/12/2020 19:37 - Bởi Thanh Hoang",
-    },
-    {
-      id: 2,
-      cthd_ten: "Phomai dây Nga",
-      ctdh_soluong: 1,
-      b_id: 10,
-      time: "10 ngày trước",
-      creatdAt: "DH000006 - 26/12/2020 19:37 - Bởi Thanh Hoang",
-    },
-    {
-      id: 3,
-      cthd_ten: "Đĩa thịt nguội Tây Ba Nha hảo hạng",
-      ctdh_soluong: 2,
-      b_id: 10,
-      time: "10 ngày trước",
-      creatdAt: "DH000006 - 26/12/2020 19:37 - Bởi Thanh Hoang",
-    },
-    {
-      id: 4,
-      cthd_ten: "APEROL SPRITZ",
-      ctdh_soluong: 1,
-      b_id: 10,
-      time: "10 ngày trước",
-      creatdAt: "DH000003 - 29/12/2020 10:49 - Bởi Thanh Hoang",
-    },
-    {
-      id: 5,
-      cthd_ten: "Bia Heiniken",
-      ctdh_soluong: 2,
-      b_id: 10,
-      time: "10 ngày trước",
-      creatdAt: "DH000003 - 29/12/2020 10:49 - Bởi Thanh Hoang",
-    },
-    {
-      id: 6,
-      cthd_ten: "Bia Hà Nội",
-      ctdh_soluong: 1,
-      b_id: 10,
-      time: "10 ngày trước",
-      creatdAt: "DH000003 - 29/12/2020 10:49 - Bởi Thanh Hoang",
-    },
-    {
-      id: 7,
-      cthd_ten: "Thuốc lá Kent HD",
-      ctdh_soluong: 1,
-      b_id: 10,
-      time: "10 ngày trước",
-      creatdAt: "DH000003 - 29/12/2020 10:49 - Bởi Thanh Hoang",
-    },
-  ]);
-  const [listCompletedMenu, setListCompletedMenu] = useState([]);
+import alertify from "alertifyjs";
+import MessageService from "../../../api/messageApi";
 
+export default (props) => {
+  const [updated, setUpdated] = useState(false);
+  const [listMenu, setListMenu] = useState(
+    JSON.parse(localStorage.getItem("menu")) || []
+  );
+  const [listCompletedMenu, setListCompletedMenu] = useState(
+    JSON.parse(localStorage.getItem("completedMenu")) || []
+  );
+
+  const setLocalMenu = (menu) => {
+    localStorage.setItem("menu", JSON.stringify(menu));
+  };
+
+  const setLocalCompletedMenu = (menu) => {
+    localStorage.setItem("completedMenu", JSON.stringify(menu));
+  };
+  useEffect(() => {
+    channel.bind("notice", function (res) {
+      const data = res.message;
+      const menu = Object.values(data.monans).map((el) => {
+        return {
+          ...el,
+          b_id: data.ban_id,
+          createdAt: new Date().toISOString(),
+          nv: data.hd_nhanvien,
+        };
+      });
+      setListMenu((state) => state.concat(menu));
+      const existingMenu = JSON.parse(localStorage.getItem("menu"));
+      localStorage.setItem("menu", JSON.stringify(menu.concat(existingMenu)));
+      alertify.warning(`Có ${menu.length} món vừa order!`);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (updated) {
+      setLocalMenu(listMenu);
+      setUpdated(false);
+    }
+  }, [updated]);
+
+  const onNextMenuHandler = (menu, b_id) => {
+    setListCompletedMenu((state) => {
+      const existingMenu = state.filter(
+        (el) => el.id === menu.id && el.b_id === b_id
+      );
+
+      if (existingMenu.length > 0) {
+        return state.map((el) => {
+          if (el.id === menu.id && el.b_id === b_id) {
+            return {
+              ...el,
+              amount: el.amount + 1,
+            };
+          }
+          return el;
+        });
+      }
+      const result = state.concat({ ...menu, amount: 1 });
+      setLocalCompletedMenu(result);
+      return result;
+    });
+
+    try {
+      MessageService.supplyMessage({ type: "supply", data: menu }).then(
+        (res) => res
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onNextAllMenuHandler = (menu) => {
+    setListCompletedMenu((state) => {
+      const result = state.concat(menu);
+      setLocalCompletedMenu(result);
+      return result;
+    });
+
+    try {
+      MessageService.supplyMessage({ type: "supply", data: menu }).then(
+        (res) => res
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const onNextCompletedMenuHandler = (menu) => {
+    try {
+      MessageService.supplyMessage({ type: "supplied", data: menu }).then(
+        (res) => res
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const onDeleteMenuHandler = async (id, b_id) => {
+    const menuUpdated = listMenu.filter(
+      (el) => el.id !== id || el.b_id !== b_id
+    );
+    setLocalMenu(menuUpdated);
+    setListMenu(menuUpdated);
+  };
+  const onDeleteCompletedMenuHandler = async (id, b_id) => {
+    const menuUpdated = listCompletedMenu.filter(
+      (el) => el.id !== id || el.b_id !== b_id
+    );
+    setLocalCompletedMenu(menuUpdated);
+    setListCompletedMenu(menuUpdated);
+  };
   return (
     <CContainer fluid className="bg-info" style={{ height: "100vh" }}>
       <CRow>
@@ -113,71 +166,89 @@ export default (props) => {
                       style={{ height: "90vh" }}
                       className="rounded content"
                     >
-                      {listMenu.map((el, key) => (
-                        <>
-                          {" "}
-                          <CRow
-                            className="border-bottom py-2 mt-2  text-dark"
-                            style={{
-                              boxShadow: "0px 1px 1px #007fc1",
-                            }}
-                          >
-                            <CCol lg="7" className="d-flex flex-column">
-                              <h5>{el.cthd_ten}</h5>
-                              <p>{el.creatdAt}</p>
-                            </CCol>
-                            <CCol lg="1">
-                              <p>
+                      {listMenu.length > 0
+                        ? listMenu.map((el, key) => {
+                            const { id, b_id } = el;
+                            return (
+                              <>
                                 {" "}
-                                <strong>{el.ctdh_soluong}</strong>
-                              </p>
-                            </CCol>
-                            <CCol lg="2" className="d-flex flex-column">
-                              <h6>Mang về</h6>
-                              <p>
-                                <em> {el.time}</em>
-                              </p>
-                            </CCol>
-                            <CCol
-                              lg="2"
-                              className="d-flex justify-content-between"
-                            >
-                              <button
-                                className="button-next"
-                                onClick={(e) => {
-                                  setListCompletedMenu((el) => {
-                                    const updatedState = [...el];
-
-                                    return produce(updatedState, (v) => {
-                                      updatedState.push(el);
-                                    });
-                                  });
-                                }}
-                              >
-                                <Icon
-                                  path={mdiChevronRight}
-                                  title="User Profile"
-                                  size={1}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />
-                              </button>
-                              &nbsp; &nbsp;
-                              <button className="button-next-all">
-                                <Icon
-                                  path={mdiChevronDoubleRight}
-                                  title="User Profile"
-                                  size={1}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />
-                              </button>
-                            </CCol>
-                          </CRow>
-                        </>
-                      ))}
+                                <CRow
+                                  className="border-bottom py-2 mt-2"
+                                  style={{
+                                    boxShadow: "0px 1px 1px #007fc1",
+                                    color: "black",
+                                  }}
+                                  key={key}
+                                >
+                                  <CCol lg="7" className="d-flex flex-column">
+                                    <h5>
+                                      <strong>{el.name}</strong>
+                                    </h5>
+                                    <p className="text-dark">
+                                      <em>{ToDateForView(el.createdAt)}</em>{" "}
+                                    </p>
+                                  </CCol>
+                                  <CCol lg="1">
+                                    <p>
+                                      {" "}
+                                      <strong>{el.amount}</strong>
+                                    </p>
+                                  </CCol>
+                                  <CCol lg="2" className="d-flex flex-column">
+                                    <h5>Bàn {el.b_id}</h5>
+                                    <p className="text-dark">
+                                      <em> 10 giờ trước</em>
+                                    </p>
+                                  </CCol>
+                                  <CCol
+                                    lg="2"
+                                    className="d-flex justify-content-between"
+                                  >
+                                    <button
+                                      className="button-next"
+                                      onClick={(e) => {
+                                        onNextMenuHandler(el, b_id);
+                                        setListMenu((el) => {
+                                          if (el[key].amount === 1) {
+                                            onDeleteMenuHandler(id, b_id);
+                                          }
+                                          setUpdated(true);
+                                          return produce(el, (v) => {
+                                            v[key].amount = el[key].amount - 1;
+                                          });
+                                        });
+                                      }}
+                                    >
+                                      <Icon
+                                        path={mdiChevronRight}
+                                        title="User Profile"
+                                        size={1}
+                                        horizontal
+                                        rotate={180}
+                                        vertical
+                                      />
+                                    </button>
+                                    &nbsp; &nbsp;
+                                    <button className="button-next-all">
+                                      <Icon
+                                        path={mdiChevronDoubleRight}
+                                        title="User Profile"
+                                        size={1}
+                                        horizontal
+                                        rotate={180}
+                                        vertical
+                                        onClick={(e) => {
+                                          onNextAllMenuHandler(el, b_id);
+                                          onDeleteMenuHandler(id, b_id);
+                                        }}
+                                      />
+                                    </button>
+                                  </CCol>
+                                </CRow>
+                              </>
+                            );
+                          })
+                        : null}
                     </CCol>
                   </CRow>
                 </CContainer>
@@ -214,69 +285,94 @@ export default (props) => {
                       style={{ height: "90vh" }}
                       className="rounded content"
                     >
-                      {listMenu.map((el, key) => (
-                        <>
-                          {" "}
-                          <CRow
-                            className="border-bottom py-2 mt-2  text-dark"
-                            style={{
-                              boxShadow: "0px 1px 1px #007fc1",
-                            }}
-                          >
-                            <CCol lg="7" className="d-flex flex-column">
-                              <h5>{el.cthd_ten}</h5>
-                              <p>{el.creatdAt}</p>
-                            </CCol>
-                            <CCol lg="1">
-                              <p>
+                      {listCompletedMenu.length > 0
+                        ? listCompletedMenu.map((el, key) => {
+                            const { id, b_id } = el;
+                            return (
+                              <>
                                 {" "}
-                                <strong>{el.ctdh_soluong}</strong>
-                              </p>
-                            </CCol>
-                            <CCol lg="2" className="d-flex flex-column">
-                              <h6>Mang về</h6>
-                              <p>
-                                <em> {el.time}</em>
-                              </p>
-                            </CCol>
-                            <CCol
-                              lg="2"
-                              className="d-flex justify-content-between"
-                            >
-                              <button
-                                className="completed-button-next"
-                                onClick={(e) => {
-                                  setListCompletedMenu((el) => {
-                                    const updatedState = [...el];
-                                    updatedState.push(el);
-                                    return updatedState;
-                                  });
-                                }}
-                              >
-                                <Icon
-                                  path={mdiChevronRight}
-                                  title="User Profile"
-                                  size={1}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />
-                              </button>
-                              &nbsp; &nbsp;
-                              <button className="completed-button-next-all">
-                                <Icon
-                                  path={mdiChevronDoubleRight}
-                                  title="User Profile"
-                                  size={1}
-                                  horizontal
-                                  rotate={180}
-                                  vertical
-                                />
-                              </button>
-                            </CCol>
-                          </CRow>
-                        </>
-                      ))}
+                                <CRow
+                                  className="border-bottom py-2 mt-2"
+                                  style={{
+                                    boxShadow: "0px 1px 1px #007fc1",
+                                    color: "black",
+                                  }}
+                                >
+                                  <CCol lg="7" className="d-flex flex-column">
+                                    <h5>
+                                      <strong>{el.name}</strong>
+                                    </h5>
+                                    <p className="text-dark">
+                                      <em>{ToDateForView(el.createdAt)}</em>{" "}
+                                    </p>
+                                  </CCol>
+                                  <CCol lg="1">
+                                    <p>
+                                      {" "}
+                                      <strong>{el.amount}</strong>
+                                    </p>
+                                  </CCol>
+                                  <CCol lg="2" className="d-flex flex-column">
+                                    <h5>Bàn {el.b_id}</h5>
+                                    <p className="text-dark">
+                                      <em> 10 giờ trước</em>
+                                    </p>
+                                  </CCol>
+                                  <CCol
+                                    lg="2"
+                                    className="d-flex justify-content-between"
+                                  >
+                                    <button
+                                      className="completed-button-next"
+                                      onClick={(e) => {
+                                        onNextCompletedMenuHandler(el);
+                                        setListCompletedMenu((el) => {
+                                          if (el[key].amount === 1) {
+                                            onDeleteCompletedMenuHandler(
+                                              id,
+                                              b_id
+                                            );
+                                          }
+                                          setUpdated(true);
+                                          return produce(el, (v) => {
+                                            v[key].amount = el[key].amount - 1;
+                                          });
+                                        });
+                                      }}
+                                    >
+                                      <Icon
+                                        path={mdiChevronRight}
+                                        title="User Profile"
+                                        size={1}
+                                        horizontal
+                                        rotate={180}
+                                        vertical
+                                      />
+                                    </button>
+                                    &nbsp; &nbsp;
+                                    <button className="completed-button-next-all">
+                                      <Icon
+                                        path={mdiChevronDoubleRight}
+                                        title="User Profile"
+                                        size={1}
+                                        horizontal
+                                        rotate={180}
+                                        vertical
+                                        onClick={(e) => {
+                                          onNextCompletedMenuHandler(el);
+                                          onDeleteCompletedMenuHandler(
+                                            id,
+                                            b_id
+                                          );
+                                        }}
+                                      />
+                                    </button>
+                                  </CCol>
+                                </CRow>
+                              </>
+                            );
+                          })
+                        : null}
                     </CCol>
                   </CRow>
                 </CContainer>
