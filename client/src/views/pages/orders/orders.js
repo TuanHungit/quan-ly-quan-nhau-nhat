@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
 import alertify from "alertifyjs";
+
+import { channel, privateChanel } from "../../../common/pusher";
 import { produce } from "immer";
 import {
   mdiAccountCircle,
@@ -78,6 +80,17 @@ export default (props) => {
   const [billId, setBillId] = useState(0);
   const [noti, setNoti] = useState(true);
   useEffect(() => {
+    channel.bind("supply", function (res) {
+      const { b_id, name, amount } = res.message.data;
+
+      if (res.message.type === "supply") {
+        const message = `${amount} - ${name} - bàn ${b_id} đang chờ được cung ứng!`;
+        alertify.warning(message);
+      } else if (res.message.type === "supplied") {
+        const message = `${amount} - ${name} - bàn ${b_id} đã được cung ứng!`;
+        alertify.success(message);
+      }
+    });
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
   }, []);
@@ -172,8 +185,6 @@ export default (props) => {
         billCheckOut[key].push(obj.bill);
         return billCheckOut;
       }, {});
-
-    console.log({ b_id: table.b_id, monans: result[table.b_id] });
   };
 
   const onDeleteMenuHandler = async (e, id) => {
@@ -201,11 +212,7 @@ export default (props) => {
           if (!billCheckOut[key]) {
             billCheckOut[key] = [];
           }
-          billCheckOut[key].push({
-            id: obj.bill.id,
-            price: obj.bill.price,
-            amount: obj.bill.amount,
-          });
+          billCheckOut[key].push(obj.bill);
           return billCheckOut;
         }, {});
         HoaDonService.getHoaDonIdByTable(table.b_id).then((res) => {
@@ -219,6 +226,8 @@ export default (props) => {
               hd_tongtien: total,
               hd_trangthai: 1,
               hd_nhanvienid: JSON.parse(localStorage.getItem("userInfo")).nv_id,
+              hd_nhanvien: JSON.parse(localStorage.getItem("userInfo"))
+                .tk_tendangnhap,
               monans: result[table.b_id],
             }).then((res) => {
               setBillId(res.hd_id);

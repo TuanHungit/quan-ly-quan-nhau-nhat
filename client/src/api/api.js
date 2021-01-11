@@ -5,6 +5,7 @@ const url = {
   baseUrl: "http://localhost:8080/api/v1/",
   login: "taikhoans/login",
   hoadon: "hoadons",
+  message: "messages",
 };
 const instance = axios.create({
   baseURL: url.baseUrl,
