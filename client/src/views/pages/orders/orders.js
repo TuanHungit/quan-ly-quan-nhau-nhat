@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Icon from "@mdi/react";
+import alertify from "alertifyjs";
 import { produce } from "immer";
 import {
   mdiAccountCircle,
@@ -46,8 +47,9 @@ import Checkout from "./payment/checkout";
 import Sidebar from "react-sidebar";
 import ToPriceForView from "../../../common/convertPriceForView";
 import ToDateForView from "../../../common/convertDateForView";
-import HoaDonService from './../../../api/HoaDonService';
-import alertify from "alertifyjs";
+import HoaDonService from "./../../../api/HoaDonService";
+import Cards from "./../../base/cards/Cards";
+
 export default (props) => {
   const settings = {
     dots: true,
@@ -56,6 +58,7 @@ export default (props) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
   const fetchTableData = async () => {
     try {
       const response = await getBans();
@@ -67,28 +70,50 @@ export default (props) => {
 
   const [paymentSideBarOpen, setPaymentSideBarOpen] = useState(false);
   const [table, setTable] = useState(0);
+  const [search, setSearch] = useState(0);
   const [bill, setBill] = useState([]);
   const [checkout, setCheckout] = useState([]);
   const [listTable, setListTable] = useState([]);
   const [update, setUpdate] = useState(false);
   const [updatedMenu, setUpdatedMenu] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [billId, setBillId] = useState(0);
+  const [noti, setNoti] = useState(true);
   useEffect(() => {
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
   }, []);
 
   useEffect(() => {
-    fetchTableData();
+    if (update) {
+      fetchTableData();
+      setUpdate(false);
+    }
   }, [update]);
+
   const onClickTableHandler = (e, el) => {
     setTable(el);
+    calculateTotalOfBill(el.b_id);
+    HoaDonService.getHoaDonIdByTable(el.b_id).then((res) => {
+      if (res) {
+        return setBillId(res);
+      }
+      setBillId(0);
+    });
   };
+
   useEffect(() => {
-    if(updatedMenu){
+    if (updatedMenu) {
       localStorage.setItem("bill", JSON.stringify(bill));
+      calculateTotalOfBill(table.b_id);
     }
     setUpdatedMenu(false);
   }, [updatedMenu]);
+
+  const onSetSidebarOpen = () => {
+    setPaymentSideBarOpen((state) => !state);
+  };
+
   const onClickMenuHandler = async (id, idBan, name, price) => {
     try {
       const existingTable = bill.filter((el) => el.idBan === idBan);
@@ -96,22 +121,6 @@ export default (props) => {
         await editBan({ b_id: table.b_id, b_trangthai: 0 });
         setUpdate((state) => !state);
       }
-
-      // setCheckout((state) => {
-      //   const total = existingTable.reduce(
-      //     total,
-      //     (el) => total + el.bill.price * el.bill.amount
-      //   );
-      //   return state.map((el) => {
-      //     if (el.idBan === idBan) {
-      //       return {
-      //         ...el,
-      //         total,
-      //       };
-      //     }
-      //     return { ...el, idBan };
-      //   });
-      // });
 
       setBill((state) => {
         const existingMenu = state.filter(
@@ -134,18 +143,24 @@ export default (props) => {
         }
         return state.concat([{ idBan, bill: { id, name, price, amount: 1 } }]);
       });
-      setUpdatedMenu(true)
-     
+      setUpdatedMenu(true);
+      setNoti(true);
     } catch (err) {
       console.log(err);
     }
   };
-  const onSetSidebarOpen = () => {
-    setPaymentSideBarOpen((state) => !state);
-  };
+
   const onCheckOutHandler = (e) => {
     if (table.b_id === 0) {
-      return alertify.error("Vui lòng chọn bàn để thanh toán!");
+      return alertify.confirm(
+        "Vui lòng chọn bàn để thanh toán.",
+        function () {
+          alertify.success("Ok");
+        },
+        function () {
+          alertify.error("Hủy");
+        }
+      );
     }
     setPaymentSideBarOpen((state) => !state);
     const result = bill
@@ -160,9 +175,8 @@ export default (props) => {
         return billCheckOut;
       }, {});
 
-   console.log({ b_id: table.b_id, monans: result[table.b_id] });
+    console.log({ b_id: table.b_id, monans: result[table.b_id] });
   };
-
 
   const onDeleteMenuHandler = async (e, id) => {
     const billUpdated = bill.filter(
@@ -175,37 +189,67 @@ export default (props) => {
     }
     localStorage.setItem("bill", JSON.stringify(billUpdated));
     setBill([...billUpdated]);
+    setUpdatedMenu(true);
   };
-  const submitNotifications =()=>{
 
-    const result = bill
-      .filter((el) => el.idBan === table.b_id)
-      .reduce(function (billCheckOut, obj) {
-        let key = obj["idBan"];
+  const submitNotifications = () => {
+    const existingBill = bill.filter((el) => el.idBan === table.b_id);
 
-        if (!billCheckOut[key]) {
-          billCheckOut[key] = [];
-        }
-        billCheckOut[key].push({id: obj.bill.id, price: obj.bill.price, amount: obj.bill.amount});
-        return billCheckOut;
-      }, {});
+    if (existingBill.length > 0) {
       try {
-        HoaDonService.createBill({
-          ban_id: table.b_id,
-          hd_tongtien:12345,
-          hd_trangthai:1, 
-          hd_nhanvienid:JSON.parse((localStorage.getItem("userInfo"))).nv_id, 
-          monans: result[table.b_id]
-        }).then(res=>alertify.success("Đã thông báo cho bếp!"));
-        
+        const result = existingBill.reduce(function (billCheckOut, obj) {
+          let key = obj["idBan"];
 
-      } catch (error) {
-        alertify.success("Thông báo thất bại!")
-      }
-  }
-  const onChangeSearched=()=>{
-    alert("Thông báo thất bại!")
-  }
+          if (!billCheckOut[key]) {
+            billCheckOut[key] = [];
+          }
+          billCheckOut[key].push({
+            id: obj.bill.id,
+            price: obj.bill.price,
+            amount: obj.bill.amount,
+          });
+          return billCheckOut;
+        }, {});
+        HoaDonService.getHoaDonIdByTable(table.b_id).then((res) => {
+          if (res) {
+            alertify.confirm("Đã thông báo cho nhà bếp.", function () {
+              alertify.success("Ok");
+            });
+          } else {
+            HoaDonService.createBill({
+              ban_id: table.b_id,
+              hd_tongtien: total,
+              hd_trangthai: 1,
+              hd_nhanvienid: JSON.parse(localStorage.getItem("userInfo")).nv_id,
+              monans: result[table.b_id],
+            }).then((res) => {
+              setBillId(res.hd_id);
+              setNoti(false);
+              alertify.success("Đã thông báo cho nhà bếp.");
+            });
+          }
+        });
+      } catch (error) {}
+    }
+  };
+
+  const calculateTotalOfBill = (idBan) => {
+    const existingBill = bill.filter((el) => el.idBan === idBan);
+    if (existingBill.length === 0) {
+      setTotal(0);
+      return;
+    }
+
+    let totalBill = existingBill.reduce(function (total, el) {
+      return total + el.bill.price * el.bill.amount;
+    }, 0);
+    setTotal(totalBill);
+  };
+  const onChangeSearched = () => {
+    setSearch(1);
+    alertify.success("Đã thông báo cho nhà bếp.");
+    return <div>ádfsdf</div>;
+  };
   const Bill = () =>
     bill.filter((el) => el.idBan === table.b_id).length > 0 ? (
       bill
@@ -214,7 +258,6 @@ export default (props) => {
           const id = el.bill.id;
           return (
             <CRow
-              className=" pt-3 text-dark"
               style={{
                 boxShadow: "0px 1px 1px black",
               }}
@@ -308,7 +351,18 @@ export default (props) => {
     );
   return (
     <Sidebar
-      sidebar={<Checkout menu={<Bill />} />}
+      sidebar={
+        <Checkout
+          menu={<Bill />}
+          total={total}
+          billId={billId}
+          banId={table.b_id}
+          setUpdate={setUpdate}
+          setBillId={setBillId}
+          setBill={setBill}
+          onSetSidebarOpen={onSetSidebarOpen}
+        />
+      }
       open={paymentSideBarOpen}
       pullRight
       transitions
@@ -327,41 +381,43 @@ export default (props) => {
           <CCol lg="7">
             <CTabs activeTab="roomtable">
               <CNav variant="tabs">
-              {/*  */}
-              <CCol lg="3">
-                <CNavItem>
-                  <CNavLink data-tab="roomtable">
-                    {" "}
-                    <Icon
-                      path={mdiTable}
-                      title="User Profile"
-                      size={0.7}
-                      horizontal
-                      vertical
-                    />
-                    <strong> Phòng bàn</strong>
-                  </CNavLink>
-                </CNavItem>
-                </CCol>
-                  {/*  */}
+                {/*  */}
                 <CCol lg="3">
-                <CNavItem>
-                  <CNavLink data-tab="menu">
-                    {" "}
-                    <strong>Thực đơn</strong>{" "}
-                  </CNavLink>
-                </CNavItem>
+                  <CNavItem>
+                    <CNavLink data-tab="roomtable">
+                      {" "}
+                      <Icon
+                        path={mdiTable}
+                        title="User Profile"
+                        size={0.7}
+                        horizontal
+                        vertical
+                      />
+                      <strong> Phòng bàn</strong>
+                    </CNavLink>
+                  </CNavItem>
+                </CCol>
+                {/*  */}
+                <CCol lg="3">
+                  <CNavItem>
+                    <CNavLink data-tab="menu">
+                      {" "}
+                      <strong>Thực đơn</strong>{" "}
+                    </CNavLink>
+                  </CNavItem>
                 </CCol>
                 {/*  */}
 
-                <CCol lg="6">
-                <CNavItem  className="py-1">   
-                  
-                 <CInput onChange={onChangeSearched} placeholder="Tìm món (F3)"/>
-                
-                </CNavItem>
+                <CCol lg="5">
+                  <CNavItem className="py-1">
+                    <CInput
+                      onChange={onChangeSearched}
+                      placeholder="Tìm món (F3)"
+                    />
+                  </CNavItem>
                 </CCol>
-                  {/*  */}
+                <CCol lg="1"></CCol>
+                {/*  */}
               </CNav>
               <CTabContent>
                 <CTabPane
@@ -370,8 +426,10 @@ export default (props) => {
                 >
                   <CContainer>
                     <CRow className="justify-content-between">
+                     
                       <CCol className="d-flex justify-content-between">
                         <p className="text-dark"> Sử dụng: 3/31</p>
+                        
                         <CDropdown className="mt-2">
                           <CDropdownToggle caret color="info">
                             Tất cả
@@ -383,6 +441,9 @@ export default (props) => {
                           </CDropdownMenu>
                         </CDropdown>
                       </CCol>
+
+                
+
                     </CRow>
                     <Slider
                       {...settings}
@@ -395,7 +456,9 @@ export default (props) => {
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
                                 className={`table  border-radius ${
-                                  el.b_id === table.b_id ? "bg-info text-light" : ""
+                                  el.b_id === table.b_id
+                                    ? "bg-info text-light"
+                                    : ""
                                 }  ${
                                   el.b_trangthai === "DaDat" &&
                                   el.b_id === table.b_id
@@ -425,7 +488,11 @@ export default (props) => {
                                 <div className="label"> Bàn {el.b_stt} </div>
                               </div>
 
-                              <span className="note font12 ">
+                              <span
+                                className={`note  ${
+                                  el.b_id === table.b_id ? `note1` : null
+                                } font12 `}
+                              >
                                 {" "}
                                 <em>
                                   Ghi chú...{" "}
@@ -448,15 +515,22 @@ export default (props) => {
                           {listTable.slice(24).map((el, key) => (
                             <CCol lg="2" className="pt-5 " key={key}>
                               <div
-                                className={`table.b_id  border-radius ${
-                                  el.b_stt === table.b_id ? "bg-info text-light" : ""
+                                className={`table  border-radius ${
+                                  el.b_id === table.b_id
+                                    ? "bg-info text-light"
+                                    : ""
+                                }  ${
+                                  el.b_trangthai === "DaDat" &&
+                                  el.b_id === table.b_id
+                                    ? "bg-danger text-light"
+                                    : ""
                                 } ${
                                   el.b_trangthai === "DaDat"
-                                    ? "bg-danger text-light"
+                                    ? "bg-none text-danger"
                                     : ""
                                 }`}
                                 id={key}
-                                onClick={(e) => onClickTableHandler(e, el)}
+                                onClick={(e) => (e, el)}
                               >
                                 <div className="d-flex justify-content-center">
                                   <Icon
@@ -465,7 +539,7 @@ export default (props) => {
                                     size={2.5}
                                     horizontal
                                     rotate={180}
-                                    vertical
+                                    verticalonClickTableHandler
                                     horizontal
                                     className="label"
                                   />
@@ -474,7 +548,11 @@ export default (props) => {
                                 <div className="label"> Bàn {el.b_stt} </div>
                               </div>
 
-                              <span className="note font12 ">
+                              <span
+                                className={`note  ${
+                                  el.b_id === table.b_id ? `note1` : null
+                                } font12 `}
+                              >
                                 {" "}
                                 <em>
                                   Ghi chú...{" "}
@@ -496,7 +574,10 @@ export default (props) => {
                   </CContainer>
                 </CTabPane>
                 <CTabPane data-tab="menu" className="pt-3">
-                  <Menu onClickMenuHandler={onClickMenuHandler} table={table.b_id} />
+                  <Menu
+                    onClickMenuHandler={onClickMenuHandler}
+                    table={table.b_id}
+                  />
                 </CTabPane>
               </CTabContent>
             </CTabs>
@@ -540,10 +621,34 @@ export default (props) => {
                       <CCardBody className="bill">
                         <Bill />
                       </CCardBody>
-                      <CCardFooter className="text-dark">
+                      <CCardFooter className="text-dark ">
+                        {noti ? (
+                          <CRow style={{ backgroundColor: "#fee7b1" }}>
+                            <p
+                              style={{ position: "relative" }}
+                              className="mt-2"
+                            >
+                              {" "}
+                              <Icon
+                                path={mdiBellRing}
+                                title="User Profile"
+                                size={0.8}
+                                horizontal
+                                rotate={180}
+                                color="red"
+                                vertical
+                              />{" "}
+                              Bạn vừa cập nhật đơn hàng. Click{" "}
+                              <strong>Thông báo</strong> để lưu thay đổi và đồng
+                              bộ trên hệ thống.
+                            </p>
+                          </CRow>
+                        ) : null}
                         <CRow className="d-flex justify-content-between">
                           <p>Số lượng khách </p>
-                          <p>Tổng tiền 375.000</p>
+                          <p>
+                            Tổng tiền: <strong>{ToPriceForView(total)}</strong>{" "}
+                          </p>
                         </CRow>
                         <CRow className="d-flex justify-content-between ">
                           <p className="mt-3">
@@ -584,8 +689,9 @@ export default (props) => {
                           </CButton>
                         </CRow>
                         <CRow>
-                          <CCol
-                            className="text-center bg-success py-3 rounded-left checkout-button"
+                          <CButton
+                            className={`text-center bg-success py-3 rounded-left checkout-button`}
+                            disabled={billId === 0}
                             onClick={onCheckOutHandler}
                           >
                             <h4 className="text-light">
@@ -599,13 +705,14 @@ export default (props) => {
                               />{" "}
                               Thanh toán
                             </h4>
-                          </CCol>
-                          <CCol 
-                          className="text-center bg-info py-3 rounded-right checkout-button"
-                          onClick={submitNotifications}
+                          </CButton>
+
+                          <CButton
+                            className={`text-center bg-info py-3 rounded-left checkout-button`}
+                            // disabled={billId !== 0}
+                            onClick={submitNotifications}
                           >
-                            <h4 className="text-light"  >
-                              {" "}
+                            <h4 className="text-light">
                               <Icon
                                 path={mdiBellRing}
                                 title="User Profile"
@@ -614,10 +721,9 @@ export default (props) => {
                                 rotate={180}
                                 vertical
                               />{" "}
-                             
                               Thông báo
                             </h4>
-                          </CCol>
+                          </CButton>
                         </CRow>
                       </CCardFooter>
                     </CCard>

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import Icon from "@mdi/react";
 import { useReactToPrint } from "react-to-print";
+import alertify from "alertifyjs";
 import {
   mdiCalendarBlankOutline,
   mdiTable,
@@ -14,16 +15,20 @@ import "./checkout.css";
 import ToDateForView from "../../../../common/convertDateForView";
 import ToPriceForView from "../../../../common/convertPriceForView";
 import InvoiceToPrint from "./invoiceToPrint/invoiceToPrint";
+import HoaDonServices from "../../../../api/HoaDonService";
+import { editBan } from "../../../../api/BanApi";
 const generatorPrice = (price) => {
   const priceArr = [];
-  if (price % 2 == 0) {
+  if (price % 2 !== 0) {
     priceArr.push(price + 1000);
   }
-  [1, 2, 3, 10, 20].map((el) =>
+  [1, 2, 3, 5, 10].map((el) =>
     priceArr.push(Math.floor(price / 10000) * 10000 + el * 10000)
   );
+
   return priceArr;
 };
+
 const pageStyle = `
   @media all {
   .page-break {
@@ -35,7 +40,8 @@ const pageStyle = `
   html, body {
     height: initial !important;
     overflow: initial !important;
-    -webkit-print-color-adjust: exact;
+    -webkit-print-colorimport { alertify } from 'alertifyjs';
+-adjust: exact;
   }
 }
 
@@ -52,16 +58,52 @@ const pageStyle = `
   margin: 20mm;
   
 }
-
 `;
-export default ({ menu }) => {
+
+export default ({
+  menu,
+  total,
+  billId,
+  banId,
+  setUpdate,
+  setBillId,
+  setBill,
+  onSetSidebarOpen,
+}) => {
   const [excessCash, setExcessCash] = useState(0);
-  const [customerCash, setCustomerCash] = useState(465000);
+  const [customerCash, setCustomerCash] = useState(0);
   const componentRef = useRef();
+
+  const onAfterPrintHanlder = () => {
+    const billUpdated = Object.values(
+      JSON.parse(localStorage.getItem("bill"))
+    ).filter((el) => el.idBan !== banId);
+
+    localStorage.setItem("bill", JSON.stringify(billUpdated));
+    setBill(billUpdated);
+    onSetSidebarOpen();
+    alertify.success("Thanh toán thành công!");
+  };
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     pageStyle: pageStyle,
+    onAfterPrint: onAfterPrintHanlder,
   });
+
+  const onCheckOutHandler = async () => {
+    try {
+      HoaDonServices.updateBillStatus(billId).then((res) => {
+        editBan({ b_id: banId, b_trangthai: 1 }).then((res) => {
+          setUpdate(true);
+          setBillId(0);
+
+          handlePrint();
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="m-4 checkout-content" style={{ height: "90%" }}>
       <CContainer>
@@ -123,7 +165,7 @@ export default ({ menu }) => {
                 Tổng tiền hàng{" "}
                 <span className="border rounded-circle px-2">{` ${6}`}</span>
               </p>
-              <p>465.000</p>
+              <p>{ToPriceForView(total)}</p>
             </div>
             <div className="d-flex justify-content-between ">
               <p>Giảm giá </p>
@@ -134,7 +176,7 @@ export default ({ menu }) => {
                 <strong> Khách cần trả </strong>
               </p>
               <p style={{ color: "#0090da", fontSize: "18px" }}>
-                {ToPriceForView(465000)}
+                {ToPriceForView(total)}
               </p>
             </div>
             <div className="d-flex justify-content-between ">
@@ -156,7 +198,7 @@ export default ({ menu }) => {
               </strong>
             </div>
             <CRow className="py-4 ">
-              {generatorPrice(465000).map((el, key) => (
+              {generatorPrice(total).map((el, key) => (
                 <CCol lg="4" className="pb-2" key={key}>
                   <CButton
                     variant="outline"
@@ -167,8 +209,8 @@ export default ({ menu }) => {
                     }}
                     value={el}
                     onClick={(e) => {
-                      setExcessCash(e.target.value - 465000);
-                      setCustomerCash(e.target.value);
+                      setExcessCash(e.target.value - total);
+                      setCustomerCash(e.target.value - 0);
                     }}
                     className="py-2"
                   >
@@ -198,7 +240,7 @@ export default ({ menu }) => {
                   height: "65px",
                   fontSize: "18px",
                 }}
-                onClick={handlePrint}
+                onClick={onCheckOutHandler}
               >
                 <Icon
                   path={mdiCurrencyUsd}
