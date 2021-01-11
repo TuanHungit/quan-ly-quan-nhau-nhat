@@ -47,6 +47,7 @@ import Sidebar from "react-sidebar";
 import ToPriceForView from "../../../common/convertPriceForView";
 import ToDateForView from "../../../common/convertDateForView";
 import HoaDonService from './../../../api/HoaDonService';
+import alertify from "alertifyjs";
 export default (props) => {
   const settings = {
     dots: true,
@@ -144,7 +145,7 @@ export default (props) => {
   };
   const onCheckOutHandler = (e) => {
     if (table.b_id === 0) {
-      return alert("Vui lòng chọn bàn để thanh toán!");
+      return alertify.error("Vui lòng chọn bàn để thanh toán!");
     }
     setPaymentSideBarOpen((state) => !state);
     const result = bill
@@ -195,14 +196,16 @@ export default (props) => {
           hd_trangthai:1, 
           hd_nhanvienid:JSON.parse((localStorage.getItem("userInfo"))).nv_id, 
           monans: result[table.b_id]
-        }).then(res=>alert("Đã thông báo cho bếp!"));
+        }).then(res=>alertify.success("Đã thông báo cho bếp!"));
         
 
       } catch (error) {
-        alert("Thông báo thất bại!")
+        alertify.success("Thông báo thất bại!")
       }
   }
-
+  const onChangeSearched=()=>{
+    alert("Thông báo thất bại!")
+  }
   const Bill = () =>
     bill.filter((el) => el.idBan === table.b_id).length > 0 ? (
       bill
@@ -324,6 +327,8 @@ export default (props) => {
           <CCol lg="7">
             <CTabs activeTab="roomtable">
               <CNav variant="tabs">
+              {/*  */}
+              <CCol lg="3">
                 <CNavItem>
                   <CNavLink data-tab="roomtable">
                     {" "}
@@ -337,12 +342,26 @@ export default (props) => {
                     <strong> Phòng bàn</strong>
                   </CNavLink>
                 </CNavItem>
+                </CCol>
+                  {/*  */}
+                <CCol lg="3">
                 <CNavItem>
                   <CNavLink data-tab="menu">
                     {" "}
                     <strong>Thực đơn</strong>{" "}
                   </CNavLink>
                 </CNavItem>
+                </CCol>
+                {/*  */}
+
+                <CCol lg="6">
+                <CNavItem  className="py-1">   
+                  
+                 <CInput onChange={onChangeSearched} placeholder="Tìm món (F3)"/>
+                
+                </CNavItem>
+                </CCol>
+                  {/*  */}
               </CNav>
               <CTabContent>
                 <CTabPane
