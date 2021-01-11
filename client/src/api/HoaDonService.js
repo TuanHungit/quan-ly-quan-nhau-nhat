@@ -12,9 +12,16 @@ const updateBillStatus = async (hoaDonId) => {
 const getHoaDonIdByTable = async (banId) => {
   return api.get(`${api.url.hoadon}/bans/${banId}`).then((res) => res.data);
 };
+
+const updateMenuOfBill = async (hoaDonId, data) => {
+  return api
+    .post(`${api.url.hoadon}/${hoaDonId}/cthd`, data)
+    .then((res) => res.data);
+};
 const HoaDonService = {
   createBill,
   updateBillStatus,
   getHoaDonIdByTable,
+  updateMenuOfBill,
 };
 export default HoaDonService;

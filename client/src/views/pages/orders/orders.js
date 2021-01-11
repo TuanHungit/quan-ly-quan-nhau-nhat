@@ -60,6 +60,8 @@ export default (props) => {
     slidesToScroll: 1,
   };
 
+  const [supply, setSupply] = useState(null);
+  const [supplied, setSupplied] = useState(null);
   const fetchTableData = async () => {
     try {
       const response = await getBans();
@@ -68,7 +70,7 @@ export default (props) => {
       console.log(err);
     }
   };
-
+  console.log(supply);
   const [paymentSideBarOpen, setPaymentSideBarOpen] = useState(false);
   const [table, setTable] = useState(0);
   const [bill, setBill] = useState([]);
@@ -81,7 +83,7 @@ export default (props) => {
   const [noti, setNoti] = useState(true);
   useEffect(() => {
     channel.bind("supply", function (res) {
-      const { b_id, name, amount } = res.message.data;
+      const { b_id, id, name, amount } = res.message.data;
 
       if (res.message.type === "supply") {
         const message = `${amount} - ${name} - bàn ${b_id} đang chờ được cung ứng!`;
@@ -90,6 +92,7 @@ export default (props) => {
         const message = `${amount} - ${name} - bàn ${b_id} đã được cung ứng!`;
         alertify.success(message);
       }
+      updateStatusMenu(id, b_id, res.message.type);
     });
     fetchTableData();
     setBill(JSON.parse(localStorage.getItem("bill")) || []);
@@ -123,6 +126,31 @@ export default (props) => {
 
   const onSetSidebarOpen = () => {
     setPaymentSideBarOpen((state) => !state);
+  };
+
+  const updateStatusMenu = (id, b_id, type) => {
+    setBill((state) => {
+      const existingMenu = state.filter(
+        (el) => el.bill.id === id && el.idBan === b_id
+      );
+
+      if (existingMenu.length > 0) {
+        return state.map((el) => {
+          if (el.bill.id === id && el.idBan === b_id) {
+            setUpdatedMenu(true);
+            return {
+              ...el,
+              bill: {
+                ...el.bill,
+                status: type === "supply" ? 1 : 2,
+              },
+            };
+          }
+          return el;
+        });
+      }
+      return state;
+    });
   };
 
   const onClickMenuHandler = async (id, idBan, name, price) => {
@@ -267,7 +295,11 @@ export default (props) => {
           const id = el.bill.id;
           return (
             <CRow
-              className=" pt-3 text-dark"
+              className={`pt-3  ${!el.bill.status ? "text-dark" : null} ${
+                el.bill.status && el.bill.status === 1 ? "text-danger" : null
+              }  ${
+                el.bill.status && el.bill.status === 2 ? "text-info" : null
+              }`}
               style={{
                 boxShadow: "0px 1px 1px black",
               }}
