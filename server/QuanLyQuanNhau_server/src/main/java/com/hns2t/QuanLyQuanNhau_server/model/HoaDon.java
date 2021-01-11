@@ -3,6 +3,7 @@ package com.hns2t.QuanLyQuanNhau_server.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,7 +41,8 @@ public class HoaDon {
 	@JoinColumn(name="hd_banid")
 	private Ban ban;
 	
-	@OneToMany(mappedBy = "hoaDon")
+	@OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
+	
 	@JsonIgnore
 	private List<ChiTietHoaDon> chiTietHoaDons;
 	

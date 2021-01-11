@@ -6,8 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -102,19 +103,26 @@ public class HoaDonController {
 		HoaDon hoaDon = new HoaDon();
 		try {
 			JSONObject json = (JSONObject) parser.parse(inputJson);
-			Long ban_id =(long) json.get("ban_id");
-			Long hd_tongtien = (long) json.get("hd_tongtien");
-			Long hd_nhanvienid = (long) json.get("hd_nhanvienid");
-			 
+			Long ban_id =Long.parseLong(json.get("ban_id").toString());
+			if(json.get("hd_tongtien") != null) {
+				Double hd_tongtien = Double.parseDouble(json.get("hd_tongtien").toString());
+				hoaDon.setHd_tongtien(hd_tongtien);
+			}
+			
+			if(json.get("hd_nhanvienid") != null) {
+				Long hd_nhanvienid = Long.parseLong(json.get("hd_nhanvienid").toString());		
+				NhanVien objectNV = nhanVienRepo.findById(hd_nhanvienid)
+						.orElseThrow(() -> new ResourceNotFoundException("Nhan vien khong ton tai with: " + hd_nhanvienid));
+				hoaDon.setHd_nhanvien(objectNV);
+			}
 			Ban object = banRepo.findById(ban_id)
 					.orElseThrow(() -> new ResourceNotFoundException("Ban khong ton tai with: " + ban_id));
-			NhanVien objectNV = nhanVienRepo.findById(hd_nhanvienid)
-					.orElseThrow(() -> new ResourceNotFoundException("Nhan vien khong ton tai with: " + hd_nhanvienid));
+
 			hoaDon.setBan(object);
 			hoaDon.setHd_ngaythanhtoan(new Date());
-			hoaDon.setHd_tongtien((double)hd_tongtien);
+			
 			hoaDon.setHd_trangthai(StatusHoaDon.ChuaThanhToan);
-			hoaDon.setHd_nhanvien(objectNV);
+			
 			repo.save(hoaDon);
 			List<JSONObject> listMonans = (ArrayList<JSONObject>)json.get("monans");		
 			for (JSONObject monan : listMonans) {
@@ -178,7 +186,7 @@ public class HoaDonController {
 			chiTietHoaDon1.setCthd_soluong(Integer.parseInt(chiTietHoaDon.get("amount").toString()));
 			chiTietHoaDon1.setCthd_gia(Double.parseDouble(chiTietHoaDon.get("price").toString()));
 			chiTietHoaDon1.setHoaDon(hoaDon);
-			cthdRepo.save(chiTietHoaDon1);
+			cthdRepo.saveAndFlush(chiTietHoaDon1);
 		}
 		return repo.save(hoaDon);
 	}
@@ -189,17 +197,15 @@ public class HoaDonController {
 	}
 	
 	
-
-//	
-//	@DeleteMapping("/{id}")
-//	public ResponseEntity<Map<String, Bo olean>> deleteHoaDon(@PathVariable Long id){
-//		HoaDon hoaDon = repo.findById(id)
-//				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
-//		repo.delete(hoaDon);
-//		Map<String, Boolean> response = new HashMap<>();
-//		response.put("deleted", Boolean.TRUE);
-//		return ResponseEntity.ok(response);
-//	}
-//	
+	@DeleteMapping("{id}")
+	public ResponseEntity<Map<String, Boolean>> deleteHoaDon(@PathVariable Long id){
+		HoaDon hoaDon = repo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Hoa Don khong ton tai with: " + id));
+		repo.delete(hoaDon);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("deleted", Boolean.TRUE);
+		return ResponseEntity.ok(response);
+	}
+	
 
 }
