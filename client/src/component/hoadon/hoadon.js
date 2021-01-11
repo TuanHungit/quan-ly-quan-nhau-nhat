@@ -55,18 +55,12 @@ function HoaDon() {
   const [hoadonList, setHoaDonList] = useState(null);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [collapse, setCollapse] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [modals, setModal] = useState(false);
-  const [nhanvien, setNhanVien] = useState();
-  const actionSuccess = () => {
-    setSuccess(!success);
-  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getHoaDons();
-        console.log(response);
         setSuccess(false);
         setHoaDonList(response);
         setLoading(false);
@@ -79,7 +73,7 @@ function HoaDon() {
     fetchData();
   }, [success]);
 
-  const toggleDetails = (item, index) => {
+  const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -88,7 +82,6 @@ function HoaDon() {
       newDetails = [...details, index];
     }
     setDetails(newDetails);
-    setNhanVien(item.hd_nhanvien.nv_hoten)
   };
   return (
     <>
@@ -132,7 +125,7 @@ function HoaDon() {
                       shape="square"
                       size="sm"
                       onClick={() => {
-                        toggleDetails(item, index);
+                        toggleDetails(index);
                       }}
                     >
                       {details.includes(index) ? "Ẩn" : "Hiển thị"}
@@ -156,7 +149,6 @@ function HoaDon() {
                                 <CCol lg="3">
                                   <label>Nhân viên</label>
                                   <h6>{item.hd_nhanvien.nv_hoten}</h6>
-                                  {/* <h6>{nhanvien}</h6> */}
                                 </CCol>
                               </CRow>
                             </CContainer>

@@ -9,8 +9,8 @@ export const getHoaDons = async (options) => {
   return response.data;
 };
 
-export const getThongKe = async (date) => {
-  let url = `/hoadons/date/${date}`;
+export const getThongKe = async (data) => {
+  let url = `/hoadons/date/${data}`;
   const response = await axios.get(url);
   return response.data;
 };
