@@ -18,6 +18,9 @@ const updateMenuOfBill = async (hoaDonId, data) => {
     .post(`${api.url.hoadon}/${hoaDonId}/cthd`, data)
     .then((res) => res.data);
 };
+// const deleteBill = async () => {
+//   return api.
+// }
 const HoaDonService = {
   createBill,
   updateBillStatus,

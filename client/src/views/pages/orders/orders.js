@@ -49,6 +49,7 @@ import Checkout from "./payment/checkout";
 import Sidebar from "react-sidebar";
 import ToPriceForView from "../../../common/convertPriceForView";
 import ToDateForView from "../../../common/convertDateForView";
+import ModalPlitBill from "./splitBill/split";
 import HoaDonService from "./../../../api/HoaDonService";
 
 export default (props) => {
@@ -60,8 +61,6 @@ export default (props) => {
     slidesToScroll: 1,
   };
 
-  const [supply, setSupply] = useState(null);
-  const [supplied, setSupplied] = useState(null);
   const fetchTableData = async () => {
     try {
       const response = await getBans();
@@ -70,17 +69,24 @@ export default (props) => {
       console.log(err);
     }
   };
-  console.log(supply);
+  const updateStatusTable = async (b_id, b_trangthai) => {
+    try {
+      await editBan({ b_id, b_trangthai });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const [paymentSideBarOpen, setPaymentSideBarOpen] = useState(false);
   const [table, setTable] = useState(0);
   const [bill, setBill] = useState([]);
-  const [checkout, setCheckout] = useState([]);
   const [listTable, setListTable] = useState([]);
   const [update, setUpdate] = useState(false);
   const [updatedMenu, setUpdatedMenu] = useState(false);
   const [total, setTotal] = useState(0);
   const [billId, setBillId] = useState(0);
   const [noti, setNoti] = useState(true);
+  const [modalSplitBill, setModalSplitBill] = useState(false);
+
   useEffect(() => {
     channel.bind("supply", function (res) {
       const { b_id, id, name, amount } = res.message.data;
@@ -128,6 +134,9 @@ export default (props) => {
     setPaymentSideBarOpen((state) => !state);
   };
 
+  const onSetModalSplitBill = () => {
+    setModalSplitBill((state) => !state);
+  };
   const updateStatusMenu = (id, b_id, type) => {
     setBill((state) => {
       const existingMenu = state.filter(
@@ -157,7 +166,7 @@ export default (props) => {
     try {
       const existingTable = bill.filter((el) => el.idBan === idBan);
       if (existingTable.length === 0) {
-        await editBan({ b_id: table.b_id, b_trangthai: 0 });
+        updateStatusTable(table.b_id, 0);
         setUpdate((state) => !state);
       }
 
@@ -216,17 +225,26 @@ export default (props) => {
   };
 
   const onDeleteMenuHandler = async (e, id) => {
-    const billUpdated = bill.filter(
-      (el) => el.bill.id !== id || el.idBan !== table.b_id
-    );
+    alertify.confirm(
+      "Bạn có chắc muốn hủy món này không?",
+      function () {
+        const billUpdated = bill.filter(
+          (el) => el.bill.id !== id || el.idBan !== table.b_id
+        );
 
-    if (billUpdated.filter((el) => el.idBan === table.b_id).length === 0) {
-      await editBan({ b_id: table.b_id, b_trangthai: 1 });
-      setUpdate((state) => !state);
-    }
-    localStorage.setItem("bill", JSON.stringify(billUpdated));
-    setBill([...billUpdated]);
-    setUpdatedMenu(true);
+        if (billUpdated.filter((el) => el.idBan === table.b_id).length === 0) {
+          updateStatusTable(table.b_id, 1);
+          setUpdate((state) => !state);
+        }
+        localStorage.setItem("bill", JSON.stringify(billUpdated));
+        setBill([...billUpdated]);
+        setUpdatedMenu(true);
+        alertify.success("Hủy mòn thành công!");
+      },
+      function () {
+        alertify.error("Hủy");
+      }
+    );
   };
 
   const submitNotifications = () => {
@@ -549,7 +567,7 @@ export default (props) => {
                                     : ""
                                 }`}
                                 id={key}
-                                onClick={(e) => (e, el)}
+                                onClick={(e) => onClickTableHandler(e, el)}
                               >
                                 <div className="d-flex justify-content-center">
                                   <Icon
@@ -558,7 +576,7 @@ export default (props) => {
                                     size={2.5}
                                     horizontal
                                     rotate={180}
-                                    verticalonClickTableHandler
+                                    vertical
                                     horizontal
                                     className="label"
                                   />
@@ -703,7 +721,12 @@ export default (props) => {
                             />{" "}
                             Lịch sử
                           </p>
-                          <CButton color="info" shape="pill" className="m-2 ">
+                          <CButton
+                            color="info"
+                            shape="pill"
+                            className="m-2 "
+                            onClick={onSetModalSplitBill}
+                          >
                             Tách ghép đơn
                           </CButton>
                         </CRow>
@@ -753,6 +776,20 @@ export default (props) => {
           </CCol>
         </CRow>
       </CContainer>
+      <ModalPlitBill
+        modalSplitBill={modalSplitBill}
+        onSetModalSplitBill={onSetModalSplitBill}
+        listTable={listTable}
+        billInfo={{
+          total,
+          bill,
+          b_id: table.b_id,
+        }}
+        setBill={setBill}
+        setUpdatedMenu={setUpdatedMenu}
+        updateStatusTable={updateStatusTable}
+        setUpdate={setUpdate}
+      />
     </Sidebar>
   );
 };
