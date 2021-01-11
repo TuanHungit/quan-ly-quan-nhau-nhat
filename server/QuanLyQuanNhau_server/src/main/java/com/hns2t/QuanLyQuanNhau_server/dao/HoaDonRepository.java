@@ -5,10 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import com.hns2t.QuanLyQuanNhau_server.model.ChiTietHoaDon;
 import com.hns2t.QuanLyQuanNhau_server.model.HoaDon;
 
 public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
