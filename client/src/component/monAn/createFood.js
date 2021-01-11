@@ -33,7 +33,8 @@ const CreateFood = (props) => {
   const [collapse, setCollapse] = useState(false);
 
    const handleChange = (e) => {
-     setHinhAnh(e.target.files[0]);
+    setHinhAnh((e.target.files[0]));
+    
    };
 
   const onSubmit = async (e) => {

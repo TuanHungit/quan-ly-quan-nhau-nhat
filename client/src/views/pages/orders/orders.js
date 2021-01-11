@@ -527,7 +527,7 @@ export default (props) => {
                               </p>
                               <p className="my-1"> Mã món: {monan.ma_id}</p>
                             </CCol>
-                            <CCol>
+                            <CCol lg="5">
                             <p className="my-1">
                                 Giá bán:{" "}
                                 <strong style={{ color: "blue" }}>
