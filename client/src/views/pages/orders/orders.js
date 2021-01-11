@@ -508,7 +508,7 @@ export default (props) => {
                                     : ""
                                 }`}
                                 id={key}
-                                onClick={(e) => onClickTableHandler(e, el)}
+                                onClick={(e) => (e, el)}
                               >
                                 <div className="d-flex justify-content-center">
                                   <Icon
@@ -517,7 +517,7 @@ export default (props) => {
                                     size={2.5}
                                     horizontal
                                     rotate={180}
-                                    vertical
+                                    verticalonClickTableHandler
                                     horizontal
                                     className="label"
                                   />

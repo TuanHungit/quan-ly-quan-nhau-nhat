@@ -36,9 +36,10 @@ const Login = (props) => {
       if (result.code==0){
         onUserLogin(result)
         props.history.push('/dashboard')
+        alertify.success(result.message)
       }
       else{
-        alert(result.message)
+        alertify.error(result.message)
       }
     })
   };
