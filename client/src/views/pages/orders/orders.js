@@ -51,6 +51,8 @@ import ToPriceForView from "../../../common/convertPriceForView";
 import ToDateForView from "../../../common/convertDateForView";
 import ModalPlitBill from "./splitBill/split";
 import HoaDonService from "./../../../api/HoaDonService";
+import Cards from "./../../base/cards/Cards";
+import { getMonAns } from "./../../../api/MonAnApi";
 
 export default (props) => {
   const settings = {
@@ -78,6 +80,10 @@ export default (props) => {
   };
   const [paymentSideBarOpen, setPaymentSideBarOpen] = useState(false);
   const [table, setTable] = useState(0);
+  const [search, setSearch] = useState(0);
+  const [data, setData] = useState([]);
+  const [listMonan, setListMonan] = useState([]);
+  const [txtSearch, setTxtSearch] = useState({});
   const [bill, setBill] = useState([]);
   const [listTable, setListTable] = useState([]);
   const [update, setUpdate] = useState(false);
@@ -287,13 +293,7 @@ export default (props) => {
             });
           }
         });
-      } catch (error) {
-        alertify.error("Thông báo thất bại!");
-      }
-    } else {
-      alertify.confirm("Bàn chưa có hóa đơn.", function () {
-        alertify.success("Ok");
-      });
+      } catch (error) {}
     }
   };
 
@@ -308,6 +308,25 @@ export default (props) => {
       return total + el.bill.price * el.bill.amount;
     }, 0);
     setTotal(totalBill);
+  };
+  const onClick = async () => {
+    const list = await getMonAns();
+    setData(list);
+    
+
+  };
+
+  const onChangeSearched = (e) => {
+    var queryData = [];
+    if (e.target.value != "") {
+      data.forEach(function (monan) {
+        if (monan.ma_ten.toLowerCase().indexOf(e.target.value) != -1) {
+          queryData.push(monan);
+        }
+      });
+    }
+
+    setListMonan(queryData);
   };
 
   const Bill = () =>
@@ -417,6 +436,7 @@ export default (props) => {
         </div>
       </>
     );
+
   return (
     <Sidebar
       sidebar={
@@ -469,11 +489,73 @@ export default (props) => {
                     <strong>Thực đơn</strong>{" "}
                   </CNavLink>
                 </CNavItem>
+                <CCol lg="2"></CCol>
+                <CCol lg="6">
+                  <CNavItem className="py-1">
+                    <CInput
+                      onClick={onClick}
+                      onChange={onChangeSearched}
+                      name="txtSearch"
+                      placeholder="Tìm món (F3)"
+                    />
+                  </CNavItem>
+                  <CCol>
+                    {listMonan?(<CCard
+                      className=" text-dark search-cart Card"
+                      style={{ width: "100%", backgroundColor: "while" }}
+                    >
+                      {listMonan.map((monan, idx) => {
+                        return (
+                          <CRow
+                            className=" addItem border-bottom"
+                            onClick={(e) =>
+                              onClickMenuHandler(
+                                monan.ma_id,
+                                table.b_id,
+                                monan.ma_ten,
+                                monan.ma_giaban
+                              )
+                            }
+                          >
+                            <CCol key={idx}>
+                              <img
+                                src={`http://localhost:8080/image/${monan.ma_hinhanh}`}
+                                class="figure-img img-fluid rounded my-1"
+                                alt="HinhAnh"
+                                style={{ width: "50px", height: "50px" }}
+                              />
+                            </CCol>
+                            <CCol>
+                              <p className="my-1">
+                                <strong
+                                  style={{ color: "dark", fontWeight: "bold" }}
+                                >
+                                  {monan.ma_ten}
+                                </strong>
+                              </p>
+                              <p className="my-1"> Mã món: {monan.ma_id}</p>
+                            </CCol>
+                            <CCol>
+                            <p className="my-1">
+                                Giá bán:{" "}
+                                <strong style={{ color: "blue" }}>
+                                  {monan.ma_giaban}{" đ"}
+                                </strong>
+                              </p>
+                            </CCol>
+                          </CRow>
+                        );
+                      })}
+                    </CCard>):''}
+                    
+                  </CCol>
+                </CCol>
               </CNav>
               <CTabContent>
                 <CTabPane
                   data-tab="roomtable"
                   className="bg-light tab-table-orders"
+                  onClick={(e) => setListMonan([])}
                 >
                   <CContainer>
                     <CRow className="justify-content-between">
@@ -491,6 +573,7 @@ export default (props) => {
                         </CDropdown>
                       </CCol>
                     </CRow>
+
                     <Slider
                       {...settings}
                       style={{ height: "80vh" }}
@@ -642,7 +725,10 @@ export default (props) => {
                 </CNavItem>
               </CNav>
               <CTabContent>
-                <CTabPane data-tab="bill" className="tab-table-orders">
+                <CTabPane
+                  data-tab="bill"
+                  className="text-dark tab-table-orders"
+                >
                   <CContainer className="pt-3" fluid>
                     <CCard style={{ height: "86.5vh" }} fluid>
                       <CCardHeader>
@@ -667,7 +753,7 @@ export default (props) => {
                       <CCardBody className="bill">
                         <Bill />
                       </CCardBody>
-                      <CCardFooter className="text-dark ">
+                      <CCardFooter className="text-dark">
                         {noti ? (
                           <CRow style={{ backgroundColor: "#fee7b1" }}>
                             <p

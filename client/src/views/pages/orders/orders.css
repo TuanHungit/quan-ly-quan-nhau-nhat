@@ -1,3 +1,24 @@
+.Card{
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.addItem{
+  margin: 0;
+  
+ 
+}
+.addItem:hover {
+  cursor: pointer;
+  background-color: rgb(56, 243, 112);
+  margin: 0;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.search-cart{
+  position:absolute; 
+  top:0px;
+  left: 0px;
+  z-index: 2;
+}
+
 .slider {
   width: 100%;
 }

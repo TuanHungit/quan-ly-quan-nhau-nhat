@@ -32,14 +32,14 @@ const Login = (props) => {
       password
     };
     TaiKhoanService.login(loginRequest).then(result=>{
-      console.log(result);
+     
       if (result.code==0){
         onUserLogin(result)
         props.history.push('/dashboard')
-        alertify.success(result.message)
+        alertify.success(result.message);
       }
       else{
-        alertify.error(result.message)
+        alertify.error(result.message);
       }
     })
   };

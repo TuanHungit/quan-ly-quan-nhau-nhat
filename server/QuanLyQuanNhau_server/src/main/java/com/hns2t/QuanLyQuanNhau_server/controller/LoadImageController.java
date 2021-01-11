@@ -27,7 +27,6 @@ public class LoadImageController {
 	public void downloadFile(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("fileName") String fileName) {
 		Path file = Paths.get(servletContext.getRealPath("/WEB-INF/image/").toString(), fileName);
-		System.out.println("Download file");
 		if (Files.exists(file)) {
 			response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 			try {
