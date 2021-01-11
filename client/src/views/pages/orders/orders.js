@@ -391,6 +391,8 @@ export default (props) => {
           <CCol lg="7">
             <CTabs activeTab="roomtable">
               <CNav variant="tabs">
+
+                
                 <CNavItem>
                   <CNavLink data-tab="roomtable">
                     {" "}
@@ -404,12 +406,17 @@ export default (props) => {
                     <strong> Phòng bàn</strong>
                   </CNavLink>
                 </CNavItem>
+
                 <CNavItem>
                   <CNavLink data-tab="menu">
                     {" "}
                     <strong>Thực đơn</strong>{" "}
                   </CNavLink>
                 </CNavItem>
+
+
+
+
               </CNav>
               <CTabContent>
                 <CTabPane
