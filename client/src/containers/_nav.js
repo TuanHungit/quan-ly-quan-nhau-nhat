@@ -73,6 +73,12 @@ export default [
       },
     ],
   },
+  // {
+  //   _tag: "CSidebarNavItem",
+  //   name: "Thống kê",
+  //   to: "/thongke",
+  //   icon: "cil-chart-pie",
+  // },
   {
     _tag: "CSidebarNavItem",
     name: "Nhà cung cấp",
