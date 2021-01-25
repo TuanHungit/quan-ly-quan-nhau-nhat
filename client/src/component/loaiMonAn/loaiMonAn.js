@@ -98,6 +98,7 @@ function LoaiMonAn() {
   };
     const toggleModalDelete = (item) => {
       setItem(item);
+      
       setModalDel(!modalDel);
     };
   const toggleDetails = (index) => {
@@ -148,14 +149,14 @@ function LoaiMonAn() {
             tableFilter
             sorter
             hover
-            itemsPerPage={5}
+            itemsPerPage={8}
             itemsPerPageSelect
             hover
             sorter
             tableFilter
             pagination
             scopedSlots={{
-              index: (item) => <td>{item.lma_id}</td>,
+              index: (item) => <td>{item.ma_lmaid}</td>,
               name: (item) => (
                 <td>
                   <CBadge color={getBadge(item.lma_ten)}>{item.lma_ten}</CBadge>

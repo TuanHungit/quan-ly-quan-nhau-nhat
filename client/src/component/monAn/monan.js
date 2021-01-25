@@ -144,7 +144,7 @@ function MonAn() {
             striped
             responsive
             loading={loading}
-            itemsPerPage={4}
+            itemsPerPage={8}
             itemsPerPageSelect
             hover
             sorter
@@ -200,6 +200,7 @@ function MonAn() {
                 </td>
               ),
               details: (item, index) => {
+           
                 return (
                   <CCollapse show={details.includes(index)}>
                     <CCardBody>
@@ -242,6 +243,7 @@ function MonAn() {
                                 listMon={item}
                                 toggleModal={toggleModal1}
                                 createSuccess={actionSuccess}
+                                
                               />
                             </CContainer>
                           </CTabPane>

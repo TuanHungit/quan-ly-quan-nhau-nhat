@@ -34,8 +34,9 @@ public class MonAn {
     @JsonBackReference
 	private LoaiMonAn loaiMonAn;
 	
-	@OneToMany(mappedBy = "monAn")
+	@OneToMany(mappedBy = "monAn", cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonIgnore
+	
 	private List<ChiTietHoaDon> chiTietHoaDons;
 	
 	@ManyToMany(cascade = CascadeType.ALL)

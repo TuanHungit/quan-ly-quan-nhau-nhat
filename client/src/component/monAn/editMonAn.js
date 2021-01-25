@@ -29,11 +29,13 @@ function EditMonAn(props) {
   const [ma_lmaid, setLoaiMonAn] = useState(props.listMon.ma_lmaid);
   const [loaiMonAnList, setLoaiMonAnList] = useState();
   const [success, setSuccess] = useState(false);
-
+  const [loaiMonAn, setNameLoaiMonAn] = useState("");
+  console.log(props.loaiMonAn)
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllLoaiMonAn();
+        setNameLoaiMonAn( response.filter(el => el.lma_id === props.loaiMonAn).lma_ten)
         setLoaiMonAnList(response);
       } catch (err) {
         setLoaiMonAnList(null);
@@ -194,6 +196,7 @@ function EditMonAn(props) {
                           value={ma_lmaid}
                           onChange={(e) => {
                             setLoaiMonAn(e.target.value);
+                            setNameLoaiMonAn(e.target.value);
                           }}
                           style={{ width: "100%" }}
                           required
@@ -206,7 +209,7 @@ function EditMonAn(props) {
                                   key={key}
                                   value={(el.lma_id, el.lma_ten)}
                                 >
-                                  {el.lma_ten}
+                                  {loaiMonAn}
                                 </option>
                               ))
                             : null}
@@ -214,8 +217,8 @@ function EditMonAn(props) {
                       </CCol>
                     </CRow>
                   </CCol>
-                </CRow>
-                */}
+                </CRow> */}
+               
 
                 <CRow className="field">
                   <CCol className="pt-3">

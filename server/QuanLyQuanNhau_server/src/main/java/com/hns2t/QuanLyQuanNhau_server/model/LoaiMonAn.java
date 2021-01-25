@@ -3,6 +3,7 @@ package com.hns2t.QuanLyQuanNhau_server.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,7 +26,7 @@ public class LoaiMonAn {
 	private Long lma_id; 
 	private String lma_ten;
 	
-	@OneToMany(mappedBy = "loaiMonAn")
+	@OneToMany(mappedBy = "loaiMonAn",cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonIgnore
 	private List<MonAn> monans = new ArrayList<MonAn>();
 	
